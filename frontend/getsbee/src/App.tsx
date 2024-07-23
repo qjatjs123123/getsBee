@@ -4,14 +4,14 @@ import Recommend from './pages/Recommend';
 import MyHive from './pages/MyHive';
 import About from './pages/About';
 
-import Button from './components/Common/Button';
+import TapButton from './components/Common/TapButton';
 import SideBar from './components/Common/SideBar';
 import MainSearchBar from './components/Common/MainSearchBar';
 
 function App() {
   return (
     <>
-      <Button />
+      <TapButton />
       <SideBar />
       <MainSearchBar />
 
