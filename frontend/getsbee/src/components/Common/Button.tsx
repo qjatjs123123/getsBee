@@ -1,5 +1,11 @@
+import './Button.css';
+
 const Button = () => {
-  return <button type="button">버튼</button>;
+  return (
+    <button className="button" type="button">
+      <h2>Following</h2>
+    </button>
+  );
 };
 
 export default Button;
