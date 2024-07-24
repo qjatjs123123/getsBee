@@ -42,6 +42,7 @@ CREATE TABLE post
     `title`           VARCHAR(50)      NOT NULL,
     `url`             VARCHAR(2083)    NOT NULL,
     `note`            LONGTEXT         NULL,
+    `thumbnail_url`   VARCHAR(2083)    NULL,
     `is_public`       TINYINT(1)       NOT NULL    DEFAULT 1,
     `view_count`      BIGINT           NOT NULL    DEFAULT 0,
     `like_count`      BIGINT           NOT NULL    DEFAULT 0,
