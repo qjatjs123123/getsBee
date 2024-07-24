@@ -9,44 +9,41 @@ spring:
   mvc:
     servlet:
       path: /api/v1
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useSSL=false&serverTimeZone=Asia/Seoul&characterEncoding=UTF-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
   servlet:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
+jwt:
+  secret: ${JWT_SECRET}
+---
+spring:
+  config:
+    activate:
+      on-profile: "local"
+    import: optional:file:.env-local[.properties]
+  jpa:
+    show-sql: true
 ---
 spring:
   config:
     activate:
       on-profile: "develop"
     import: optional:file:.env-develop[.properties]
-  datasource:
-    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useSSL=false&serverTimeZone=Asia/Seoul&characterEncoding=UTF-8
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-  data:
-    redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
 logging:
   level:
     org.hibernate.SQL: debug
-jwt:
-  secret: ${JWT_SECRET}
 ---
 spring:
   config:
     activate:
       on-profile: "production"
     import: optional:file:.env-production[.properties]
-  datasource:
-    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useSSL=false&serverTimeZone=Asia/Seoul&characterEncoding=UTF-8
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-  data:
-    redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-jwt:
-  secret: ${JWT_SECRET}

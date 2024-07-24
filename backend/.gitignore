@@ -1,5 +1,6 @@
 HELP.md
 .gradle
+.env-local
 .env-develop
 .env-production
 build/
