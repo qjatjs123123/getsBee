@@ -7,11 +7,11 @@ import java.util.List;
 public record DirectoryRequest (
         Long directoryId,
         String name,
-        int depth,
+        Integer depth,
         Long prevDirectoryId,
         Long nextDirectoryId,
         Long parentDirectoryId,
         Long memberId,
-        List<DirectoryResponse> children
+        List<DirectoryRequest> children
 ) {
 }

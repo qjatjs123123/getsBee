@@ -28,7 +28,7 @@ public class Directory extends BaseTimeEntity {
     private String name;
 
     @Column(nullable = false)
-    private int depth;
+    private Integer depth;
 
     @OneToOne(fetch = LAZY)
     @JoinColumn(name = "prev_directory_id")

@@ -5,7 +5,7 @@ import java.util.List;
 public record DirectoryResponse (
         Long directoryId,
         String name,
-        int depth,
+        Integer depth,
         Long prevDirectoryId,
         Long nextDirectoryId,
         Long parentDirectoryId,
