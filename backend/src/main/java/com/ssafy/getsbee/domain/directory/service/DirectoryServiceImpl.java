@@ -8,11 +8,13 @@ import com.ssafy.getsbee.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class DirectoryServiceImpl implements DirectoryService {
 
     private final DirectoryRepository directoryRepository;
@@ -34,6 +36,14 @@ public class DirectoryServiceImpl implements DirectoryService {
     @Override
     public Directory findTemporaryDirectoryIdByMemberId(Long memberId) {
         return null;
+    }
+
+    @Override
+    @Transactional
+    public void createDefaultDirectories(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+        directoryRepository.createDefaultDirectoriesForMember(member);
     }
 
     private void filterDirectoriesByAuth(List<Directory> directories) {

@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface DirectoryRepositoryCustom {
 
     Directory findRootDirectoryByMember(Member member);
+    void createDefaultDirectoriesForMember(Member member);
 }

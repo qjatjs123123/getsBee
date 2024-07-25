@@ -11,4 +11,6 @@ import java.util.List;
 public interface DirectoryRepository extends JpaRepository<Directory, Long>, DirectoryRepositoryCustom {
 
     List<Directory> findAllByMember(Member member);
+
+
 }
