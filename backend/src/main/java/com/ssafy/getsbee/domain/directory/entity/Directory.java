@@ -50,9 +50,8 @@ public class Directory extends BaseTimeEntity {
     private Boolean isDeleted;
 
     @Builder
-    public Directory(Long id, String name, int depth, Directory prevDirectory, Directory nextDirectory,
+    public Directory(String name, int depth, Directory prevDirectory, Directory nextDirectory,
                      Directory parentDirectory, Member member, Boolean isDeleted) {
-        this.id = id;
         this.name = name;
         this.depth = depth;
         this.prevDirectory = prevDirectory;
