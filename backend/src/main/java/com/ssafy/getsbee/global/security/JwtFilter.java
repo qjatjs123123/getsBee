@@ -1,9 +1,8 @@
-package com.ssafy.getsbee.global.security.jwt;
+package com.ssafy.getsbee.global.security;
 
-import com.ssafy.getsbee.global.consts.StaticConst;
-import com.ssafy.getsbee.global.error.ErrorCode;
 import com.ssafy.getsbee.global.error.FilterExceptionHandler;
 import com.ssafy.getsbee.global.error.exception.UnauthorizedException;
+import com.ssafy.getsbee.global.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,7 +23,7 @@ import static com.ssafy.getsbee.global.error.ErrorCode.*;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final TokenProvider tokenProvider;
+    private final JwtUtil jwtUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -32,8 +31,8 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             String jwt = resolveToken(request);
 
-            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-                Authentication authentication = tokenProvider.getAuthentication(jwt);
+            if (StringUtils.hasText(jwt) && jwtUtil.validateToken(jwt)) {
+                Authentication authentication = jwtUtil.getAuthentication(jwt);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
             filterChain.doFilter(request, response);

@@ -6,9 +6,11 @@ public class StaticConst {
     public static final String BEARER_PREFIX = "Bearer ";
     public static final String AUTHORITIES_KEY = "auth";
     public static final String CLAIM_EMAIL = "email";
+    public static final String CLAIM_PROFILE = "profile";
+    public static final String CLAIM_NAME = "name";
     public static final String BEARER_TYPE = "Bearer";
     public static final String ANONYMOUS_USER = "anonymousUser";
 
-    public static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;            // 30 min
-    public static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 14;  // 14 day
+    public static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;
+    public static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 14;
 }
