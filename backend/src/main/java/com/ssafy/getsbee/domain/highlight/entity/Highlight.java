@@ -80,6 +80,7 @@ public class Highlight extends BaseTimeEntity {
         this.lastIndex = lastIndex;
         this.startOffset = startOffset;
         this.lastOffset = lastOffset;
+        this.isDeleted = false;
         this.type = type;
         this.post = post;
     }

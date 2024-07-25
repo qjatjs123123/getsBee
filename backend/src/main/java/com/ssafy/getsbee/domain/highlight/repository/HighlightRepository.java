@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface HighlightRepository extends JpaRepository<Highlight, Long> {
+
     Optional<Highlight> findById(Long id);
 
     Optional<List<Highlight>> findAllByPostId(Long postId);

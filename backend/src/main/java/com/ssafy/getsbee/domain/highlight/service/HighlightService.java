@@ -1,11 +1,11 @@
 package com.ssafy.getsbee.domain.highlight.service;
 
 import com.ssafy.getsbee.domain.highlight.dto.request.CreateHighlightRequest;
-import com.ssafy.getsbee.domain.highlight.entity.Highlight;
+import com.ssafy.getsbee.domain.highlight.dto.response.CreateHighlightResponse;
 
 public interface HighlightService {
 
-    void addHighlight(CreateHighlightRequest createHighlightRequest, Long MemberId);
+    CreateHighlightResponse addHighlight(CreateHighlightRequest createHighlightRequest, Long MemberId);
 
-    void removeHighlight(Highlight highlight);
+    void deleteHighlight(Long highlightId, Long MemberId);
 }

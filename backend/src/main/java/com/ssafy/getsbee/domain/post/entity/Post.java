@@ -59,17 +59,14 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-//    @OneToMany(mappedBy = "highlight", cascade = CascadeType.ALL)
-//    private List<Highlight> highlights;
-
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Highlight> highlights;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "directory_id")
     private Directory directory;
 
-    @Builder
-    public Post(Long id, String title, String url, String note, String thumbnailUrl, Boolean isPublic, Long viewCount,
-                Long likeCount, Long bookmarkCount, Boolean isDeleted, Member member, Directory directory) {
+    public Post(Long id, String title, String url, String note, String thumbnailUrl, Boolean isPublic, Long viewCount, Long likeCount, Long bookmarkCount, Boolean isDeleted, Member member, List<Highlight> highlights, Directory directory) {
         this.id = id;
         this.title = title;
         this.url = url;
@@ -81,9 +78,11 @@ public class Post extends BaseTimeEntity {
         this.bookmarkCount = bookmarkCount;
         this.isDeleted = isDeleted;
         this.member = member;
+        this.highlights = highlights;
         this.directory = directory;
     }
 
+    @Builder
     public Post(String title, String url, String thumbnailUrl, Member member, Directory directory) {
         this.title = title;
         this.url = url;
@@ -95,5 +94,11 @@ public class Post extends BaseTimeEntity {
         this.isDeleted = false;
         this.member = member;
         this.directory = directory;
+    }
+
+    public void updatePost (String note, Directory directory, Boolean isPublic){
+        this.note = note;
+        this.directory = directory;
+        this.isPublic = isPublic;
     }
 }
