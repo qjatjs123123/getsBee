@@ -14,6 +14,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 
   chrome.scripting.executeScript({
     target: { tabId: tabs[0].id },
-    files: ["popup.js"], // 콘텐츠 스크립트 파일 경로
+    files: ["content.js", "highlight.js", "data.js"], // 콘텐츠 스크립트 파일 경로
   });
 });

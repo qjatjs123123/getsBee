@@ -8,7 +8,18 @@
     "default_icon": "graph.png"
   },
   "permissions": ["activeTab", "scripting", "storage"],
-  "background": {
-    "service_worker": "background.js"
-  }
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "data.js",
+        "content.js",
+        "highlight.js",
+        "constant.js",
+        "api.js",
+        "validation.js"
+      ],
+      "css": ["getsBeeCustom.css"]
+    }
+  ]
 }
