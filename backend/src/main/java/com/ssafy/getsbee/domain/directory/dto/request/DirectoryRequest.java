@@ -1,16 +1,14 @@
 package com.ssafy.getsbee.domain.directory.dto.request;
 
-import com.ssafy.getsbee.domain.directory.dto.response.DirectoryResponse;
-
 import java.util.List;
 
 public record DirectoryRequest (
-        Long directoryId,
+        String directoryId,
         String name,
         Integer depth,
-        Long prevDirectoryId,
-        Long nextDirectoryId,
-        Long parentDirectoryId,
+        String prevDirectoryId,
+        String nextDirectoryId,
+        String parentDirectoryId,
         Long memberId,
         List<DirectoryRequest> children
 ) {
