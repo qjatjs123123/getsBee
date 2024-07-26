@@ -34,9 +34,9 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> onSuccess(int status, T data) {
         return ApiResponse.<T>builder()
                 .status(status)
+                .message(ResponseMessage.SUCCESS.getActualMessage())
                 .code(null)
                 .isSuccess(true)
-                .message(ResponseMessage.SUCCESS.getActualMessage())
                 .data(data)
                 .build();
     }
@@ -44,20 +44,20 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> onFailure(ErrorCode errorCode) {
         return ApiResponse.<T>builder()
                 .status(errorCode.getHttpStatus().value())
+                .message(errorCode.getMessage())
                 .code(errorCode.getCode())
                 .isSuccess(false)
-                .message(errorCode.getMessage())
                 .data(null)
                 .build();
     }
 
     public static JSONObject jsonOf(ErrorCode errorCode) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("timestamp", LocalDateTime.now());
-        jsonObject.put("success", false);
-        jsonObject.put("message", errorCode.getMessage());
         jsonObject.put("status", errorCode.getHttpStatus().value());
+        jsonObject.put("message", errorCode.getMessage());
         jsonObject.put("code", errorCode.getCode());
+        jsonObject.put("success", false);
+        jsonObject.put("timestamp", LocalDateTime.now());
         return jsonObject;
     }
 }
