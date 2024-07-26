@@ -30,11 +30,15 @@ public enum ErrorCode {
 
     /** Member */
     DUPLICATE_MEMBER(BAD_REQUEST, "MEMBER000", "이미 존재하는 E-mail 입니다."),
-    MEMBER_NOT_FOUND(BAD_REQUEST, "MEMBER001", "해당 회원이 존재하지 않습니다.");
+    MEMBER_NOT_FOUND(BAD_REQUEST, "MEMBER001", "해당 회원이 존재하지 않습니다."),
 
     /** Post */
+    DUPLICATE_POST(BAD_REQUEST, "POST000", "이미 존재하는 포스트 입니다."),
+    POST_NOT_FOUND(BAD_REQUEST, "POST001", "해당 포스트는 존재하지 않습니다."),
 
     /** Highlight */
+    DUPLICATE_HIGHLIGHT(BAD_REQUEST, "HIGHLIGHT000", "이미 존재하는 하이라이트 입니다."),
+    HIGHLIGHT_NOT_FOUND(BAD_REQUEST, "HIGHLIGHT001", "해당 하이라이트는 존재하지 않습니다.");
 
     /** Directory */
 
