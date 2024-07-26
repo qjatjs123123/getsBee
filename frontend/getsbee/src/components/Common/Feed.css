@@ -5,7 +5,7 @@
   top: 0;
   bottom: 0;
   width: 6px;
-  background-color: #3498db;
+  background-color: var(--bar-color, #3498db);
   border-radius: 5px;
 }
 
