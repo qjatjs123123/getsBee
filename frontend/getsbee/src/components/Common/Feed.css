@@ -1,0 +1,19 @@
+.text-with-bar::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background-color: #3498db;
+  border-radius: 5px;
+}
+
+.custom-card {
+  width: 500px;
+  height: auto;
+}
+
+.custom-image {
+  width: 30px;
+}
