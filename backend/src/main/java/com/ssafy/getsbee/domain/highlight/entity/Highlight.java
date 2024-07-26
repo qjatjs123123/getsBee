@@ -83,5 +83,7 @@ public class Highlight extends BaseTimeEntity {
     }
 
 
-
+    public void changeColor(String color) {
+        this.color = color;
+    }
 }

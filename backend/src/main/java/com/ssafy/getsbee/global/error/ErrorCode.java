@@ -38,7 +38,7 @@ public enum ErrorCode {
 
     /** Highlight */
     DUPLICATE_HIGHLIGHT(BAD_REQUEST, "HIGHLIGHT000", "이미 존재하는 하이라이트 입니다."),
-    HIGHLIGHT_NOT_FOUND(BAD_REQUEST, "HIGHLIGHT001", "해당 하이라이트는 존재하지 않습니다.");
+    HIGHLIGHT_NOT_FOUND(BAD_REQUEST, "HIGHLIGHT001", "해당 하이라이트는 존재하지 않습니다."),
 
     /** Directory */
 
@@ -47,7 +47,8 @@ public enum ErrorCode {
     /** Comment */
 
     /** Bookmark */
-
+    DUPLICATE_BOOKMARK(BAD_REQUEST, "BOOKMARK000", "이미 존재하는 북마크 입니다."),
+    BOOKMARK_NOT_FOUND(BAD_REQUEST, "BOOKMARK001", "해당 하이라이트는 존재하지 않습니다.");
     /** Like */
 
     /** Follow */
