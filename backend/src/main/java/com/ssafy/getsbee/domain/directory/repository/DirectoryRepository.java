@@ -1,7 +1,16 @@
 package com.ssafy.getsbee.domain.directory.repository;
 
 import com.ssafy.getsbee.domain.directory.entity.Directory;
+import com.ssafy.getsbee.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface DirectoryRepository extends JpaRepository<Directory, Long> {
+import java.util.List;
+
+@Repository
+public interface DirectoryRepository extends JpaRepository<Directory, Long>, DirectoryRepositoryCustom {
+
+    Directory findDirectoryById(Long directoryId);
+
+    List<Directory> findAllByMember(Member member);
 }
