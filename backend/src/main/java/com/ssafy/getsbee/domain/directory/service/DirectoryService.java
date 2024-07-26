@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface DirectoryService {
 
+
+
     List<DirectoryResponse> findAllByMember(Member member);
 
     List<DirectoryResponse> modifyDirectories(List<DirectoryRequest> directoryRequests);
