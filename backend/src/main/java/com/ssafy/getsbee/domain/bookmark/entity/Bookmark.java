@@ -12,7 +12,7 @@ import org.hibernate.annotations.Where;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE bookmark SET is_deleted = true WHERE bookmark_id = ?")
-@Where(clause = "is_deleted = false")
+//@Where(clause = "is_deleted = false") // 유효한지 확인 해줘야함
 public class Bookmark extends BaseTimeEntity {
 
     @Id

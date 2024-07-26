@@ -2,13 +2,10 @@ package com.ssafy.getsbee.domain.post.controller;
 
 import com.ssafy.getsbee.domain.post.dto.request.UpdatePostRequest;
 import com.ssafy.getsbee.domain.post.dto.response.PostResponse;
-import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.domain.post.service.PostService;
 import com.ssafy.getsbee.global.security.SecurityUtil;
 import jakarta.validation.Valid;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
