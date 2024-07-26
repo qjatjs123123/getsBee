@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.ssafy.getsbee.domain.directory.entity.QDirectory.*;
+
 
 @Repository
 @RequiredArgsConstructor
@@ -18,14 +20,14 @@ public class DirectoryRepositoryCustomImpl implements DirectoryRepositoryCustom 
     private final JPAQueryFactory queryFactory;
     private final EntityManager em;
 
+    private static final int ROOT_DEPTH = 0;
+
     @Override
     public Directory findRootDirectoryByMember(Member member) {
-        QDirectory directory = QDirectory.directory;
-
         return queryFactory
                 .selectFrom(directory)
                 .where(directory.member.id.eq(member.getId())
-                        .and(directory.depth.eq(0)))
+                        .and(directory.depth.eq(ROOT_DEPTH)))
                 .fetchOne();
     }
 
@@ -34,7 +36,7 @@ public class DirectoryRepositoryCustomImpl implements DirectoryRepositoryCustom 
     public void createDefaultDirectoriesForMember(Member member) {
         // root 디렉토리
         Directory rootDirectory = Directory.builder()
-                .name("Root Directory")
+                .name("Root")
                 .depth(0)
                 .prevDirectory(null)
                 .nextDirectory(null)
@@ -58,7 +60,7 @@ public class DirectoryRepositoryCustomImpl implements DirectoryRepositoryCustom 
 
         // 북마크 디렉토리
         Directory bookmarkDirectory = Directory.builder()
-                .name("Bookmark Directory")
+                .name("Bookmark")
                 .depth(1)
                 .prevDirectory(temporaryDirectory)
                 .nextDirectory(null)

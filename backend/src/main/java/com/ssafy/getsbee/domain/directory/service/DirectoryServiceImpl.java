@@ -5,6 +5,9 @@ import com.ssafy.getsbee.domain.directory.dto.response.DirectoryResponse;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
+import com.ssafy.getsbee.domain.member.repository.MemberRepository;
+import com.ssafy.getsbee.global.error.ErrorCode;
+import com.ssafy.getsbee.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,7 @@ import java.util.*;
 public class DirectoryServiceImpl implements DirectoryService {
 
     private final DirectoryRepository directoryRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     public List<DirectoryResponse> findAllByMember(Member member) {
@@ -42,7 +46,7 @@ public class DirectoryServiceImpl implements DirectoryService {
     @Transactional
     public void createDefaultDirectories(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
         directoryRepository.createDefaultDirectoriesForMember(member);
     }
 

@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface DirectoryRepository extends JpaRepository<Directory, Long>, DirectoryRepositoryCustom {
 
+    Directory findDirectoryById(Long directoryId);
+
     List<Directory> findAllByMember(Member member);
-
-
 }

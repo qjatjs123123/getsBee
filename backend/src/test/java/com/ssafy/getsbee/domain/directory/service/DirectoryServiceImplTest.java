@@ -84,7 +84,7 @@ class DirectoryServiceImplTest {
         assertNotNull(result);
         // Assuming the assembleDirectories method returns 2 elements
         assertEquals(2, result.size());
-        assertEquals("Temporary Directory", result.get(0).getName());
+        assertEquals("Temporary Directory", result.get(0).);
         assertEquals("Bookmark Directory", result.get(1).getName());
     }
 }
