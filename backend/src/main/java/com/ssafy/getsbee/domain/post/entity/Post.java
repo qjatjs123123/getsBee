@@ -101,4 +101,8 @@ public class Post extends BaseTimeEntity {
         this.directory = directory;
         this.isPublic = isPublic;
     }
+
+    public void increaseViewCount() {
+        this.viewCount++;
+    }
 }

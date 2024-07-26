@@ -1,7 +1,6 @@
 package com.ssafy.getsbee.domain.post.dto.response;
 
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
-import com.ssafy.getsbee.domain.highlight.entity.Highlight;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import lombok.Builder;
 
@@ -17,18 +16,16 @@ public record PostResponse(
         Long viewCount,
         Long likeCount,
         Long bookmarkCount,
+
+        Long directoryId,
         String directoryName,
 
-        // 댓글
-        // 하이라이트
+        // 댓글 comment
+
         List<HighlightResponse> highlights,
 
-        // 좋아요 여부
         Boolean isLike,
-        // 북마크 여부
         Boolean isBookmark,
-
-        // 내가 만든 포스트 인지 여부
         Boolean isMyPost
 ) {
     @Builder
@@ -46,7 +43,8 @@ public record PostResponse(
                 .viewCount(post.getViewCount())
                 .likeCount(post.getLikeCount())
                 .bookmarkCount(post.getBookmarkCount())
-                .directoryName(post.getDirectory().getName())
+//                .directoryId(post.getDirectory().getId())
+//                .directoryName(post.getDirectory().getName())
                 .highlights(highlights)
                 .isLike(isLike)
                 .isBookmark(isBookmark)

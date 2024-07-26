@@ -21,7 +21,6 @@ public class HighlightServiceImpl implements HighlightService {
 
     private final HighlightRepository highlightRepository;
     private final MemberService memberService;
-    private final PostService postService;
     private final PostRepository postRepository;
 
     @Override
@@ -49,6 +48,8 @@ public class HighlightServiceImpl implements HighlightService {
         Member member = memberService.findById(memberId);
         Highlight highlight = highlightRepository.findById(highlightId)
                 .orElseThrow(() -> new BadRequestException(ErrorCode.HIGHLIGHT_NOT_FOUND));
+
+        if(highlight.getIsDeleted()) throw new BadRequestException(ErrorCode.HIGHLIGHT_NOT_FOUND);
 
         if (!highlight.getPost().getMember().equals(member)) {
             throw new BadRequestException(ErrorCode._FORBIDDEN);

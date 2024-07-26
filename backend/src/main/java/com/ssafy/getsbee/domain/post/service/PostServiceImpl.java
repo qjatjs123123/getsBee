@@ -35,8 +35,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void deletePost(Long postId, Long memberId) {
         Member member = memberService.findById(memberId);
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BadRequestException(ErrorCode.POST_NOT_FOUND));
+        Post post = findValidPost(postId);
 
         if (!post.getMember().equals(member)) {
             throw new BadRequestException(ErrorCode._FORBIDDEN);
@@ -47,8 +46,8 @@ public class PostServiceImpl implements PostService {
     @Override
     public void updatePost(Long postId, UpdatePostRequest request, Long memberId) {
         Member member = memberService.findById(memberId);
-        Post post = postRepository.findById(postId).
-                orElseThrow(() -> new BadRequestException(ErrorCode.POST_NOT_FOUND));
+        Post post = findValidPost(postId);
+
         // Directory directory = directoryRepository.findById(request.directoryId());
         Directory directory = null;
 
@@ -63,27 +62,34 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostResponse showPostInfo(Long postId, Long memberId) {
         Member member = memberService.findById(memberId);
-        Post post = postRepository.findById(postId).
-                orElseThrow(() -> new BadRequestException(ErrorCode.POST_NOT_FOUND));
+        Post post = findValidPost(postId);
 
         List<HighlightResponse> highlightResponses = post.getHighlights()
-                .stream().map(HighlightResponse::of).collect(Collectors.toList());
+                .stream()
+                .filter(highlight -> !highlight.getIsDeleted())
+                .map(HighlightResponse::of).collect(Collectors.toList());
 
-        System.out.println(highlightResponses.toString());
+        if (!post.getIsPublic() && !post.getMember().equals(member)) {
+            throw new BadRequestException(ErrorCode._UNAUTHORIZED);
+        }
 
         // 북마크 좋아요 여부 필요, 디렉토리 저장 필요
         // Boolean isBookmark = bookmarkRepository.findByIdMemberAndPost()
 
-        if(!post.getIsPublic()){
-            if(!post.getMember().equals(member)){
-                throw new BadRequestException(ErrorCode._UNAUTHORIZED);
-            }
-            return PostResponse.from(post, highlightResponses, MYPOST, false, false);
-        }
+        post.increaseViewCount();
+        return PostResponse.from(post, highlightResponses,
+                isOwner(post.getMember(), member) ? MYPOST : NOTMYPOST, false, false);
+    }
 
-        if(!post.getMember().equals(member)){
-            return PostResponse.from(post, highlightResponses, NOTMYPOST, false, false);
-        }
-        return PostResponse.from(post, highlightResponses, MYPOST, false, false);
+    private Post findValidPost(Long postId){
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BadRequestException(ErrorCode.POST_NOT_FOUND));
+
+        if(post.getIsDeleted()) throw new BadRequestException(ErrorCode.POST_NOT_FOUND);
+        return post;
+    }
+
+    private Boolean isOwner(Member member, Member OwnerMember) {
+        return member.equals(OwnerMember);
     }
 }

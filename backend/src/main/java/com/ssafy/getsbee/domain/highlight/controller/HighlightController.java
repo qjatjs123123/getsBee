@@ -7,7 +7,6 @@ import com.ssafy.getsbee.domain.post.service.PostService;
 import com.ssafy.getsbee.global.security.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
