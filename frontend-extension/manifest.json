@@ -5,10 +5,21 @@
   "version": "1.0",
   "action": {
     "default_popup": "popup.html",
-    "default_icon": "graph.png"
+    "default_icon": "icon.png"
   },
   "permissions": ["activeTab", "scripting", "storage"],
-  "background": {
-    "service_worker": "background.js"
-  }
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "data.js",
+        "content.js",
+        "highlight.js",
+        "constant.js",
+        "api.js",
+        "validation.js"
+      ],
+      "css": ["getsBeeCustom.css"]
+    }
+  ]
 }
