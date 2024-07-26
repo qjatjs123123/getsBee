@@ -1,39 +1,96 @@
 window.addEventListener("load", () => {
-  const tooltip = document.createElement("div");
-  tooltip.id = "tooltip";
-  tooltip.style.visibility = "hidden"; // 요소는 보이지 않지만 여전히 DOM에 존재
-  tooltip.style.opacity = "0";
-  tooltip.style.position = "absolute";
-  tooltip.style.padding = `${TOOLTIP_PT} ${TOOLTIP_PL}`;
-  tooltip.style.backgroundColor = TOOLTIP_BGC; // 배경색을 흰색으로 설정
-  tooltip.style.borderRadius = TOOLTIP_BORDER_RADIUS;
-  tooltip.style.fontSize = TOOLTIP_FONTSIZE;
-  tooltip.style.zIndex = "1000";
-  tooltip.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.3)"; // 그림자 효과 추가
+  loadFontAwesome();
+
+  const tooltip = createTooltip();
   document.body.appendChild(tooltip);
 
-  // 색상 버튼을 만들고 툴팁에 추가
-
   COLORS.forEach(({ color, colorh }) => {
+    const colorButton = createColorButton(color, colorh);
+    tooltip.appendChild(colorButton);
+  });
+
+  const binButton = createIconButton("fa fa-trash-o", "25px", () => {
+    deleteHighlight();
+    hideTooltip();
+  });
+  tooltip.appendChild(binButton);
+
+  function createTooltip() {
+    const tooltip = document.createElement("div");
+    tooltip.id = "tooltip";
+    tooltip.style.visibility = "hidden";
+    tooltip.style.opacity = "0";
+    tooltip.style.position = "absolute";
+    tooltip.style.padding = `${TOOLTIP_PT} ${TOOLTIP_PL}`;
+    tooltip.style.backgroundColor = TOOLTIP_BGC;
+    tooltip.style.borderRadius = TOOLTIP_BORDER_RADIUS;
+    tooltip.style.fontSize = TOOLTIP_FONTSIZE;
+    tooltip.style.zIndex = "1000";
+    tooltip.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.3)";
+    tooltip.style.display = "flex";
+    tooltip.style.flexDirection = "row";
+    tooltip.style.alignItems = "center";
+    tooltip.style.justifyContent = "center";
+    tooltip.style.gap = "8px";
+    return tooltip;
+  }
+
+  function createColorButton(color, colorh) {
     const button = document.createElement("button");
-    button.classList.add("color-btn");
     button.style.width = BTN_WIDTH;
     button.style.height = BTN_HEIGHT;
     button.style.borderRadius = BTN_BORDER_RADIUS;
-    button.style.marginLeft = BTN_ML;
-    button.style.marginRight = BTN_MR;
     button.style.backgroundColor = color;
     button.style.border = "none";
     button.style.cursor = "pointer";
 
     button.addEventListener("mousedown", (event) => {
       hideTooltip();
-      dragHighlight(selection.getRangeAt(0), color, colorh);
+      decideDragOrUpdate(color, colorh);
       deleteRange();
-      event.stopPropagation(); // 이벤트 전파를 막음
+      event.stopPropagation();
     });
-    tooltip.appendChild(button);
-  });
+
+    return button;
+  }
+
+  function createIconButton(iconClass, fontSize, onClick) {
+    const button = document.createElement("button");
+    button.style.width = BTN_WIDTH;
+    button.style.height = BTN_HEIGHT;
+    button.style.borderRadius = BTN_BORDER_RADIUS;
+    button.style.backgroundColor = "transparent";
+    button.style.border = "none";
+    button.style.cursor = "pointer";
+    button.style.display = "flex";
+    button.style.alignItems = "center";
+    button.style.justifyContent = "center";
+
+    const icon = document.createElement("i");
+    icon.className = iconClass;
+    icon.style.fontSize = fontSize;
+
+    button.appendChild(icon);
+    button.addEventListener("mousedown", (event) => {
+      onClick();
+      event.stopPropagation();
+    });
+
+    return button;
+  }
+  function loadFontAwesome() {
+    const link = document.createElement("link");
+    link.href =
+      "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css";
+    link.rel = "stylesheet";
+    link.type = "text/css";
+    document.head.appendChild(link);
+  }
+  function decideDragOrUpdate(color, colorh) {
+    if (isTextSelected(selection.getRangeAt(0)))
+      dragHighlight(selection.getRangeAt(0), color, colorh);
+    else updateHighlight(color, colorh);
+  }
 
   function deleteRange() {
     if (!selection) return;
