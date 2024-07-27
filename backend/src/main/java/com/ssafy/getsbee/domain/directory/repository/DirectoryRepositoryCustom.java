@@ -13,4 +13,6 @@ public interface DirectoryRepositoryCustom {
 
     Directory findTemporaryDirectoryByMember(Member member);
     void createDefaultDirectoriesForMember(Member member);
+
+    Directory createNewDirectoryForMember(Member member, String newDirectoryName);
 }

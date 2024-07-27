@@ -95,4 +95,20 @@ public class DirectoryRepositoryCustomImpl implements DirectoryRepositoryCustom 
         temporaryDirectory.setNextDirectory(bookmarkDirectory);
         em.merge(temporaryDirectory);
     }
+
+    @Override
+    public Directory createNewDirectoryForMember(Member member, String newDirectoryName) {
+        Directory temp = Directory.builder()
+                .name(newDirectoryName)
+                .depth(1)
+                .prevDirectory(null)
+                .nextDirectory(null)
+                .parentDirectory(null)
+                .member(member)
+                .isDeleted(false)
+                .build();
+        em.persist(temp);
+        em.flush(); //flush 해야 db에 삽입
+        return temp;
+    }
 }
