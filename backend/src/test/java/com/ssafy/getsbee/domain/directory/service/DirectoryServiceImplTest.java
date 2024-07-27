@@ -1,6 +1,7 @@
 package com.ssafy.getsbee.domain.directory.service;
 
 import com.ssafy.getsbee.GetsbeeApplication;
+import com.ssafy.getsbee.domain.directory.dto.request.DirectoryRequest;
 import com.ssafy.getsbee.domain.directory.dto.response.DirectoryResponse;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
@@ -16,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import jakarta.transaction.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -110,7 +112,6 @@ class DirectoryServiceImplTest {
     }
 
     @Test
-    @Transactional
     void findDefaultDirectoryTest(){
         Directory rootDirectory = directoryRepository.findRootDirectoryByMember(member);
         Directory temporaryDirectory = directoryRepository.findTemporaryDirectoryByMember(member);
@@ -160,4 +161,36 @@ class DirectoryServiceImplTest {
         assertEquals(3, directories.size(), "depth 1인 폴더는 3개여야 한다.");
         assertEquals(3, directories.get(2).children().size(), "Second Folder의 children은 3개이다.");
     }
+
+    @Test
+    @Transactional
+    void modifyDirectoriesTest() {
+        // 새로운 디렉토리 구조 생성 -> id값 동적으로 설정하기
+        List<DirectoryRequest> directoryRequests = new ArrayList<>();
+        directoryRequests.add(new DirectoryRequest("2", "Temporary", 1, "1", "T1", "1", member.getId())); // Bookmark
+        directoryRequests.add(new DirectoryRequest("2", "Bookmark", 1, "1", "T1", "1", member.getId())); // Bookmark
+        directoryRequests.add(new DirectoryRequest("T1", "Third Folder", 1, "2", null, "1", member.getId())); // Third Folder
+
+        // Third Folder의 children 설정
+        directoryRequests.add(new DirectoryRequest("3", "Child2", 2, null, "4", "T1", member.getId())); // Child2
+        directoryRequests.add(new DirectoryRequest("4", "Child3", 2, "3", null, "T1", member.getId())); // Child3
+
+        List<DirectoryResponse> modifiedDirectories = directoryService.modifyDirectories(directoryRequests);
+
+        assertNotNull(modifiedDirectories);
+        assertEquals(2, modifiedDirectories.size(), "depth1짜리 폴더는 2개");
+
+        DirectoryResponse thirdFolder = modifiedDirectories.stream()
+                .filter(dir -> "Third Folder".equals(dir.name()))
+                .findFirst()
+                .orElse(null);
+
+        assertNotNull(thirdFolder, "Third Folder 폴더는 만들어졌다");
+        assertEquals("Third Folder", thirdFolder.name(), "Third Folder 폴더의 이름이 맞다");
+
+        assertEquals(2, thirdFolder.children().size(), "Third Folder의 child는 2개");
+        assertEquals("Child2", thirdFolder.children().get(0).name(), "첫번째 child는 Child2");
+        assertEquals("Child3", thirdFolder.children().get(1).name(), "두번째 child는 Child3");
+    }
+
 }
