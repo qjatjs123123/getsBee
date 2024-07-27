@@ -6,7 +6,10 @@ import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.repository.MemberRepository;
+import com.ssafy.getsbee.global.error.ErrorCode;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
+import com.ssafy.getsbee.global.error.exception.UnauthorizedException;
+import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,8 +37,11 @@ public class DirectoryServiceImpl implements DirectoryService {
     }
 
     @Override
+    @Transactional
     public List<DirectoryResponse> modifyDirectories(List<DirectoryRequest> directoryRequests) {
+
         Long memberId = directoryRequests.get(0).memberId();
+        // if(!SecurityUtil.getCurrentMemberId().equals(memberId)) throw new UnauthorizedException(FORBIDDEN_USER);
         Member member = memberRepository.getReferenceById(memberId);
         List<Directory> existingDirectories = directoryRepository.findAllByMember(member);
 
@@ -49,7 +55,7 @@ public class DirectoryServiceImpl implements DirectoryService {
             }
         }
 
-        //DELETE
+        // DELETE
         List<Long> requestDirectoryIds = directoryRequests.stream()
                 .filter(dr -> !dr.directoryId().startsWith("T"))
                 .map(dr -> Long.parseLong(dr.directoryId()))
@@ -63,69 +69,67 @@ public class DirectoryServiceImpl implements DirectoryService {
 
         // MODIFY
         for (DirectoryRequest DR : directoryRequests) {
-            if (!DR.directoryId().startsWith("T")) {
-                Long directoryId = Long.parseLong(DR.directoryId());
-                Directory existingDirectory = directoryRepository.findDirectoryById(directoryId);
+            Long directoryId = Long.parseLong(DR.directoryId());
+            Directory existingDirectory = directoryRepository.findDirectoryById(directoryId);
 
-                // prevDirectoryId 설정
-                Long newPrevDirectoryId;
-                if(DR.prevDirectoryId()==null)  newPrevDirectoryId = null;
-                else if (DR.prevDirectoryId().startsWith("T")){
-                    newPrevDirectoryId = tempIdToId.get(DR.prevDirectoryId());
-                }else{
-                    newPrevDirectoryId = Long.parseLong(DR.prevDirectoryId());
-                }
+            Long newPrevDirectoryId = getNewDirectoryId(DR.prevDirectoryId(), tempIdToId);
+            Long newNextDirectoryId = getNewDirectoryId(DR.nextDirectoryId(), tempIdToId);
+            Long newParentDirectoryId = getNewDirectoryId(DR.parentDirectoryId(), tempIdToId);
 
-                //nextDirectoryId 설정
-                Long newNextDirectoryId;
-                if(DR.nextDirectoryId()==null)  newNextDirectoryId = null;
-                else if (DR.nextDirectoryId().startsWith("T")){
-                    newNextDirectoryId = tempIdToId.get(DR.nextDirectoryId());
-                }else{
-                    newNextDirectoryId = Long.parseLong(DR.nextDirectoryId());
-                }
-
-                // parentDirectoryId 설정
-                Long newParentDirectoryId;
-                if (DR.parentDirectoryId() == null) {
-                    newParentDirectoryId = null;
-                } else if (DR.parentDirectoryId().startsWith("T")) {
-                    newParentDirectoryId = tempIdToId.get(DR.parentDirectoryId());
-                } else {
-                    newParentDirectoryId = Long.parseLong(DR.parentDirectoryId());
-                }
-
-                // 변경사항 확인 및 수정
-                boolean isModified = false;
-
-                if (!existingDirectory.getName().equals(DR.name()) ||
-                        existingDirectory.getDepth() != DR.depth() ||
-                        (existingDirectory.getPrevDirectory() != null && !existingDirectory.getPrevDirectory().getId().equals(newPrevDirectoryId)) ||
-                        (existingDirectory.getPrevDirectory() == null && newPrevDirectoryId != null) ||
-                        (existingDirectory.getNextDirectory() != null && !existingDirectory.getNextDirectory().getId().equals(newNextDirectoryId)) ||
-                        (existingDirectory.getNextDirectory() == null && newNextDirectoryId != null) ||
-                        (existingDirectory.getParentDirectory() != null && !existingDirectory.getParentDirectory().getId().equals(newParentDirectoryId)) ||
-                        (existingDirectory.getParentDirectory() == null && newParentDirectoryId != null)) {
-
-                    existingDirectory.changeDirectoryInfo(
-                            DR.name(),
-                            DR.depth(),
-                            newPrevDirectoryId != null ? directoryRepository.findDirectoryById(newPrevDirectoryId) : null,
-                            newNextDirectoryId != null ? directoryRepository.findDirectoryById(newNextDirectoryId) : null,
-                            newParentDirectoryId != null ? directoryRepository.findDirectoryById(newParentDirectoryId) : null
-                    );
-                    isModified = true;
-                }
-
-                if (isModified) {
-                    directoryRepository.save(existingDirectory);
-                }
+            // 변경사항 확인 및 수정
+            if (isDirectoryChanged(existingDirectory, DR, newPrevDirectoryId, newNextDirectoryId, newParentDirectoryId)) {
+                existingDirectory.changeDirectoryInfo(
+                        DR.name(),
+                        DR.depth(),
+                        newPrevDirectoryId != null ? directoryRepository.findDirectoryById(newPrevDirectoryId) : null,
+                        newNextDirectoryId != null ? directoryRepository.findDirectoryById(newNextDirectoryId) : null,
+                        newParentDirectoryId != null ? directoryRepository.findDirectoryById(newParentDirectoryId) : null
+                );
+                directoryRepository.save(existingDirectory);
             }
         }
 
         return assembleDirectories(directoryRepository.findAllByMember(member));
-
     }
+
+    private Long getNewDirectoryId(String directoryId, HashMap<String, Long> tempIdToId) {
+        if (directoryId == null) {
+            return null;
+        } else if (directoryId.startsWith("T")) {
+            return tempIdToId.get(directoryId);
+        } else {
+            return Long.parseLong(directoryId);
+        }
+    }
+
+    private boolean isDirectoryChanged(Directory existingDirectory, DirectoryRequest DR, Long newPrevDirectoryId,
+                                       Long newNextDirectoryId, Long newParentDirectoryId) {
+        if (!existingDirectory.getName().equals(DR.name())) {
+            return true;
+        }
+
+        if (!existingDirectory.getDepth().equals(DR.depth())) {
+            return true;
+        }
+
+        Long existingPrevDirectoryId = existingDirectory.getPrevDirectory() != null ?
+                existingDirectory.getPrevDirectory().getId() : null;
+        if (!Objects.equals(existingPrevDirectoryId, newPrevDirectoryId)) {
+            return true;
+        }
+
+        Long existingNextDirectoryId = existingDirectory.getNextDirectory() != null ?
+                existingDirectory.getNextDirectory().getId() : null;
+        if (!Objects.equals(existingNextDirectoryId, newNextDirectoryId)) {
+            return true;
+        }
+
+        Long existingParentDirectoryId = existingDirectory.getParentDirectory() != null ?
+                existingDirectory.getParentDirectory().getId() : null;
+
+        return !Objects.equals(existingParentDirectoryId, newParentDirectoryId);
+    }
+
 
     @Override
     public Directory findTemporaryDirectoryByMember(Member member) {
