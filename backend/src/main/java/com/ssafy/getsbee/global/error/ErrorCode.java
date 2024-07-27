@@ -38,10 +38,12 @@ public enum ErrorCode {
 
     /** Highlight */
     DUPLICATE_HIGHLIGHT(BAD_REQUEST, "HIGHLIGHT000", "이미 존재하는 하이라이트 입니다."),
-    HIGHLIGHT_NOT_FOUND(BAD_REQUEST, "HIGHLIGHT001", "해당 하이라이트는 존재하지 않습니다.");
+    HIGHLIGHT_NOT_FOUND(BAD_REQUEST, "HIGHLIGHT001", "해당 하이라이트는 존재하지 않습니다."),
 
     /** Directory */
-
+    DIRECTORY_NOT_FOUND(BAD_REQUEST, "DIR000", "해당 디렉토리를 찾을 수 없습니다."),
+    NEXT_DIRECTORY_NOT_FOUND(BAD_REQUEST, "DIR001", "다음 디렉토리를 찾을 수 없습니다."),
+    PREV_DIRECTORY_NOT_FOUND(BAD_REQUEST, "DIR002", "이전 디렉토리를 찾을 수 없습니다.");
     /** Category */
 
     /** Comment */
