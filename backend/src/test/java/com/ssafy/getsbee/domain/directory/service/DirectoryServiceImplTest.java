@@ -1,90 +1,171 @@
 package com.ssafy.getsbee.domain.directory.service;
 
+import com.ssafy.getsbee.GetsbeeApplication;
 import com.ssafy.getsbee.domain.directory.dto.response.DirectoryResponse;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
+import com.ssafy.getsbee.domain.member.entity.Authority;
 import com.ssafy.getsbee.domain.member.entity.Member;
+import com.ssafy.getsbee.domain.member.entity.Provider;
+import com.ssafy.getsbee.domain.member.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
-import java.util.ArrayList;
+import jakarta.transaction.Transactional;
+
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@SpringBootTest(classes = GetsbeeApplication.class)
+@ActiveProfiles("local")
 class DirectoryServiceImplTest {
 
-    @Mock
-    private DirectoryRepository directoryRepository;
-
-    @InjectMocks
+    @Autowired
     private DirectoryServiceImpl directoryService;
 
+    @Autowired
+    private DirectoryRepository directoryRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
+
     private Member member;
-    private List<Directory> directories;
 
     @BeforeEach
+    @Transactional
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-
-        member = new Member();
-        member.setId(1L);
-
-        directories = new ArrayList<>();
-        Directory rootDirectory = Directory.builder()
-                .name("Root Directory")
-                .depth(0)
-                .prevDirectory(null)
-                .nextDirectory(null)
-                .parentDirectory(null)
-                .member(member)
+        member = Member.builder()
+                .email("example@example.com")
+                .provider(Provider.GOOGLE)
+                .authority(Authority.ROLE_USER)
+                .birthYear(1990)
+                .profile("profile.jpg")
+                .name("John Doe")
                 .isDeleted(false)
                 .build();
+        member = memberRepository.save(member);
 
-        Directory tempDirectory = Directory.builder()
-                .name("Temporary Directory")
+        directoryService.createDefaultDirectoriesForMember(member);
+
+        // Fetch the default directories
+        Directory rootDirectory = directoryRepository.findRootDirectoryByMember(member);
+        Directory bookmarkDirectory = directoryRepository.findBookmarkDirectoryByMember(member);
+        System.out.println("BM:" + bookmarkDirectory.getName());
+
+        // Add an additional directory with children
+        Directory secondFolder = Directory.builder()
+                .name("Second Folder")
                 .depth(1)
-                .prevDirectory(null)
+                .prevDirectory(bookmarkDirectory)
                 .nextDirectory(null)
                 .parentDirectory(rootDirectory)
                 .member(member)
                 .isDeleted(false)
                 .build();
+        directoryRepository.save(secondFolder);
 
-        Directory bookmarkDirectory = Directory.builder()
-                .name("Bookmark Directory")
-                .depth(1)
-                .prevDirectory(tempDirectory)
+        bookmarkDirectory.setNextDirectory(secondFolder);
+        directoryRepository.save(bookmarkDirectory);
+
+        Directory child1 = Directory.builder()
+                .name("Child1")
+                .depth(2)
+                .prevDirectory(null)
                 .nextDirectory(null)
-                .parentDirectory(rootDirectory)
+                .parentDirectory(secondFolder)
                 .member(member)
                 .isDeleted(false)
                 .build();
+        directoryRepository.save(child1);
 
-        tempDirectory.setNextDirectory(bookmarkDirectory);
+        Directory child2 = Directory.builder()
+                .name("Child2")
+                .depth(2)
+                .prevDirectory(child1)
+                .nextDirectory(null)
+                .parentDirectory(secondFolder)
+                .member(member)
+                .isDeleted(false)
+                .build();
+        directoryRepository.save(child2);
 
-        directories.add(rootDirectory);
-        directories.add(tempDirectory);
-        directories.add(bookmarkDirectory);
+        child1.setNextDirectory(child2);
+        directoryRepository.save(child1);
+
+        Directory child3 = Directory.builder()
+                .name("Child3")
+                .depth(2)
+                .prevDirectory(child2)
+                .nextDirectory(null)
+                .parentDirectory(secondFolder)
+                .member(member)
+                .isDeleted(false)
+                .build();
+        directoryRepository.save(child3);
+
+        child2.setNextDirectory(child3);
+        directoryRepository.save(child2);
     }
 
     @Test
-    void testFindAllByMember() {
-        when(directoryRepository.findAllByMember(member)).thenReturn(directories);
+    @Transactional
+    void findDefaultDirectoryTest(){
+        Directory rootDirectory = directoryRepository.findRootDirectoryByMember(member);
+        Directory temporaryDirectory = directoryRepository.findTemporaryDirectoryByMember(member);
+        Directory bookmarkDirectory = directoryRepository.findBookmarkDirectoryByMember(member);
+        assertEquals("Root", rootDirectory.getName());
+        assertEquals("Temporary", temporaryDirectory.getName());
+        assertEquals("Bookmark", bookmarkDirectory.getName());
+    }
 
-        List<DirectoryResponse> result = directoryService.findAllByMember(member);
+    @Test
+    @Transactional
+    void createDefaultDirectoriesTest() {
+        List<DirectoryResponse> directories = directoryService.findAllByMember(member);
 
-        assertNotNull(result);
-        // Assuming the assembleDirectories method returns 2 elements
-        assertEquals(2, result.size());
-        assertEquals("Temporary Directory", result.get(0).);
-        assertEquals("Bookmark Directory", result.get(1).getName());
+        assertNotNull(directories);
+        assertEquals(3, directories.size(), "depth1짜리 폴더는 3개");
+
+        DirectoryResponse tempDirectory = directories.stream()
+                .filter(dir -> "Temporary".equals(dir.name()))
+                .findFirst()
+                .orElse(null);
+
+        DirectoryResponse bookmarkDirectory = directories.stream()
+                .filter(dir -> "Bookmark".equals(dir.name()))
+                .findFirst()
+                .orElse(null);
+
+        DirectoryResponse secondFolder = directories.stream()
+                .filter(dir -> "Second Folder".equals(dir.name()))
+                .findFirst()
+                .orElse(null);
+
+        assertNotNull(tempDirectory, "Temporary 폴더는 만들어졌다");
+        assertNotNull(bookmarkDirectory, "Bookmark 폴더는 만들어졌다");
+        assertNotNull(secondFolder, "Second Folder 폴더는 만들어졌다");
+
+        assertEquals(3, secondFolder.children().size(), "SecondFolder의 child는 3개");
+        for(DirectoryResponse d : directories){
+            System.out.println(d.toString());
+        }
+    }
+
+    @Test
+    @Transactional
+    void findAllByMemberTest() {
+        List<DirectoryResponse> directories = directoryService.findAllByMember(member);
+
+        assertNotNull(directories);
+        assertEquals(3, directories.size(), "The number of depth 1 directories should be 3");
+
+        directories.forEach(dir -> System.out.println(dir.toString()));
+
+        assertEquals(3, directories.get(2).children().size(), "Second Folder의 children은 3개이다.");
     }
 }
