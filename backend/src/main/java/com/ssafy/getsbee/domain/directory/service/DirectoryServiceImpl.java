@@ -103,7 +103,7 @@ public class DirectoryServiceImpl implements DirectoryService {
 
         DirectoryResponse current = first;
 
-        //depth 1 sorting
+        //depth 1 정렬
         while (current.nextDirectoryId() != null) {
             final Long nextId = current.nextDirectoryId();
             current = directories.stream()
@@ -113,7 +113,7 @@ public class DirectoryServiceImpl implements DirectoryService {
             sorted.add(current);
         }
 
-        //depth 2 sorting
+        //depth 2 정렬
         for (DirectoryResponse directory : sorted) {
             sortDirectories(directory.children());
         }

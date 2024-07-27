@@ -52,12 +52,9 @@ class DirectoryServiceImplTest {
 
         directoryService.createDefaultDirectoriesForMember(member);
 
-        // Fetch the default directories
         Directory rootDirectory = directoryRepository.findRootDirectoryByMember(member);
         Directory bookmarkDirectory = directoryRepository.findBookmarkDirectoryByMember(member);
-        System.out.println("BM:" + bookmarkDirectory.getName());
 
-        // Add an additional directory with children
         Directory secondFolder = Directory.builder()
                 .name("Second Folder")
                 .depth(1)
@@ -160,12 +157,7 @@ class DirectoryServiceImplTest {
     @Transactional
     void findAllByMemberTest() {
         List<DirectoryResponse> directories = directoryService.findAllByMember(member);
-
-        assertNotNull(directories);
-        assertEquals(3, directories.size(), "The number of depth 1 directories should be 3");
-
-        directories.forEach(dir -> System.out.println(dir.toString()));
-
+        assertEquals(3, directories.size(), "depth 1인 폴더는 3개여야 한다.");
         assertEquals(3, directories.get(2).children().size(), "Second Folder의 children은 3개이다.");
     }
 }
