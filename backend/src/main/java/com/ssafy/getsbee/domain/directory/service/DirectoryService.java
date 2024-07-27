@@ -9,13 +9,15 @@ import java.util.List;
 
 public interface DirectoryService {
 
-
-
     List<DirectoryResponse> findAllByMember(Member member);
 
     List<DirectoryResponse> modifyDirectories(List<DirectoryRequest> directoryRequests);
 
-    Directory findTemporaryDirectoryIdByMemberId(Long memberId);
+    Directory findTemporaryDirectoryByMember(Member member);
 
-    void createDefaultDirectories(Long MemberId);
+    Directory FindRootDirectoryByMember(Member member);
+
+    Directory FindBookmarkDirectoryByMember(Member member);
+
+    void createDefaultDirectoriesForMember(Member member);
 }

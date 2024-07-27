@@ -5,15 +5,16 @@ import com.ssafy.getsbee.domain.directory.dto.response.DirectoryResponse;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
-import com.ssafy.getsbee.domain.member.repository.MemberRepository;
-import com.ssafy.getsbee.global.error.ErrorCode;
-import com.ssafy.getsbee.global.error.exception.NotFoundException;
+import com.ssafy.getsbee.domain.member.service.MemberService;
+import com.ssafy.getsbee.global.error.exception.BadRequestException;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+
+import static com.ssafy.getsbee.global.error.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -21,12 +22,13 @@ import java.util.*;
 public class DirectoryServiceImpl implements DirectoryService {
 
     private final DirectoryRepository directoryRepository;
-    private final MemberRepository memberRepository;
+    private final EntityManager em;
+    private final MemberService memberService;
 
     @Override
     public List<DirectoryResponse> findAllByMember(Member member) {
         List<Directory> directories = directoryRepository.findAllByMember(member);
-//        if(getLoginMemberId() != member.getId()){
+//        if(SecurityUtil.getCurrentMemberId() != member.getId()){
 //            filterDirectoriesByAuth(directories);
 //        }
         return assembleDirectories(directories);
@@ -38,15 +40,23 @@ public class DirectoryServiceImpl implements DirectoryService {
     }
 
     @Override
-    public Directory findTemporaryDirectoryIdByMemberId(Long memberId) {
-        return null;
+    public Directory findTemporaryDirectoryByMember(Member member) {
+        return directoryRepository.findTemporaryDirectoryByMember(member);
+    }
+
+    @Override
+    public Directory FindRootDirectoryByMember(Member member) {
+        return directoryRepository.findRootDirectoryByMember(member);
+    }
+
+    @Override
+    public Directory FindBookmarkDirectoryByMember(Member member) {
+        return directoryRepository.findBookmarkDirectoryByMember(member);
     }
 
     @Override
     @Transactional
-    public void createDefaultDirectories(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+    public void createDefaultDirectoriesForMember(Member member) {
         directoryRepository.createDefaultDirectoriesForMember(member);
     }
 
@@ -59,6 +69,7 @@ public class DirectoryServiceImpl implements DirectoryService {
         Map<Long, DirectoryResponse> directoryMap = new HashMap<>();
 
         for (Directory directory : directories) {
+            if(directory.getDepth()==0) continue;
             DirectoryResponse response = DirectoryResponse.fromEntity(directory);
             directoryMap.put(directory.getId(), response);
         }
@@ -82,11 +93,11 @@ public class DirectoryServiceImpl implements DirectoryService {
 
     private void sortDirectories(List<DirectoryResponse> directories) {
         List<DirectoryResponse> sorted = new ArrayList<>();
-
+        if(directories == null || directories.isEmpty()) return;
         DirectoryResponse first = directories.stream()
                 .filter(d -> d.prevDirectoryId() == null)
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("첫 번째 디렉토리를 찾을 수 없습니다."));
+                .orElseThrow(() -> new BadRequestException(DIRECTORY_NOT_FOUND));
 
         sorted.add(first);
 
@@ -98,7 +109,7 @@ public class DirectoryServiceImpl implements DirectoryService {
             current = directories.stream()
                     .filter(d -> d.directoryId().equals(nextId))
                     .findFirst()
-                    .orElseThrow(() -> new IllegalStateException("다음 디렉토리를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new BadRequestException(NEXT_DIRECTORY_NOT_FOUND));
             sorted.add(current);
         }
 
