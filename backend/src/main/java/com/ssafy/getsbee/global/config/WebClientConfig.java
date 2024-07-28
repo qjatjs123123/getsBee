@@ -12,14 +12,12 @@ import reactor.netty.http.client.HttpClient;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
+import static com.ssafy.getsbee.global.consts.StaticConst.*;
 import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.MediaType.*;
 
 @Configuration
 public class WebClientConfig {
-
-    private static final long ONE_MINUTE = 60 * 1000L;
-    private static final int MAX_MEMORY_SIZE = 5 * 1024 * 1024;
 
     @Bean
     public WebClient webClient() {
