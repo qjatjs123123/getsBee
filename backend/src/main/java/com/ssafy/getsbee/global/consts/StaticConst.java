@@ -21,6 +21,7 @@ public class StaticConst {
     public static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;
     public static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 14;
     public static final long ONE_MINUTE = 60 * 1000L;
+    public static final long SEVEN_DAYS = 7L;
 
     /** Directory */
 
