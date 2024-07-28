@@ -48,7 +48,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String generateRefreshToken(Member member) {
+    public String generateRefreshToken() {
         long now = (new Date()).getTime();
         return Jwts.builder()
                 .expiration(new Date(now + REFRESH_TOKEN_EXPIRE_TIME))
@@ -74,17 +74,11 @@ public class JwtUtil {
         try {
             Jwts.parser().verifyWith(secretkey).build().parseSignedClaims(token);
             return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.error("잘못된 JWT 서명입니다.", e);
         } catch (ExpiredJwtException e) {
-            log.error("만료된 JWT 토큰입니다.", e);
             throw new UnauthorizedException(UNAUTHORIZED_ACCESS);
-        } catch (UnsupportedJwtException e) {
-            log.error("지원되지 않는 JWT 토큰입니다.", e);
-        } catch (IllegalArgumentException e) {
-            log.error("JWT 토큰이 잘못되었습니다.", e);
+        } catch (Exception e) {
+            throw new BadRequestException(INVALID_TOKEN);
         }
-        throw new BadRequestException(INVALID_TOKEN);
     }
 
     private String getAuthorities(Authentication authentication) {
