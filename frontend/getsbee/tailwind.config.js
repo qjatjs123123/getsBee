@@ -1,5 +1,7 @@
+// tailwind.config.js
 module.exports = {
-  content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  content: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
+  darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
       fontFamily: {
@@ -14,6 +16,9 @@ module.exports = {
         black: 900,
       },
     },
+  },
+  variants: {
+    extend: {},
   },
   plugins: [],
 };
