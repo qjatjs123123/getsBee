@@ -1,7 +1,6 @@
 package com.ssafy.getsbee.domain.auth.service;
 
 import com.ssafy.getsbee.domain.auth.dto.response.OidcDecodePayload;
-import com.ssafy.getsbee.global.consts.StaticConst;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.error.exception.UnauthorizedException;
 import io.jsonwebtoken.*;
@@ -43,32 +42,30 @@ public class JwtOidcProvider {
     }
 
     private String getUnsignedToken(String token) {
-        String[] splitToken = token.split("\\.");
+        String[] splitToken = token.split(TOKEN_SPLIT_DELIMITER);
         if (splitToken.length != 3) throw new BadRequestException(INVALID_ID_TOKEN);
         return splitToken[0] + "." + splitToken[1] + ".";
     }
 
     private Jws<Claims> getOidcTokenJws(String token, String modulus, String exponent) {
         try {
-            token = token.replace("—", "--");
+            token = token.replace(DASH, DOUBLE_DASH);
             return Jwts.parser()
                     .setSigningKey(getRSAPublicKey(modulus, exponent))
                     .build()
                     .parseClaimsJws(token);
-        } catch (ExpiredJwtException e) {
-            throw new IllegalArgumentException("만료된 Id Token 입니다.");
         } catch (Exception e) {
-            throw new IllegalArgumentException("잘못된 Id Token 입니다.");
+            throw new BadRequestException(INVALID_ID_TOKEN);
         }
     }
 
     private Key getRSAPublicKey(String modulus, String exponent) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        KeyFactory keyFactory = KeyFactory.getInstance(RSA);
 
         byte[] decodeN = Base64.getUrlDecoder().decode(modulus);
         byte[] decodeE = Base64.getUrlDecoder().decode(exponent);
-        BigInteger n = new BigInteger(1, decodeN);
-        BigInteger e = new BigInteger(1, decodeE);
+        BigInteger n = new BigInteger(SIGN_NUM, decodeN);
+        BigInteger e = new BigInteger(SIGN_NUM, decodeE);
 
         RSAPublicKeySpec keySpec = new RSAPublicKeySpec(n, e);
         return keyFactory.generatePublic(keySpec);
