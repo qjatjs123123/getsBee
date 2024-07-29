@@ -9,4 +9,8 @@ public interface PostService {
     void updatePost(Long postId, UpdatePostRequest request, Long memberId);
 
     PostResponse showPostInfo(Long postId, Long memberId);
+
+    void addBookmark(Long postId, Long memberId);
+
+    void deleteBookmark(Long postId, Long memberId);
 }

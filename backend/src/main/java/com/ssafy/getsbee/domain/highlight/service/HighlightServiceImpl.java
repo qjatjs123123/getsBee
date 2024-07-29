@@ -2,14 +2,14 @@ package com.ssafy.getsbee.domain.highlight.service;
 
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.highlight.dto.request.CreateHighlightRequest;
-import com.ssafy.getsbee.domain.highlight.dto.response.CreateHighlightResponse;
+import com.ssafy.getsbee.domain.highlight.dto.request.UpdateHighlightRequest;
+import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
 import com.ssafy.getsbee.domain.highlight.entity.Highlight;
 import com.ssafy.getsbee.domain.highlight.repository.HighlightRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.service.MemberService;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.domain.post.repository.PostRepository;
-import com.ssafy.getsbee.global.error.ErrorCode;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.error.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class HighlightServiceImpl implements HighlightService {
 
     @Override
     @Transactional
-    public CreateHighlightResponse addHighlight(CreateHighlightRequest request, Long memberId) {
+    public HighlightResponse addHighlight(CreateHighlightRequest request, Long memberId) {
         Member member = memberService.findById(memberId);
 
         Post post = postRepository.findByMemberAndUrl(member, request.url())
@@ -46,7 +46,7 @@ public class HighlightServiceImpl implements HighlightService {
 
         Highlight highlight = request.toHighlightEntity(post);
         highlightRepository.save(highlight);
-        return CreateHighlightResponse.of(highlight.getId());
+        return HighlightResponse.of(highlight.getId());
     }
 
     @Override
@@ -59,8 +59,23 @@ public class HighlightServiceImpl implements HighlightService {
         if (highlight.getPost().getMember() != member) {
             throw new ForbiddenException(_FORBIDDEN);
         }
+        Post post = highlight.getPost();
         highlightRepository.deleteById(highlightId);
 
-        // 하이라이트 다 삭제되면 포스트도 지워야하는지
+        if(post.getHighlights().isEmpty() && post.getNote().isEmpty()){
+            postRepository.delete(post);
+        }
+    }
+
+    @Override
+    public void updateHighlight(Long highlightId, UpdateHighlightRequest request) {
+        Member member = memberService.findById(highlightId);
+        Highlight highlight = highlightRepository.findById(highlightId)
+                .orElseThrow(() -> new BadRequestException(HIGHLIGHT_NOT_FOUND));
+
+        if(highlight.getPost().getMember() != member) {
+            throw new ForbiddenException(_FORBIDDEN);
+        }
+        highlight.changeColor(request.color());
     }
 }

@@ -1,9 +1,11 @@
 package com.ssafy.getsbee.domain.post.service;
 
+import com.ssafy.getsbee.domain.bookmark.entity.Bookmark;
 import com.ssafy.getsbee.domain.bookmark.repository.BookmarkRepository;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
+import com.ssafy.getsbee.domain.highlight.repository.HighlightRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.service.MemberService;
 import com.ssafy.getsbee.domain.post.dto.request.UpdatePostRequest;
@@ -28,6 +30,7 @@ public class PostServiceImpl implements PostService {
     private final MemberService memberService; // 순환 참조
     private final DirectoryRepository directoryRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final HighlightRepository highlightRepository;
 
     @Override
     @Transactional
@@ -54,6 +57,11 @@ public class PostServiceImpl implements PostService {
         // Directory directory = directoryRepository.findById(request.directoryId());
         Directory directory = null;
 
+        // 하이라이트 삭제
+        highlightRepository.deleteAll(request.deleteHighlightIds().stream()
+                .map(highlightId -> highlightRepository.findById(highlightId).orElseThrow(() -> new BadRequestException(HIGHLIGHT_NOT_FOUND)))
+                .collect(Collectors.toList()));
+
         post.updatePost(request.note(), directory, request.isPublic());
         postRepository.save(post);
     }
@@ -78,6 +86,31 @@ public class PostServiceImpl implements PostService {
         post.increaseViewCount();
         return PostResponse.from(post, highlightResponses,
                 !isNotOwner(post.getMember(), member), false, false);
+    }
+
+    @Override
+    public void addBookmark(Long postId, Long memberId) {
+        Member member = memberService.findById(memberId);
+        Post post = findById(postId);
+
+        Bookmark bookmark = bookmarkRepository.findByPostAndMember(post, member)
+                .orElseGet(()->{
+                    return bookmarkRepository.save(new Bookmark(member, post));
+                });
+
+        if(!bookmark.getIsDeleted()) {
+            bookmark.changeBookmark();
+        }
+    }
+
+    @Override
+    public void deleteBookmark(Long postId, Long memberId) {
+        Member member = memberService.findById(memberId);
+        Post post = findById(postId);
+
+        Bookmark bookmark = bookmarkRepository.findByPostAndMember(post, member)
+                        .orElseThrow(() -> new BadRequestException(BOOKMARK_NOT_FOUND));
+        bookmark.changeBookmark();
     }
 
     private Post findById(Long postId){
