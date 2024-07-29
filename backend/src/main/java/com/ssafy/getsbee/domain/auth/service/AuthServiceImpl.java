@@ -42,20 +42,13 @@ public class AuthServiceImpl implements AuthService {
         Member member = memberRepository.findByProviderAndEmail(request.provider(), payload.email())
                 .orElseGet(() -> signup(request.provider(), payload));
         member.updateInfo(payload);
-        return createNewToken(member, response);
+        return createTokens(member, response);
     }
 
     @Override
     public AccessTokenResponse reissueToken(TokenRequest request, HttpServletResponse response, String refreshToken) {
-        jwtUtil.validateToken(refreshToken);
-        Authentication authentication = jwtUtil.getAuthentication(request.accessToken());
-        RefreshToken existedRefreshToken = refreshTokenRedisRepository.findById(refreshToken)
-                .orElseThrow(() -> new BadRequestException(REFRESH_TOKEN_NOT_FOUND));
-        if (!existedRefreshToken.getMemberId().equals(authentication.getName())) {
-            throw new BadRequestException(INVALID_REFRESH_TOKEN);
-        }
-        refreshTokenRedisRepository.delete(existedRefreshToken);
-        return createNewToken(memberService.findById(Long.parseLong(authentication.getName())), response);
+        Authentication authentication = validateTokens(request.accessToken(), refreshToken);
+        return createTokens(memberService.findById(Long.parseLong(authentication.getName())), response);
     }
 
     private Member signup(Provider provider, OidcDecodePayload payload) {
@@ -64,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
         return member;
     }
 
-    private AccessTokenResponse createNewToken(Member member, HttpServletResponse response) {
+    private AccessTokenResponse createTokens(Member member, HttpServletResponse response) {
         RefreshToken refreshToken = refreshTokenRedisRepository.save(jwtUtil.getRefreshToken(member.getId()));
         response.addCookie(createRefreshTokenCookie(refreshToken.getToken()));
         return AccessTokenResponse.of(BEARER_TYPE, jwtUtil.generateAccessToken(member));
@@ -75,5 +68,21 @@ public class AuthServiceImpl implements AuthService {
         cookie.setSecure(true);
         cookie.setHttpOnly(true);
         return cookie;
+    }
+
+    private Authentication validateTokens(String accessToken, String refreshToken) {
+        jwtUtil.validateToken(refreshToken);
+        Authentication authentication = jwtUtil.getAuthentication(accessToken);
+        RefreshToken existedRefreshToken = findRefreshToken(refreshToken);
+        if (!existedRefreshToken.getMemberId().equals(authentication.getName())) {
+            throw new BadRequestException(INVALID_REFRESH_TOKEN);
+        }
+        refreshTokenRedisRepository.delete(existedRefreshToken);
+        return authentication;
+    }
+
+    private RefreshToken findRefreshToken(String refreshToken) {
+        return refreshTokenRedisRepository.findById(refreshToken)
+                .orElseThrow(() -> new BadRequestException(REFRESH_TOKEN_NOT_FOUND));
     }
 }
