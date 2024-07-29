@@ -59,10 +59,7 @@ public class JwtUtil {
         if (claims.get(AUTHORITIES_KEY) == null) {
             throw new UnauthorizedException(INVALID_AUTH_TOKEN);
         }
-        Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(AUTHORITY_DELIMITER))
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+        Collection<? extends GrantedAuthority> authorities = getAuthorities(claims);
         UserDetails principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
@@ -92,5 +89,11 @@ public class JwtUtil {
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
+    }
+
+    private Collection<? extends GrantedAuthority> getAuthorities(Claims claims) {
+        return Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(AUTHORITY_DELIMITER))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 }
