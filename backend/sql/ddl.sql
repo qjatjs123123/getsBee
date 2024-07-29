@@ -7,7 +7,7 @@ CREATE TABLE member
     `authority`   VARCHAR(10)      NOT NULL    DEFAULT 'ROLE_USER',
     `birth_year`  INT              NULL,
     `job`         VARCHAR(30)      NULL,
-    `profile`     VARCHAR(2083)    NULL,
+    `picture`     VARCHAR(2083)    NULL,
     `name`        VARCHAR(73)      NULL,
     `is_deleted`  TINYINT(1)       NOT NULL    DEFAULT 0,
     `created_at`  TIMESTAMP        NOT NULL,
@@ -29,10 +29,7 @@ CREATE TABLE directory
     `created_at`  TIMESTAMP        NOT NULL,
     `updated_at`  TIMESTAMP        NOT NULL,
     PRIMARY KEY (directory_id),
-    FOREIGN KEY (member_id) REFERENCES member(member_id),
-    FOREIGN KEY (prev_directory_id) REFERENCES directory(directory_id),
-    FOREIGN KEY (next_directory_id) REFERENCES directory(directory_id),
-    FOREIGN KEY (parent_directory_id) REFERENCES directory(directory_id)
+    FOREIGN KEY (member_id) REFERENCES member(member_id)
 );
 
 -- post Table Create SQL
@@ -57,18 +54,6 @@ CREATE TABLE post
     FOREIGN KEY (directory_id) REFERENCES directory(directory_id)
 );
 
--- company Table Create SQL
-CREATE TABLE company
-(
-    `company_id`  BIGINT         NOT NULL    AUTO_INCREMENT,
-    `name`        BIGINT         NULL,
-    `code`        VARCHAR(12)    NULL,
-    `is_deleted`  TINYINT(1)     NOT NULL    DEFAULT 0,
-    `created_at`  TIMESTAMP        NOT NULL,
-    `updated_at`  TIMESTAMP        NOT NULL,
-    PRIMARY KEY (company_id)
-);
-
 -- likes Table Create SQL
 CREATE TABLE likes
 (
@@ -86,15 +71,17 @@ CREATE TABLE likes
 -- bookmark Table Create SQL
 CREATE TABLE bookmark
 (
-    `bookmark_id`  BIGINT        NOT NULL    AUTO_INCREMENT,
-    `is_deleted`   TINYINT(1)    NOT NULL    DEFAULT 0,
-    `member_id`    BIGINT        NOT NULL,
-    `post_id`      BIGINT        NOT NULL,
-    `created_at`   TIMESTAMP     NOT NULL,
-    `updated_at`   TIMESTAMP     NOT NULL,
+    `bookmark_id`   BIGINT        NOT NULL    AUTO_INCREMENT,
+    `is_deleted`    TINYINT(1)    NOT NULL    DEFAULT 0,
+    `member_id`     BIGINT        NOT NULL,
+    `post_id`       BIGINT        NOT NULL,
+    `directory_id`  BIGINT        NOT NULL,
+    `created_at`    TIMESTAMP     NOT NULL,
+    `updated_at`    TIMESTAMP     NOT NULL,
     PRIMARY KEY (bookmark_id),
     FOREIGN KEY (member_id) REFERENCES member(member_id),
-    FOREIGN KEY (post_id) REFERENCES post(post_id)
+    FOREIGN KEY (post_id) REFERENCES post(post_id),
+    FOREIGN KEY (directory_id) REFERENCES directory(directory_id)
 );
 
 -- highlight Table Create SQL
@@ -151,15 +138,12 @@ CREATE TABLE follow
 CREATE TABLE interest
 (
     `interest_id`  BIGINT       NOT NULL    AUTO_INCREMENT,
-    `company_id`   BIGINT       NULL,
     `member_id`    BIGINT       NULL,
-    `post_id`      BIGINT       NULL,
+    `url`          VARCHAR(13)  NULL,
     `created_at`   TIMESTAMP    NOT NULL,
     `updated_at`   TIMESTAMP    NOT NULL,
     PRIMARY KEY (interest_id),
-    FOREIGN KEY (member_id) REFERENCES member(member_id),
-    FOREIGN KEY (post) REFERENCES post(post_id),
-    FOREIGN KEY (company_id) REFERENCES company(company_id)
+    FOREIGN KEY (member_id) REFERENCES member(member_id)
 );
 
 -- block Table Create SQL

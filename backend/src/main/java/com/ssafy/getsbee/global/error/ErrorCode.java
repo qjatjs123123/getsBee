@@ -27,6 +27,9 @@ public enum ErrorCode {
     INVALID_AUTH_TOKEN(UNAUTHORIZED, "AUTH004", "권한 정보가 없는 토큰 입니다"),
     INVALID_REFRESH_TOKEN(BAD_REQUEST, "AUTH005", "Refresh Token이 유효하지 않습니다"),
     REFRESH_TOKEN_NOT_FOUND(BAD_REQUEST, "AUTH006", "로그아웃 된 사용자입니다"),
+    GOOGLE_SERVER_ERROR(BAD_REQUEST, "AUTH007", "Google Server 에러입니다."),
+    INVALID_ID_TOKEN(UNAUTHORIZED, "AUTH008", "ID 토큰 검증에 실패했습니다."),
+
 
     /** Member */
     DUPLICATE_MEMBER(BAD_REQUEST, "MEMBER000", "이미 존재하는 E-mail 입니다."),

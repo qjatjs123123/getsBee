@@ -24,6 +24,12 @@ spring:
       max-request-size: 100MB
 jwt:
   secret: ${JWT_SECRET}
+oauth2:
+  provider:
+    google:
+      public-key-url: ${GOOGLE_PUBLIC_KEY_URL}
+      issuer: ${GOOGLE_OIDC_ISSUER}
+      audience: ${GOOGLE_OIDC_AUDIENCE}
 ---
 spring:
   config:
