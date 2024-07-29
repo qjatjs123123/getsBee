@@ -41,7 +41,7 @@ public class JwtUtil {
                 .subject(authentication.getName())
                 .claim(CLAIM_EMAIL, member.getEmail())
                 .claim(CLAIM_NAME, member.getName())
-                .claim(CLAIM_PROFILE, member.getProfile())
+                .claim(CLAIM_PICTURE, member.getProfile())
                 .claim(AUTHORITIES_KEY, getAuthorities(authentication))
                 .expiration(new Date(now + ACCESS_TOKEN_EXPIRE_TIME))
                 .signWith(secretkey, Jwts.SIG.HS512)
