@@ -37,6 +37,12 @@ class DirectoryServiceImplTest {
     private MemberRepository memberRepository;
 
     private Member member;
+    private Directory rootDirectory;
+    private Directory temporaryDirectory;
+    private Directory bookmarkDirectory;
+    private Directory child1;
+    private Directory child2;
+    private Directory child3;
 
     @BeforeEach
     @Transactional
@@ -54,8 +60,9 @@ class DirectoryServiceImplTest {
 
         directoryService.createDefaultDirectoriesForMember(member);
 
-        Directory rootDirectory = directoryRepository.findRootDirectoryByMember(member);
-        Directory bookmarkDirectory = directoryRepository.findBookmarkDirectoryByMember(member);
+        rootDirectory = directoryRepository.findRootDirectoryByMember(member);
+        bookmarkDirectory = directoryRepository.findBookmarkDirectoryByMember(member);
+        temporaryDirectory = directoryRepository.findTemporaryDirectoryByMember(member);
 
         Directory secondFolder = Directory.builder()
                 .name("Second Folder")
@@ -71,7 +78,7 @@ class DirectoryServiceImplTest {
         bookmarkDirectory.setNextDirectory(secondFolder);
         directoryRepository.save(bookmarkDirectory);
 
-        Directory child1 = Directory.builder()
+        child1 = Directory.builder()
                 .name("Child1")
                 .depth(2)
                 .prevDirectory(null)
@@ -82,7 +89,7 @@ class DirectoryServiceImplTest {
                 .build();
         directoryRepository.save(child1);
 
-        Directory child2 = Directory.builder()
+        child2 = Directory.builder()
                 .name("Child2")
                 .depth(2)
                 .prevDirectory(child1)
@@ -96,7 +103,7 @@ class DirectoryServiceImplTest {
         child1.setNextDirectory(child2);
         directoryRepository.save(child1);
 
-        Directory child3 = Directory.builder()
+        child3 = Directory.builder()
                 .name("Child3")
                 .depth(2)
                 .prevDirectory(child2)
@@ -113,9 +120,9 @@ class DirectoryServiceImplTest {
 
     @Test
     void findDefaultDirectoryTest(){
-        Directory rootDirectory = directoryRepository.findRootDirectoryByMember(member);
-        Directory temporaryDirectory = directoryRepository.findTemporaryDirectoryByMember(member);
-        Directory bookmarkDirectory = directoryRepository.findBookmarkDirectoryByMember(member);
+        rootDirectory = directoryRepository.findRootDirectoryByMember(member);
+        temporaryDirectory = directoryRepository.findTemporaryDirectoryByMember(member);
+        bookmarkDirectory = directoryRepository.findBookmarkDirectoryByMember(member);
         assertEquals("Root", rootDirectory.getName());
         assertEquals("Temporary", temporaryDirectory.getName());
         assertEquals("Bookmark", bookmarkDirectory.getName());
@@ -165,20 +172,22 @@ class DirectoryServiceImplTest {
     @Test
     @Transactional
     void modifyDirectoriesTest() {
-        // 새로운 디렉토리 구조 생성 -> id값 동적으로 설정하기
+        System.out.println("Start of modifyDirectoriesTest()");
+        // 새로운 디렉토리 구조 생성
         List<DirectoryRequest> directoryRequests = new ArrayList<>();
-        directoryRequests.add(new DirectoryRequest("2", "Temporary", 1, "1", "T1", "1", member.getId())); // Bookmark
-        directoryRequests.add(new DirectoryRequest("2", "Bookmark", 1, "1", "T1", "1", member.getId())); // Bookmark
-        directoryRequests.add(new DirectoryRequest("T1", "Third Folder", 1, "2", null, "1", member.getId())); // Third Folder
+        directoryRequests.add(new DirectoryRequest(temporaryDirectory.getId().toString(), "Temporary", 1, null, bookmarkDirectory.getId().toString(), rootDirectory.getId().toString(), member.getId())); // Bookmark
+        directoryRequests.add(new DirectoryRequest(bookmarkDirectory.getId().toString(), "Bookmark", 1, temporaryDirectory.getId().toString(), "T1", rootDirectory.getId().toString(), member.getId())); // Bookmark
+        directoryRequests.add(new DirectoryRequest("T1", "Third Folder", 1, bookmarkDirectory.getId().toString(), null, rootDirectory.getId().toString(), member.getId())); // Third Folder
 
         // Third Folder의 children 설정
-        directoryRequests.add(new DirectoryRequest("3", "Child2", 2, null, "4", "T1", member.getId())); // Child2
-        directoryRequests.add(new DirectoryRequest("4", "Child3", 2, "3", null, "T1", member.getId())); // Child3
+        directoryRequests.add(new DirectoryRequest(child2.getId().toString(), "Child2 modified name", 2, null, child3.getId().toString(), "T1", member.getId())); // Child2
+        directoryRequests.add(new DirectoryRequest(child3.getId().toString(), "Child3", 2, child1.getId().toString(), "T2", "T1", member.getId())); // Child3
+        directoryRequests.add(new DirectoryRequest("T2", "Child4", 2, child3.getId().toString(), null, "T1", member.getId())); // Child4
 
         List<DirectoryResponse> modifiedDirectories = directoryService.modifyDirectories(directoryRequests);
 
         assertNotNull(modifiedDirectories);
-        assertEquals(2, modifiedDirectories.size(), "depth1짜리 폴더는 2개");
+        assertEquals(3, modifiedDirectories.size(), "depth1짜리 폴더는 3개");
 
         DirectoryResponse thirdFolder = modifiedDirectories.stream()
                 .filter(dir -> "Third Folder".equals(dir.name()))
@@ -188,9 +197,10 @@ class DirectoryServiceImplTest {
         assertNotNull(thirdFolder, "Third Folder 폴더는 만들어졌다");
         assertEquals("Third Folder", thirdFolder.name(), "Third Folder 폴더의 이름이 맞다");
 
-        assertEquals(2, thirdFolder.children().size(), "Third Folder의 child는 2개");
-        assertEquals("Child2", thirdFolder.children().get(0).name(), "첫번째 child는 Child2");
+        assertEquals(3, thirdFolder.children().size(), "Third Folder의 child는 3개");
+        assertEquals("Child2 modified name", thirdFolder.children().get(0).name(), "첫번째 child는 Child2 modified name");
         assertEquals("Child3", thirdFolder.children().get(1).name(), "두번째 child는 Child3");
+        assertEquals("Child4", thirdFolder.children().get(2).name(), "세번째 child는 Child4");
     }
 
 }
