@@ -5,6 +5,7 @@ import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -37,4 +38,12 @@ public class Comment extends BaseTimeEntity {
 
     @Column(name = "is_deleted", columnDefinition = "tinyint(1) not null default 0")
     private Boolean isDeleted;
+
+    @Builder
+    public Comment(String content, Member member, Post post, Boolean isDeleted) {
+        this.content = content;
+        this.member = member;
+        this.post = post;
+        this.isDeleted = isDeleted;
+    }
 }
