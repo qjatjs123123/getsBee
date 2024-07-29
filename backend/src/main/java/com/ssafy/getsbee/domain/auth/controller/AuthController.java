@@ -31,4 +31,10 @@ public class AuthController {
                                        HttpServletResponse response) {
         return authService.reissueToken(request, response, refreshToken);
     }
+
+    @PostMapping("/logout")
+    public void logout(@Valid @RequestBody TokenRequest request,
+                       @CookieValue(REFRESH_TOKEN) String refreshToken) {
+        authService.logout(request, refreshToken);
+    }
 }

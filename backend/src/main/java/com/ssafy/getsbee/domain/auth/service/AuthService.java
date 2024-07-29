@@ -9,4 +9,5 @@ public interface AuthService {
 
     AccessTokenResponse login(LoginRequest request, HttpServletResponse response);
     AccessTokenResponse reissueToken(TokenRequest request, HttpServletResponse response, String refreshToken);
+    void logout(TokenRequest request, String refreshToken);
 }

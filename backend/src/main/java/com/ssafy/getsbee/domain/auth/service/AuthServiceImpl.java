@@ -46,9 +46,17 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public AccessTokenResponse reissueToken(TokenRequest request, HttpServletResponse response, String refreshToken) {
         Authentication authentication = validateTokens(request.accessToken(), refreshToken);
         return createTokens(memberService.findById(Long.parseLong(authentication.getName())), response);
+    }
+
+    @Override
+    @Transactional
+    public void logout(TokenRequest request, String refreshToken) {
+        RefreshToken existedRefreshToken = findRefreshToken(refreshToken);
+        refreshTokenRedisRepository.delete(existedRefreshToken);
     }
 
     private Member signup(Provider provider, OidcDecodePayload payload) {
