@@ -9,7 +9,6 @@ public record DirectoryRequest (
         String prevDirectoryId,
         String nextDirectoryId,
         String parentDirectoryId,
-        Long memberId,
-        List<DirectoryRequest> children
+        Long memberId
 ) {
 }
