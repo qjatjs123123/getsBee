@@ -1,5 +1,6 @@
 package com.ssafy.getsbee.domain.member.entity;
 
+import com.ssafy.getsbee.domain.auth.dto.response.OidcDecodePayload;
 import com.ssafy.getsbee.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -41,7 +42,7 @@ public class Member extends BaseTimeEntity {
     private Job job;
 
     @Column(length = 2083)
-    private String profile;
+    private String picture;
 
     @Column(length = 73)
     private String name;
@@ -51,15 +52,20 @@ public class Member extends BaseTimeEntity {
 
     @Builder
     public Member(Long id, String email, Provider provider, Authority authority, Integer birthYear, Job job,
-                  String profile, String name, Boolean isDeleted) {
+                  String picture, String name, Boolean isDeleted) {
         this.id = id;
         this.email = email;
         this.provider = provider;
         this.authority = authority;
         this.birthYear = birthYear;
         this.job = job;
-        this.profile = profile;
+        this.picture = picture;
         this.name = name;
         this.isDeleted = isDeleted;
+    }
+
+    public void updateInfo(OidcDecodePayload payload) {
+        picture = payload.picture();
+        name = payload.name();
     }
 }

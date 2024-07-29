@@ -1,5 +1,6 @@
 package com.ssafy.getsbee.global.util;
 
+import com.ssafy.getsbee.domain.auth.entity.RefreshToken;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.error.exception.UnauthorizedException;
@@ -35,25 +36,21 @@ public class JwtUtil {
         this.secretkey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
     }
 
-    public String generateAccessToken(Authentication authentication, Member member) {
+    public String generateAccessToken(Member member) {
         long now = (new Date()).getTime();
         return Jwts.builder()
-                .subject(authentication.getName())
+                .subject(member.getId().toString())
                 .claim(CLAIM_EMAIL, member.getEmail())
                 .claim(CLAIM_NAME, member.getName())
-                .claim(CLAIM_PICTURE, member.getProfile())
-                .claim(AUTHORITIES_KEY, getAuthorities(authentication))
+                .claim(CLAIM_PICTURE, member.getPicture())
+                .claim(AUTHORITIES_KEY, member.getAuthority())
                 .expiration(new Date(now + ACCESS_TOKEN_EXPIRE_TIME))
                 .signWith(secretkey, Jwts.SIG.HS512)
                 .compact();
     }
 
-    public String generateRefreshToken() {
-        long now = (new Date()).getTime();
-        return Jwts.builder()
-                .expiration(new Date(now + REFRESH_TOKEN_EXPIRE_TIME))
-                .signWith(secretkey, Jwts.SIG.HS512)
-                .compact();
+    public RefreshToken getRefreshToken(Long memberId) {
+        return RefreshToken.of(generateRefreshToken(), memberId.toString(), REFRESH_TOKEN_EXPIRE_TIME);
     }
 
     public Authentication getAuthentication(String accessToken) {
@@ -63,7 +60,7 @@ public class JwtUtil {
             throw new UnauthorizedException(INVALID_AUTH_TOKEN);
         }
         Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(AUTHORITY_DELIMITER))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
         UserDetails principal = new User(claims.getSubject(), "", authorities);
@@ -81,10 +78,12 @@ public class JwtUtil {
         }
     }
 
-    private String getAuthorities(Authentication authentication) {
-        return authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+    private String generateRefreshToken() {
+        long now = (new Date()).getTime();
+        return Jwts.builder()
+                .expiration(new Date(now + REFRESH_TOKEN_EXPIRE_TIME))
+                .signWith(secretkey, Jwts.SIG.HS512)
+                .compact();
     }
 
     private Claims parseClaims(String accessToken) {
