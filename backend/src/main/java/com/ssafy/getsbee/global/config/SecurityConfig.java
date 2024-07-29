@@ -1,5 +1,6 @@
 package com.ssafy.getsbee.global.config;
 
+import com.ssafy.getsbee.global.consts.StaticConst;
 import com.ssafy.getsbee.global.error.jwt.JwtAccessDeniedHandler;
 import com.ssafy.getsbee.global.error.jwt.JwtAuthenticationEntryPoint;
 import com.ssafy.getsbee.global.security.JwtFilter;
@@ -18,6 +19,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.CorsFilter;
+
+import static com.ssafy.getsbee.global.consts.StaticConst.*;
 
 @Configuration
 @EnableWebSecurity
@@ -49,7 +52,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequest ->
                         authorizeRequest
                                 .requestMatchers(
-                                        AntPathRequestMatcher.antMatcher("/api/v1/auth/**")
+                                        AntPathRequestMatcher.antMatcher(AUTH_URL)
                                 ).permitAll()
                                 .anyRequest().authenticated()
                 )

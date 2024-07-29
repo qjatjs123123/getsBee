@@ -10,10 +10,11 @@ public class StaticConst {
     public static final String BEARER_TYPE = "Bearer";
     public static final String BEARER_PREFIX = "Bearer ";
     public static final String CLAIM_EMAIL = "email";
-    public static final String CLAIM_PROFILE = "profile";
+    public static final String CLAIM_PICTURE = "picture";
     public static final String CLAIM_NAME = "name";
+    public static final String KID = "kid";
 
-    public static final String[] AUTH_URL = { "/auth/**", };
+    public static final String AUTH_URL = "api/v1/auth/**";
 
     public static final int MAX_MEMORY_SIZE = 5 * 1024 * 1024;
     public static final int TEN_SECONDS = 10 * 1000;
