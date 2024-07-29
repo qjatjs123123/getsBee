@@ -19,7 +19,6 @@ import java.io.IOException;
 import static com.ssafy.getsbee.global.consts.StaticConst.*;
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
 
-@Slf4j
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
@@ -27,7 +26,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws IOException, ServletException {
+            throws IOException {
         try {
             String jwt = resolveToken(request);
 
