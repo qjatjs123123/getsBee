@@ -10,5 +10,5 @@ public interface HighlightService {
 
     void deleteHighlight(Long highlightId, Long MemberId);
 
-    HighlightResponse updateHighlight(Long highlightId, UpdateHighlightRequest updateHighlightRequest);
+    void updateHighlight(Long highlightId, UpdateHighlightRequest updateHighlightRequest);
 }

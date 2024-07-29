@@ -68,7 +68,7 @@ public class HighlightServiceImpl implements HighlightService {
     }
 
     @Override
-    public HighlightResponse updateHighlight(Long highlightId, UpdateHighlightRequest request) {
+    public void updateHighlight(Long highlightId, UpdateHighlightRequest request) {
         Member member = memberService.findById(highlightId);
         Highlight highlight = highlightRepository.findById(highlightId)
                 .orElseThrow(() -> new BadRequestException(HIGHLIGHT_NOT_FOUND));
@@ -77,6 +77,5 @@ public class HighlightServiceImpl implements HighlightService {
             throw new ForbiddenException(_FORBIDDEN);
         }
         highlight.changeColor(request.color());
-        return HighlightResponse.of(highlight.getId());
     }
 }

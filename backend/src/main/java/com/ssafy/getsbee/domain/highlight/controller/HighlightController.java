@@ -28,8 +28,8 @@ public class HighlightController {
     }
 
     @PatchMapping("/{highlight-id}")
-    public HighlightResponse updateHighlight(@PathVariable("highlight-id") Long highlightId,
+    public void updateHighlight(@PathVariable("highlight-id") Long highlightId,
                                                    @RequestBody @Valid UpdateHighlightRequest updateHighlightRequest){
-        return highlightService.updateHighlight(highlightId, updateHighlightRequest);
+        highlightService.updateHighlight(highlightId, updateHighlightRequest);
     }
 }
