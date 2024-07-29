@@ -2,9 +2,7 @@ package com.ssafy.getsbee.domain.comment.repository;
 
 import com.ssafy.getsbee.GetsbeeApplication;
 import com.ssafy.getsbee.domain.comment.entity.Comment;
-import com.ssafy.getsbee.domain.member.entity.Authority;
 import com.ssafy.getsbee.domain.member.entity.Member;
-import com.ssafy.getsbee.domain.member.entity.Provider;
 import com.ssafy.getsbee.domain.member.repository.MemberRepository;
 import com.ssafy.getsbee.domain.post.repository.PostRepository;
 import org.junit.jupiter.api.BeforeEach;

@@ -6,16 +6,12 @@ import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.repository.MemberRepository;
-import com.ssafy.getsbee.global.error.ErrorCode;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
-import com.ssafy.getsbee.global.error.exception.UnauthorizedException;
-import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
 

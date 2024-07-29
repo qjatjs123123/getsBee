@@ -6,7 +6,6 @@ import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.repository.MemberRepository;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.domain.post.repository.PostRepository;
-import com.ssafy.getsbee.global.error.ErrorCode;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
