@@ -12,6 +12,7 @@ public interface DirectoryRepositoryCustom {
     Directory findBookmarkDirectoryByMember(Member member);
 
     Directory findTemporaryDirectoryByMember(Member member);
+
     void createDefaultDirectoriesForMember(Member member);
 
     Directory createNewDirectoryForMember(Member member, String newDirectoryName);

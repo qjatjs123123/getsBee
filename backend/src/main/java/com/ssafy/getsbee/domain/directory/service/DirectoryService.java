@@ -13,11 +13,5 @@ public interface DirectoryService {
 
     List<DirectoryResponse> modifyDirectories(List<DirectoryRequest> directoryRequests);
 
-    Directory findTemporaryDirectoryByMember(Member member);
-
-    Directory FindRootDirectoryByMember(Member member);
-
-    Directory FindBookmarkDirectoryByMember(Member member);
-
     void createDefaultDirectoriesForMember(Member member);
 }
