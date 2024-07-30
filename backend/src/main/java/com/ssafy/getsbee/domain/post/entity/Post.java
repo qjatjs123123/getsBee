@@ -1,5 +1,6 @@
 package com.ssafy.getsbee.domain.post.entity;
 
+import com.ssafy.getsbee.domain.comment.entity.Comment;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.highlight.entity.Highlight;
 import com.ssafy.getsbee.domain.member.entity.Member;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static jakarta.persistence.FetchType.*;
@@ -65,6 +67,9 @@ public class Post extends BaseTimeEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "directory_id")
     private Directory directory;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<Comment> comments = new ArrayList<>();
 
     public Post(Long id, String title, String url, String note, String thumbnailUrl, Boolean isPublic, Long viewCount, Long likeCount, Long bookmarkCount, Boolean isDeleted, Member member, List<Highlight> highlights, Directory directory) {
         this.id = id;

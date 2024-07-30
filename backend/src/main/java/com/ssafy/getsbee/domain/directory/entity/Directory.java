@@ -1,6 +1,7 @@
 package com.ssafy.getsbee.domain.directory.entity;
 
 import com.ssafy.getsbee.domain.member.entity.Member;
+import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -10,6 +11,10 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.FetchType.*;
 
 @Entity
@@ -48,6 +53,9 @@ public class Directory extends BaseTimeEntity {
 
     @Column(name = "is_deleted", columnDefinition = "tinyint(1) not null default 0")
     private Boolean isDeleted;
+
+    @OneToMany(mappedBy = "directory", cascade = REMOVE)
+    private List<Post> posts = new ArrayList<>();
 
     @Builder
     public Directory(String name, int depth, Directory prevDirectory, Directory nextDirectory,

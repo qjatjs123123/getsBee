@@ -16,4 +16,8 @@ public interface DirectoryRepositoryCustom {
     void createDefaultDirectoriesForMember(Member member);
 
     Directory createNewDirectoryForMember(Member member, String newDirectoryName);
+
+    Long countPostsForMember(Member member);
+
+    Long countTemporaryPostsForMember(Member member);
 }

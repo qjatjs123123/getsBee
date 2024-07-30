@@ -6,16 +6,12 @@ import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.repository.MemberRepository;
-import com.ssafy.getsbee.global.error.ErrorCode;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
-import com.ssafy.getsbee.global.error.exception.UnauthorizedException;
-import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
 
@@ -61,22 +57,25 @@ public class DirectoryServiceImpl implements DirectoryService {
                 .map(dr -> Long.parseLong(dr.directoryId()))
                 .toList();
 
+
         for(Directory directory : existingDirectories){
             if(!requestDirectoryIds.contains(directory.getId())){
+                if(directory.getName().equals("Bookmark") || directory.getName().equals("Temporary")||
+                        directory.getName().equals("Root")) {
+                    throw new BadRequestException(CANT_DELETE_DEFAULT_DIRECTORY);
+                }
                 directoryRepository.delete(directory);
             }
         }
 
         // MODIFY
         for (DirectoryRequest DR : directoryRequests) {
-            System.out.println("modifing: " + DR.name() + " id: "+ DR.directoryId());
             Long newDirectoryId = getNewDirectoryId(DR.directoryId(), tempIdToId);
             Long newPrevDirectoryId = getNewDirectoryId(DR.prevDirectoryId(), tempIdToId);
             Long newNextDirectoryId = getNewDirectoryId(DR.nextDirectoryId(), tempIdToId);
             Long newParentDirectoryId = getNewDirectoryId(DR.parentDirectoryId(), tempIdToId);
 
             Directory existingDirectory = directoryRepository.findDirectoryById(newDirectoryId);
-            System.out.println("existingDirectoryId: " + existingDirectory.getId());
 
             // 변경사항 확인 및 수정
             if (isDirectoryChanged(existingDirectory, DR, newPrevDirectoryId, newNextDirectoryId, newParentDirectoryId)) {

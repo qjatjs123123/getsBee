@@ -52,7 +52,7 @@ class DirectoryServiceImplTest {
                 .provider(Provider.GOOGLE)
                 .authority(Authority.ROLE_USER)
                 .birthYear(1990)
-                .profile("profile.jpg")
+                .picture("profile.jpg")
                 .name("John Doe")
                 .isDeleted(false)
                 .build();
