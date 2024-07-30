@@ -44,26 +44,9 @@ function updateColorById(color, colorh) {
 
   elements.forEach((element) => {
     if (element) {
-      // 색상을 변경합니다
-      element.style.color = color;
-
-      // 자식 노드들 중에서 텍스트 노드와 다른 노드를 유지하기 위해 복사합니다
-      const newElement = document.createElement(element.tagName);
-      newElement.style.backgroundColor = color;
-      newElement.dataset.id = element.dataset.id; // 기존 data-id 값을 유지
-      newElement.style.cursor = "pointer";
-      Array.from(element.childNodes).forEach((node) => {
-        if (node.nodeType === Node.TEXT_NODE) {
-          // 텍스트 노드의 내용을 가져온 후 줄 바꿈을 유지
-          newElement.appendChild(document.createTextNode(node.textContent));
-        } else if (node.nodeType === Node.ELEMENT_NODE) {
-          // 다른 노드(예: HTML 요소)도 새로운 요소에 추가
-          newElement.appendChild(node.cloneNode(true)); // 노드를 깊은 복사
-        }
-      });
-
-      // 기존 요소를 새로운 요소로 교체
-      element.parentNode.replaceChild(newElement, element);
+      element.style.backgroundColor = color;
+      element.dataset.id = element.dataset.id; // 기존 data-id 값을 유지
+      element.style.cursor = "pointer";
     }
   });
   highLightHover(SELECTED_ID, color, colorh);
@@ -87,7 +70,7 @@ function dragHighlight(range, color, colorh) {
   });
 
   // 하이라이트 저장 API 호출
-  insertHighLightAPI(rangeData, colorh);
+  insertHighLightAPI(rangeData);
 }
 
 function findTextNodesInRange(range) {
@@ -178,7 +161,7 @@ function highLightHover(id, color, colorh) {
         SELECTED_ID = Number(clickedId);
         const left = event.clientX + window.scrollX + 10;
         const top = event.clientY + window.scrollY + 10;
-
+        console.log(SELECTED_ID);
         displayTooltip(left, top);
         // deleteHighlight();
       });
