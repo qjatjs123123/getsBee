@@ -10,8 +10,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.ssafy.getsbee.domain.directory.entity.QDirectory.*;
-import static com.ssafy.getsbee.domain.post.entity.QPost.post;
-
 
 @Repository
 @RequiredArgsConstructor
@@ -20,7 +18,6 @@ public class DirectoryRepositoryCustomImpl implements DirectoryRepositoryCustom 
 
     private final JPAQueryFactory queryFactory;
     private final EntityManager em;
-    private final DirectoryRepository directoryRepository;
 
     private static final int ROOT_DEPTH = 0;
     private static final int BOOKMARK_DEPTH = 1;
@@ -128,7 +125,7 @@ public class DirectoryRepositoryCustomImpl implements DirectoryRepositoryCustom 
 
     @Override
     public Long countTemporaryPostsForMember(Member member) {
-        Directory temp = directoryRepository.findTemporaryDirectoryByMember(member);
+        Directory temp = findTemporaryDirectoryByMember(member);
         QPost post = QPost.post;
 
         return queryFactory
