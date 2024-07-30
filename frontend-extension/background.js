@@ -1,19 +1,9 @@
-chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-  if (tabs.length === 0) {
-    return;
+// 메시지 수신 및 데이터 저장
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.pageContent) {
+    // 저장: chrome.storage.local 또는 chrome.storage.sync에 데이터 저장
+    chrome.storage.local.set({ pageContent: message.pageContent }, () => {
+      console.log("Page content saved", message.pageContent);
+    });
   }
-
-  const tab = tabs[0];
-  if (!tab.url) {
-    return;
-  }
-
-  if (tab.url.startsWith("chrome://")) {
-    return;
-  }
-
-  chrome.scripting.executeScript({
-    target: { tabId: tabs[0].id },
-    files: ["popup.js"], // 콘텐츠 스크립트 파일 경로
-  });
 });
