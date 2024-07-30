@@ -3,7 +3,6 @@ import Home from './pages/Home';
 import Recommend from './pages/Recommend';
 import MyHive from './pages/MyHive';
 import About from './pages/About';
-
 import TapButton from './components/Common/TapButton';
 import SideBar from './components/Common/SideBar';
 import MainSearchBar from './components/Common/MainSearchBar';
