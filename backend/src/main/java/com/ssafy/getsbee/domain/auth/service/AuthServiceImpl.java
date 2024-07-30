@@ -3,7 +3,6 @@ package com.ssafy.getsbee.domain.auth.service;
 import com.ssafy.getsbee.domain.auth.dto.request.LoginRequest;
 import com.ssafy.getsbee.domain.auth.dto.request.TokenRequest;
 import com.ssafy.getsbee.domain.auth.dto.response.AccessTokenResponse;
-import com.ssafy.getsbee.domain.auth.dto.response.OidcDecodePayload;
 import com.ssafy.getsbee.domain.auth.entity.RefreshToken;
 import com.ssafy.getsbee.domain.auth.repository.RefreshTokenRedisRepository;
 import com.ssafy.getsbee.domain.directory.service.DirectoryService;
@@ -20,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.google.api.client.json.webtoken.JsonWebToken.*;
 import static com.ssafy.getsbee.global.consts.StaticConst.*;
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
 
@@ -29,17 +29,16 @@ public class AuthServiceImpl implements AuthService {
 
     private final DirectoryService directoryService;
     private final MemberService memberService;
-    private final GoogleOauthHelper googleOauthHelper;
-    private final JwtUtil jwtUtil;
     private final MemberRepository memberRepository;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
+    private final JwtUtil jwtUtil;
+    private final GoogleOidcTokenVerifier googleOidcTokenVerifier;
 
     @Override
     @Transactional
     public AccessTokenResponse login(LoginRequest request, HttpServletResponse response) {
-        OidcDecodePayload payload = googleOauthHelper.getOidcDecodePayload(request.idToken());
-
-        Member member = memberRepository.findByProviderAndEmail(request.provider(), payload.email())
+        Payload payload = googleOidcTokenVerifier.verify(request.idToken());
+        Member member = memberRepository.findByProviderAndEmail(request.provider(), payload.get(CLAIM_EMAIL).toString())
                 .orElseGet(() -> signup(request.provider(), payload));
         member.updateInfo(payload);
         return createTokens(member, response);
@@ -59,8 +58,8 @@ public class AuthServiceImpl implements AuthService {
         refreshTokenRedisRepository.delete(existedRefreshToken);
     }
 
-    private Member signup(Provider provider, OidcDecodePayload payload) {
-        Member member = memberRepository.save(payload.toEntity(provider));
+    private Member signup(Provider provider, Payload payload) {
+        Member member = memberRepository.save(Member.of(provider, payload));
         directoryService.createDefaultDirectoriesForMember(member);
         return member;
     }

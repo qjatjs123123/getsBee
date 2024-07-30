@@ -1,6 +1,5 @@
 package com.ssafy.getsbee.domain.member.entity;
 
-import com.ssafy.getsbee.domain.auth.dto.response.OidcDecodePayload;
 import com.ssafy.getsbee.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,7 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.Where;
+
+import static com.google.api.client.json.webtoken.JsonWebToken.*;
+import static com.ssafy.getsbee.global.consts.StaticConst.*;
 
 @Entity
 @Getter
@@ -64,8 +65,20 @@ public class Member extends BaseTimeEntity {
         this.isDeleted = isDeleted;
     }
 
-    public void updateInfo(OidcDecodePayload payload) {
-        picture = payload.picture();
-        name = payload.name();
+    public static Member of(Provider provider, Payload payload) {
+        return Member.builder()
+                .email(payload.get(CLAIM_EMAIL).toString())
+                .provider(provider)
+                .authority(Authority.ROLE_USER)
+                .picture(payload.get(CLAIM_PICTURE).toString())
+                .name(payload.get(CLAIM_NAME).toString())
+                .isDeleted(false)
+                .build();
+    }
+
+    public void updateInfo(Payload payload) {
+        email = payload.get(CLAIM_EMAIL).toString();
+        picture = payload.get(CLAIM_PICTURE).toString();
+        name = payload.get(CLAIM_NAME).toString();
     }
 }

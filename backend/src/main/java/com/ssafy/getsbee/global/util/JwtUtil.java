@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -30,22 +31,23 @@ import static com.ssafy.getsbee.global.error.ErrorCode.*;
 @Component
 public class JwtUtil {
 
-    private final SecretKey secretkey;
+    private final Key key;
 
     public JwtUtil(@Value("${jwt.secret}") String secretKey) {
-        this.secretkey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String generateAccessToken(Member member) {
         long now = (new Date()).getTime();
         return Jwts.builder()
-                .subject(member.getId().toString())
+                .setSubject(member.getId().toString())
                 .claim(CLAIM_EMAIL, member.getEmail())
                 .claim(CLAIM_NAME, member.getName())
                 .claim(CLAIM_PICTURE, member.getPicture())
                 .claim(AUTHORITIES_KEY, member.getAuthority())
-                .expiration(new Date(now + ACCESS_TOKEN_EXPIRE_TIME))
-                .signWith(secretkey, Jwts.SIG.HS512)
+                .setExpiration(new Date(now + ACCESS_TOKEN_EXPIRE_TIME))
+                .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
 
@@ -66,7 +68,7 @@ public class JwtUtil {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().verifyWith(secretkey).build().parseSignedClaims(token);
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException e) {
             throw new UnauthorizedException(UNAUTHORIZED_ACCESS);
@@ -78,14 +80,14 @@ public class JwtUtil {
     private String generateRefreshToken() {
         long now = (new Date()).getTime();
         return Jwts.builder()
-                .expiration(new Date(now + REFRESH_TOKEN_EXPIRE_TIME))
-                .signWith(secretkey, Jwts.SIG.HS512)
+                .setExpiration(new Date(now + REFRESH_TOKEN_EXPIRE_TIME))
+                .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
 
     private Claims parseClaims(String accessToken) {
         try {
-            return Jwts.parser().verifyWith(secretkey).build().parseSignedClaims(accessToken).getPayload();
+            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
