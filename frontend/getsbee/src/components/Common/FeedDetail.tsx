@@ -65,7 +65,7 @@ export default function FeedDetail() {
           </p>
           <Highlight
             text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-            color="#000000"
+            color="#3498db"
           />
           <p className="mt-2 mb-2 mr-2 font-semibold text-right " style={{ color: '#72736A' }}>
             Show more

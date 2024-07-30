@@ -57,7 +57,7 @@ export default function Feed() {
         <div className="p-0">
           <Highlight
             text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-            color="#000000"
+            color="#3498db"
           />
           <div className="flex items-center gap-2 mt-3 border border-gray-300 rounded-[12px] mr-3">
             <img src="https://via.placeholder.com/100" alt="Thumbnail" className="rounded-s-[10px]" />
