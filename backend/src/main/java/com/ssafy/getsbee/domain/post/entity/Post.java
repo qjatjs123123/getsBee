@@ -110,4 +110,8 @@ public class Post extends BaseTimeEntity {
     public void increaseViewCount() {
         this.viewCount++;
     }
+
+    public void changeDirectory(Directory directory) {
+        this.directory = directory;
+    }
 }

@@ -1,6 +1,8 @@
 package com.ssafy.getsbee.domain.highlight.service;
 
 import com.ssafy.getsbee.domain.directory.entity.Directory;
+import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
+import com.ssafy.getsbee.domain.directory.service.DirectoryService;
 import com.ssafy.getsbee.domain.highlight.dto.request.CreateHighlightRequest;
 import com.ssafy.getsbee.domain.highlight.dto.request.UpdateHighlightRequest;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
@@ -29,6 +31,7 @@ public class HighlightServiceImpl implements HighlightService {
     private final HighlightRepository highlightRepository;
     private final MemberService memberService;
     private final PostRepository postRepository;
+    private final DirectoryRepository directoryRepository;
 
     @Override
     @Transactional
@@ -37,8 +40,7 @@ public class HighlightServiceImpl implements HighlightService {
 
         Post post = postRepository.findByMemberAndUrl(member, request.url())
                         .orElseGet(()->{
-                            // Directory directory = directoryService.findByMemberAndTemporary();
-                            Directory directory = null;
+                            Directory directory = directoryRepository.findTemporaryDirectoryByMember(member);
                             return postRepository.save(request.toPostEntity(member, directory));
                         });
 

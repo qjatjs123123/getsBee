@@ -54,8 +54,7 @@ public class PostServiceImpl implements PostService {
             throw new BadRequestException(_FORBIDDEN);
         }
 
-        // Directory directory = directoryRepository.findById(request.directoryId());
-        Directory directory = null;
+        Directory directory = directoryRepository.findDirectoryById(request.directoryId());
 
         // 하이라이트 삭제
         highlightRepository.deleteAll(request.deleteHighlightIds().stream()
@@ -80,12 +79,13 @@ public class PostServiceImpl implements PostService {
                 .stream()
                 .map(HighlightResponse::of).collect(Collectors.toList());
 
-        // 북마크 좋아요 여부 필요, 디렉토리 저장 필요
-        // Boolean isBookmark = bookmarkRepository.findByIdMemberAndPost()
+        //좋아요 여부 필요
+        Boolean isBookmark = bookmarkRepository.findByPostAndMember(post, member).isPresent();
+        post.changeDirectory(directoryRepository.findBookmarkDirectoryByMember(member));
 
         post.increaseViewCount();
         return PostResponse.from(post, highlightResponses,
-                !isNotOwner(post.getMember(), member), false, false);
+                !isNotOwner(post.getMember(), member), false, isBookmark);
     }
 
     @Override
@@ -94,11 +94,9 @@ public class PostServiceImpl implements PostService {
         Post post = findById(postId);
 
         Bookmark bookmark = bookmarkRepository.findByPostAndMember(post, member)
-                .orElseGet(()->{
-                    return bookmarkRepository.save(new Bookmark(member, post));
-                });
+                .orElseGet(() -> bookmarkRepository.save(new Bookmark(member, post)));
 
-        if(!bookmark.getIsDeleted()) {
+        if (!bookmark.getIsDeleted()) {
             bookmark.changeBookmark();
         }
     }
@@ -109,11 +107,21 @@ public class PostServiceImpl implements PostService {
         Post post = findById(postId);
 
         Bookmark bookmark = bookmarkRepository.findByPostAndMember(post, member)
-                        .orElseThrow(() -> new BadRequestException(BOOKMARK_NOT_FOUND));
+                .orElseThrow(() -> new BadRequestException(BOOKMARK_NOT_FOUND));
         bookmark.changeBookmark();
     }
 
-    private Post findById(Long postId){
+    @Override
+    public void likePost(Long postId, Long memberId) {
+
+    }
+
+    @Override
+    public void unlikePost(Long postId, Long memberId) {
+
+    }
+
+    private Post findById(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new BadRequestException(POST_NOT_FOUND));
     }
