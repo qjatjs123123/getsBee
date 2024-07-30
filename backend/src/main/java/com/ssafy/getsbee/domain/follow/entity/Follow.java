@@ -5,6 +5,7 @@ import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -26,16 +27,25 @@ public class Follow extends BaseTimeEntity {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "following_member_id", nullable = false)
-    private Member followingMemberId;
+    private Member followingMember;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "followed_member_id", nullable = false)
-    private Member followedMemberId;
+    private Member followedMember;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "followed_directory_id", nullable = false)
-    private Directory followedDirectoryId;
+    private Directory followedDirectory;
 
     @Column(name = "is_deleted", columnDefinition = "tinyint(1) not null default 0")
     private Boolean isDeleted;
+
+    @Builder
+    public Follow(Long id, Member followingMember, Member followedMember, Directory followedDirectory, Boolean isDeleted) {
+        this.id = id;
+        this.followingMember = followingMember;
+        this.followedMember = followedMember;
+        this.followedDirectory = followedDirectory;
+        this.isDeleted = isDeleted;
+    }
 }
