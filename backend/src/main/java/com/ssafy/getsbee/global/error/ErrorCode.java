@@ -46,7 +46,8 @@ public enum ErrorCode {
     /** Directory */
     DIRECTORY_NOT_FOUND(BAD_REQUEST, "DIR000", "해당 디렉토리를 찾을 수 없습니다."),
     NEXT_DIRECTORY_NOT_FOUND(BAD_REQUEST, "DIR001", "다음 디렉토리를 찾을 수 없습니다."),
-    PREV_DIRECTORY_NOT_FOUND(BAD_REQUEST, "DIR002", "이전 디렉토리를 찾을 수 없습니다.");
+    PREV_DIRECTORY_NOT_FOUND(BAD_REQUEST, "DIR002", "이전 디렉토리를 찾을 수 없습니다."),
+    CANT_DELETE_DEFAULT_DIRECTORY(BAD_REQUEST, "DIR003", "기본 디렉토리는 삭제할 수 없습니다."),
     /** Category */
 
     /** Comment */
