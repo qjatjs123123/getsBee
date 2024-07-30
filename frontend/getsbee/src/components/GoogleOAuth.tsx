@@ -1,13 +1,9 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import axios from 'axios';
 import { GoogleLogin, GoogleOAuthProvider, CredentialResponse } from '@react-oauth/google';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
-
-interface UserInfo {
-  email: string;
-  name: string;
-  picture: string;
-}
+import { useRecoilState } from 'recoil';
+import { userState } from '../recoil/userState';
 
 interface GoogleJwtPayload extends JwtPayload {
   email: string;
@@ -16,7 +12,7 @@ interface GoogleJwtPayload extends JwtPayload {
 }
 
 const GoogleOAuth: FC = () => {
-  const [user, setUser] = useState<UserInfo | null>(null);
+  const [user, setUser] = useRecoilState(userState);
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const serverAuthEndpoint = import.meta.env.VITE_SERVER_AUTH_ENDPOINT;
 
