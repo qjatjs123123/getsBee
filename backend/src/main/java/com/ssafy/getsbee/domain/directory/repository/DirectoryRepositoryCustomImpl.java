@@ -3,13 +3,13 @@ package com.ssafy.getsbee.domain.directory.repository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.member.entity.Member;
-import com.ssafy.getsbee.domain.post.entity.QPost;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.ssafy.getsbee.domain.directory.entity.QDirectory.*;
+import static com.ssafy.getsbee.domain.post.entity.QPost.post;
 
 @Repository
 @RequiredArgsConstructor
@@ -114,8 +114,6 @@ public class DirectoryRepositoryCustomImpl implements DirectoryRepositoryCustom 
 
     @Override
     public Long countPostsForMember(Member member) {
-        QPost post = QPost.post;
-
         return queryFactory
                 .select(post.count())
                 .from(post)
@@ -126,7 +124,6 @@ public class DirectoryRepositoryCustomImpl implements DirectoryRepositoryCustom 
     @Override
     public Long countTemporaryPostsForMember(Member member) {
         Directory temp = findTemporaryDirectoryByMember(member);
-        QPost post = QPost.post;
 
         return queryFactory
                 .select(post.count())
