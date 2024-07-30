@@ -3,12 +3,14 @@ package com.ssafy.getsbee.domain.directory.repository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.member.entity.Member;
+import com.ssafy.getsbee.domain.post.entity.QPost;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.ssafy.getsbee.domain.directory.entity.QDirectory.*;
+import static com.ssafy.getsbee.domain.post.entity.QPost.post;
 
 
 @Repository
@@ -18,6 +20,7 @@ public class DirectoryRepositoryCustomImpl implements DirectoryRepositoryCustom 
 
     private final JPAQueryFactory queryFactory;
     private final EntityManager em;
+    private final DirectoryRepository directoryRepository;
 
     private static final int ROOT_DEPTH = 0;
     private static final int BOOKMARK_DEPTH = 1;
@@ -110,5 +113,28 @@ public class DirectoryRepositoryCustomImpl implements DirectoryRepositoryCustom 
         em.persist(temp);
         em.flush(); //flush 해야 db에 삽입
         return temp;
+    }
+
+    @Override
+    public Long countPostsForMember(Member member) {
+        QPost post = QPost.post;
+
+        return queryFactory
+                .select(post.count())
+                .from(post)
+                .where(post.member.eq(member))
+                .fetchOne();
+    }
+
+    @Override
+    public Long countTemporaryPostsForMember(Member member) {
+        Directory temp = directoryRepository.findTemporaryDirectoryByMember(member);
+        QPost post = QPost.post;
+
+        return queryFactory
+                .select(post.count())
+                .from(post)
+                .where(post.directory.eq(temp))
+                .fetchOne();
     }
 }

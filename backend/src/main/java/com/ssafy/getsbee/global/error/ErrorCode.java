@@ -51,6 +51,7 @@ public enum ErrorCode {
     /** Category */
 
     /** Comment */
+    COMMENT_NOT_FOUND(BAD_REQUEST, "COMMENT000", "해당 댓글을 찾을 수 없습니다."),
 
     /** Bookmark */
     DUPLICATE_BOOKMARK(BAD_REQUEST, "BOOKMARK000", "이미 존재하는 북마크 입니다."),
