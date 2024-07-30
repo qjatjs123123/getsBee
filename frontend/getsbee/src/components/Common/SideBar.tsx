@@ -7,7 +7,7 @@ import beeIcon from '../../assets/beeIcon.png';
 import foldIcon from '../../assets/foldIcon.png';
 import homeIcon from '../../assets/homeIcon.png';
 import recommendIcon from '../../assets/recommendIcon.png';
-import myhiveIcon from '../../assets/myhiveIcon.png';
+import myHiveIcon from '../../assets/myHiveIcon.png';
 import aboutIcon from '../../assets/aboutIcon.png';
 
 const SideBar: React.FC = () => {
@@ -48,7 +48,7 @@ const SideBar: React.FC = () => {
             <span className="sidebar-text">Recommend</span>
           </Link>
           <Link to="/myhive" className="sidebar-link">
-            <img className="sidebar-icon" src={myhiveIcon} alt="MyHive" />
+            <img className="sidebar-icon" src={myHiveIcon} alt="MyHive" />
             <span className="sidebar-text">MyHive</span>
           </Link>
           <Link to="/about" className="sidebar-link">
