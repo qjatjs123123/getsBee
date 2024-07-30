@@ -1,5 +1,5 @@
 import React from 'react';
-import './Feed';
+import './Feed.css';
 
 interface HighlightProps {
   text: string;
@@ -8,7 +8,7 @@ interface HighlightProps {
 
 const Highlight: React.FC<HighlightProps> = ({ text, color }) => {
   return (
-    <p className="mt-1 m-0 pl-4 relative text-with-bar" style={{ color }}>
+    <p className="mt-1 m-0 pl-4 relative text-with-bar" style={{ '--bar-color': color } as React.CSSProperties}>
       {text}
     </p>
   );

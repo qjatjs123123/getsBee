@@ -4,17 +4,22 @@ let SELECTED_ID = 0;
 
 function getURL() {
   // url return
-  return null;
+  return window.location.href;
 }
 
 function getThumbnailUrl() {
-  // 썸네일 리턴
-  return null;
+  const ogImageMetaTag = document.querySelector('meta[property="og:image"]');
+
+  // 이미지 URL 추출
+  return ogImageMetaTag ? ogImageMetaTag.getAttribute("content") : null;
 }
 
 function getTitle() {
-  //타이틀 리턴
-  return null;
+  // title 메타 태그 찾기
+  const titleMetaTag = document.querySelector("title");
+
+  // title 속성 값 추출
+  return titleMetaTag ? titleMetaTag.textContent : null;
 }
 
 function insertHighLight(data) {

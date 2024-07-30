@@ -1,4 +1,10 @@
 window.addEventListener("load", () => {
+  // 예: 페이지의 텍스트 내용을 가져와 Background Script에 전송
+  const pageContent = document.body.innerHTML;
+
+  // 데이터 전송
+  chrome.runtime.sendMessage({ pageContent });
+
   loadFontAwesome();
 
   const tooltip = createTooltip();

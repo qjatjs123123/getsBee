@@ -17,3 +17,14 @@
   @tailwind components;
   @tailwind utilities;
 }
+
+@font-face {
+  font-family: 'Roboto Medium';
+  src: url('/fonts/Roboto-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+}
