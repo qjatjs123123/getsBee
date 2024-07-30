@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Badge } from 'primereact/badge';
 
 interface Directory {
   directoryId: number;
@@ -30,6 +31,8 @@ const Directory: React.FC<DirectoryProps> = ({ directory }) => {
 
   const fontSize = directory.depth === 1 ? 'text-[16px]' : 'text-[14px]';
 
+  const badge = directory.name === 'Temporary' ? '9' : '';
+
   return (
     <div className={`pl-${directory.depth * 1} my-1 `}>
       <div>
@@ -46,6 +49,14 @@ const Directory: React.FC<DirectoryProps> = ({ directory }) => {
         <span className={`font-bold text-[#8D8D8D] ${fontSize} hover:text-[#07294D] cursor-pointer`}>
           {directory.name}
         </span>
+        {badge && (
+          <Badge
+            value={badge}
+            severity="danger" // 뱃지 색상 (danger는 빨간색, primary는 파란색 등)
+            className="ml-3"
+            style={{ fontSize: '14px' }}
+          />
+        )}
       </div>
       {isExpanded && directory.children.length > 0 && (
         <div className="ml-5">
