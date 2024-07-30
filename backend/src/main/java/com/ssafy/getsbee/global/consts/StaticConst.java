@@ -12,12 +12,10 @@ public class StaticConst {
     public static final String CLAIM_EMAIL = "email";
     public static final String CLAIM_PICTURE = "picture";
     public static final String CLAIM_NAME = "name";
-    public static final String KID = "kid";
-
-    public static final String AUTH_URL = "api/v1/auth/**";
+    public static final String REFRESH_TOKEN = "refresh_token";
+    public static final String AUTH_URL = "/api/v1/auth/**";
 
     public static final int MAX_MEMORY_SIZE = 5 * 1024 * 1024;
-    public static final int TEN_SECONDS = 10 * 1000;
 
     public static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;
     public static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 14;

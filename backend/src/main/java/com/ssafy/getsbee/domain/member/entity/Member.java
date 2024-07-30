@@ -8,7 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.Where;
+
+import static com.google.api.client.json.webtoken.JsonWebToken.*;
+import static com.ssafy.getsbee.global.consts.StaticConst.*;
 
 @Entity
 @Getter
@@ -41,7 +43,7 @@ public class Member extends BaseTimeEntity {
     private Job job;
 
     @Column(length = 2083)
-    private String profile;
+    private String picture;
 
     @Column(length = 73)
     private String name;
@@ -51,15 +53,32 @@ public class Member extends BaseTimeEntity {
 
     @Builder
     public Member(Long id, String email, Provider provider, Authority authority, Integer birthYear, Job job,
-                  String profile, String name, Boolean isDeleted) {
+                  String picture, String name, Boolean isDeleted) {
         this.id = id;
         this.email = email;
         this.provider = provider;
         this.authority = authority;
         this.birthYear = birthYear;
         this.job = job;
-        this.profile = profile;
+        this.picture = picture;
         this.name = name;
         this.isDeleted = isDeleted;
+    }
+
+    public static Member of(Provider provider, Payload payload) {
+        return Member.builder()
+                .email(payload.get(CLAIM_EMAIL).toString())
+                .provider(provider)
+                .authority(Authority.ROLE_USER)
+                .picture(payload.get(CLAIM_PICTURE).toString())
+                .name(payload.get(CLAIM_NAME).toString())
+                .isDeleted(false)
+                .build();
+    }
+
+    public void updateInfo(Payload payload) {
+        email = payload.get(CLAIM_EMAIL).toString();
+        picture = payload.get(CLAIM_PICTURE).toString();
+        name = payload.get(CLAIM_NAME).toString();
     }
 }

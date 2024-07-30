@@ -1,5 +1,6 @@
 package com.ssafy.getsbee.global.util;
 
+import com.ssafy.getsbee.domain.auth.entity.RefreshToken;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.error.exception.UnauthorizedException;
@@ -17,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -29,31 +31,28 @@ import static com.ssafy.getsbee.global.error.ErrorCode.*;
 @Component
 public class JwtUtil {
 
-    private final SecretKey secretkey;
+    private final Key key;
 
     public JwtUtil(@Value("${jwt.secret}") String secretKey) {
-        this.secretkey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateAccessToken(Authentication authentication, Member member) {
+    public String generateAccessToken(Member member) {
         long now = (new Date()).getTime();
         return Jwts.builder()
-                .subject(authentication.getName())
+                .setSubject(member.getId().toString())
                 .claim(CLAIM_EMAIL, member.getEmail())
                 .claim(CLAIM_NAME, member.getName())
-                .claim(CLAIM_PICTURE, member.getProfile())
-                .claim(AUTHORITIES_KEY, getAuthorities(authentication))
-                .expiration(new Date(now + ACCESS_TOKEN_EXPIRE_TIME))
-                .signWith(secretkey, Jwts.SIG.HS512)
+                .claim(CLAIM_PICTURE, member.getPicture())
+                .claim(AUTHORITIES_KEY, member.getAuthority())
+                .setExpiration(new Date(now + ACCESS_TOKEN_EXPIRE_TIME))
+                .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
 
-    public String generateRefreshToken() {
-        long now = (new Date()).getTime();
-        return Jwts.builder()
-                .expiration(new Date(now + REFRESH_TOKEN_EXPIRE_TIME))
-                .signWith(secretkey, Jwts.SIG.HS512)
-                .compact();
+    public RefreshToken getRefreshToken(Long memberId) {
+        return RefreshToken.of(generateRefreshToken(), memberId.toString(), REFRESH_TOKEN_EXPIRE_TIME);
     }
 
     public Authentication getAuthentication(String accessToken) {
@@ -62,17 +61,14 @@ public class JwtUtil {
         if (claims.get(AUTHORITIES_KEY) == null) {
             throw new UnauthorizedException(INVALID_AUTH_TOKEN);
         }
-        Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+        Collection<? extends GrantedAuthority> authorities = getAuthorities(claims);
         UserDetails principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().verifyWith(secretkey).build().parseSignedClaims(token);
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException e) {
             throw new UnauthorizedException(UNAUTHORIZED_ACCESS);
@@ -81,17 +77,25 @@ public class JwtUtil {
         }
     }
 
-    private String getAuthorities(Authentication authentication) {
-        return authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+    private String generateRefreshToken() {
+        long now = (new Date()).getTime();
+        return Jwts.builder()
+                .setExpiration(new Date(now + REFRESH_TOKEN_EXPIRE_TIME))
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
     }
 
     private Claims parseClaims(String accessToken) {
         try {
-            return Jwts.parser().verifyWith(secretkey).build().parseSignedClaims(accessToken).getPayload();
+            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
+    }
+
+    private Collection<? extends GrantedAuthority> getAuthorities(Claims claims) {
+        return Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(AUTHORITY_DELIMITER))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 }
