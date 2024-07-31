@@ -5,7 +5,7 @@ import com.ssafy.getsbee.domain.highlight.dto.request.UpdateHighlightRequest;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
 import com.ssafy.getsbee.domain.highlight.service.HighlightService;
 import com.ssafy.getsbee.domain.post.service.PostService;
-import com.ssafy.getsbee.global.security.SecurityUtil;
+import com.ssafy.getsbee.global.util.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

@@ -3,7 +3,7 @@ package com.ssafy.getsbee.domain.post.controller;
 import com.ssafy.getsbee.domain.post.dto.request.UpdatePostRequest;
 import com.ssafy.getsbee.domain.post.dto.response.PostResponse;
 import com.ssafy.getsbee.domain.post.service.PostService;
-import com.ssafy.getsbee.global.security.SecurityUtil;
+import com.ssafy.getsbee.global.util.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -31,13 +31,23 @@ public class PostController {
         postService.deletePost(postId, SecurityUtil.getCurrentMemberId());
     }
 
-    @PostMapping("/bookmark/{post-id}")
+    @PostMapping("/{post-id}/bookmarks")
     public void addBookmark(@PathVariable("post-id") Long postId) {
         postService.addBookmark(postId, SecurityUtil.getCurrentMemberId());
     }
 
-    @DeleteMapping("/bookmark/{post-id}")
+    @DeleteMapping("/{post-id}/bookmarks")
     public void deleteBookmark(@PathVariable("post-id") Long postId) {
         postService.deleteBookmark(postId, SecurityUtil.getCurrentMemberId());
+    }
+
+    @PostMapping("/{post-id}/likes")
+    public void likePost(@PathVariable("post-id") Long postId){
+        postService.likePost(postId, SecurityUtil.getCurrentMemberId());
+    }
+
+    @DeleteMapping("/{post-id}/likes")
+    public void unlikePost(@PathVariable("post-id") Long postId){
+        postService.likePost(postId, SecurityUtil.getCurrentMemberId());
     }
 }
