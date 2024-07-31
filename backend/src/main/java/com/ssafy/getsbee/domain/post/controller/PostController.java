@@ -1,12 +1,19 @@
 package com.ssafy.getsbee.domain.post.controller;
 
+import com.ssafy.getsbee.domain.post.dto.request.PostListRequest;
 import com.ssafy.getsbee.domain.post.dto.request.UpdatePostRequest;
+import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostResponse;
 import com.ssafy.getsbee.domain.post.service.PostService;
+import com.ssafy.getsbee.global.error.ErrorCode;
+import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.util.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+import static com.ssafy.getsbee.global.error.ErrorCode.*;
 
 @RestController
 @RequestMapping("/posts")
@@ -49,5 +56,20 @@ public class PostController {
     @DeleteMapping("/{post-id}/likes")
     public void unlikePost(@PathVariable("post-id") Long postId){
         postService.likePost(postId, SecurityUtil.getCurrentMemberId());
+    }
+
+    @GetMapping("/")
+    public List<PostListResponse> showPostList(PostListRequest postListRequest){
+        if(postListRequest.directoryId() != null){
+
+        }else if(postListRequest.memberId() != null){
+
+        }else if(postListRequest.following()!=null){
+
+        }else if(postListRequest.query()!=null){
+            //가현이 검색 로직
+        }else{
+            throw new BadRequestException(INVALID_POST_REQUEST);
+        }
     }
 }

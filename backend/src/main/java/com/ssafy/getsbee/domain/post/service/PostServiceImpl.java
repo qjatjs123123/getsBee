@@ -8,7 +8,9 @@ import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
 import com.ssafy.getsbee.domain.highlight.repository.HighlightRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.service.MemberService;
+import com.ssafy.getsbee.domain.post.dto.request.PostListRequest;
 import com.ssafy.getsbee.domain.post.dto.request.UpdatePostRequest;
+import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostResponse;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.domain.post.repository.PostRepository;
@@ -120,6 +122,16 @@ public class PostServiceImpl implements PostService {
     @Override
     public void unlikePost(Long postId, Long memberId) {
 
+    }
+
+    @Override
+    public List<PostListResponse> showPostListByMemberId(Long memberId) {
+        return List.of();
+    }
+
+    @Override
+    public List<PostListResponse> showPostListByDirectoryId(Long memberId) {
+        return List.of();
     }
 
     private Post findById(Long postId) {
