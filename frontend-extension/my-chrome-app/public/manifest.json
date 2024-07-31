@@ -4,7 +4,7 @@
   "description": "Counts the number of words in the body text of any webpage",
   "version": "1.0",
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "index.html",
     "default_icon": "icon.png"
   },
   "background": {
@@ -22,7 +22,12 @@
         "api.js",
         "validation.js"
       ],
-      "css": ["getsBeeCustom.css"]
+      "css": ["getsBeeCustom.css"],
+      "type": "module"
     }
-  ]
+  ],
+  "content_security_policy": {
+    "script-src": "'self' 'https://unpkg.com'",
+    "object-src": "'self'"
+  }
 }

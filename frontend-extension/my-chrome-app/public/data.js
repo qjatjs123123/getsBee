@@ -1,7 +1,10 @@
 let selection = null;
 const RANGE_DATA_ARR = [];
 let SELECTED_ID = 0;
-
+function getDomain() {
+  // url return
+  return window.location.hostname;
+}
 function getURL() {
   // url return
   return window.location.href;

@@ -1,9 +1,36 @@
+/* eslint-disable no-undef */
 window.addEventListener("load", () => {
+  function extractTextNodes(node) {
+    let textNodes = [];
+
+    // 재귀적으로 모든 자식 노드를 탐색합니다
+    function traverse(currentNode) {
+      // 텍스트 노드인 경우
+      if (currentNode.nodeType === Node.TEXT_NODE) {
+        const textContent = currentNode.textContent.trim();
+        if (textContent) {
+          if (textContent.length > 20 && textContent.length < 100)
+            textNodes.push(textContent);
+        }
+      }
+
+      // 자식 노드를 재귀적으로 탐색합니다
+      if (currentNode.nodeType === Node.ELEMENT_NODE) {
+        Array.from(currentNode.childNodes).forEach((child) => traverse(child));
+      }
+    }
+
+    traverse(node);
+    return textNodes;
+  }
+
   // 예: 페이지의 텍스트 내용을 가져와 Background Script에 전송
-  const pageContent = document.body.innerHTML;
 
   // 데이터 전송
-  chrome.runtime.sendMessage({ pageContent });
+  chrome.runtime.sendMessage({
+    pageContentArr: extractTextNodes(document.body),
+    hostName: getDomain(),
+  });
 
   loadFontAwesome();
 
