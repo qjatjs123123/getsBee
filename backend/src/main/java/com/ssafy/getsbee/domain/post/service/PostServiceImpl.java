@@ -8,15 +8,20 @@ import com.ssafy.getsbee.domain.highlight.entity.Highlight;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
 import com.ssafy.getsbee.domain.highlight.repository.HighlightRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
+import com.ssafy.getsbee.domain.member.repository.MemberRepository;
 import com.ssafy.getsbee.domain.member.service.MemberService;
+import com.ssafy.getsbee.domain.post.dto.request.PostListRequest;
 import com.ssafy.getsbee.domain.post.dto.request.UpdatePostRequest;
 import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostResponse;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.domain.post.repository.PostRepository;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
-import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +40,9 @@ public class PostServiceImpl implements PostService {
     private final DirectoryRepository directoryRepository;
     private final BookmarkRepository bookmarkRepository;
     private final HighlightRepository highlightRepository;
+
+    private static final Integer DEFAULT_PAGE_SIZE = 20;
+    private final MemberRepository memberRepository;
 
     @Override
     @Transactional
@@ -127,77 +135,97 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostListResponse> showPostListByMemberId(Long memberId) {
-        return List.of();
-    }
-
-
-    @Override
-    public List<PostListResponse> showPostListByDirectoryId(Long directoryId) {
-        List<PostListResponse> postListResponses = new ArrayList<>();
-        List<Post> posts = postRepository.findAllByDirectoryId(directoryId);
-
-        for (Post post : posts) {
-            List<Highlight> highlights = highlightRepository.findAllByPostId(post.getId()).orElse(new ArrayList<>());
-            List<String> highlightColors = highlights.stream()
-                    .map(Highlight::getColor)
-                    .collect(Collectors.toList());
-
-            Member member = post.getMember();
-            Directory directory = post.getDirectory(); // or fetch from directoryRepository if necessary
-
-            // Create PostListResponse object using builders
-            PostListResponse.Post postInfo = PostListResponse.Post.builder()
-                    .postId(post.getId())
-                    .title(post.getTitle())
-                    .url(post.getUrl())
-                    .thumbnail(post.getThumbnailUrl())
-                    .note(post.getNote())
-                    .isPublic(post.getIsPublic())
-                    .viewCount(post.getViewCount())
-                    .likeCount(post.getLikeCount())
-                    .bookmarkCount(post.getBookmarkCount())
-                    .createdAt(post.getCreatedAt())
-                    .build();
-
-            PostListResponse.Member memberInfo = PostListResponse.Member.builder()
-                    .memberId(member.getId())
-                    .memberName(member.getName())
-                    .memberPicture(member.getPicture())
-                    .build();
-
-            PostListResponse.Directory directoryInfo = PostListResponse.Directory.builder()
-                    .directoryId(directory.getId())
-                    .directoryName(directory.getName())
-                    .build();
-
-            PostListResponse.Highlight highlightInfo = PostListResponse.Highlight.builder()
-                    .highlightColors(highlightColors)
-                    .highlightNumber(highlightColors.size())
-                    .firstHighlightColor(highlightColors.isEmpty() ? null : highlightColors.get(0))
-                    .firstHighlightContent(highlights.isEmpty() ? null : highlights.get(0).getContent())
-                    .build();
-
-            PostListResponse.Info info = PostListResponse.Info.builder()
-                    .isLikedByCurrentUser(null) // 구현 예정
-                    .isBookmarkedByCurrentUser(null) // 구현 예정
-                    .relatedFeedNumber(null) // 구현 예정
-                    .build();
-
-            PostListResponse response = PostListResponse.builder()
-                    .post(postInfo)
-                    .member(memberInfo)
-                    .directory(directoryInfo)
-                    .highlight(highlightInfo)
-                    .info(info)
-                    .build();
-
-            postListResponses.add(response);
+    public Page<PostListResponse> showPostList(PostListRequest postListRequest) {
+        if(postListRequest.page()==null){
+            throw new BadRequestException(INVALID_POST_REQUEST);
         }
+        int size = postListRequest.size() == null ? DEFAULT_PAGE_SIZE : postListRequest.size();
+        Pageable pageable = PageRequest.of(postListRequest.page(), postListRequest.page()+size);
 
-        return postListResponses;
+        if(postListRequest.directoryId() != null){
+            return showPostListByDirectoryId(postListRequest.directoryId(), pageable);
+        }else if(postListRequest.memberId() != null){
+            return showPostListByMemberId(postListRequest.memberId(), pageable);
+        }else if(postListRequest.following()!=null){
+
+        }else if(postListRequest.query()!=null){
+            //다현이 검색 로직
+        }else{
+            throw new BadRequestException(INVALID_POST_REQUEST);
+        }
+        return null;
     }
 
+    public Page<PostListResponse> showPostListByMemberId(Long memberId, Pageable pageable) {
+        Page<Post> posts = postRepository.findAllByMemberId(memberId, pageable);
+        return makePostListResponseWithPosts(posts);
+    }
+
+    private Page<PostListResponse> showPostListByDirectoryId(Long directoryId, Pageable pageable) {
+        Page<Post> posts = postRepository.findAllByDirectoryId(directoryId, pageable);
+        return makePostListResponseWithPosts(posts);
+    }
+
+    private Page<PostListResponse> makePostListResponseWithPosts(Page<Post> posts) {
+        List<PostListResponse> postListResponses = posts.stream()
+                .map(post -> {
+                    List<Highlight> highlights = highlightRepository.findAllByPostId(post.getId()).orElse(new ArrayList<>());
+                    List<String> highlightColors = highlights.stream()
+                            .map(Highlight::getColor)
+                            .collect(Collectors.toList());
+
+                    Member member = post.getMember();
+                    Directory directory = post.getDirectory(); // or fetch from directoryRepository if necessary
+
+                    // Create PostListResponse object using builders
+                    PostListResponse.Post postInfo = PostListResponse.Post.builder()
+                            .postId(post.getId())
+                            .title(post.getTitle())
+                            .url(post.getUrl())
+                            .thumbnail(post.getThumbnailUrl())
+                            .note(post.getNote())
+                            .isPublic(post.getIsPublic())
+                            .viewCount(post.getViewCount())
+                            .likeCount(post.getLikeCount())
+                            .bookmarkCount(post.getBookmarkCount())
+                            .createdAt(post.getCreatedAt())
+                            .build();
+
+                    PostListResponse.Member memberInfo = PostListResponse.Member.builder()
+                            .memberId(member.getId())
+                            .memberName(member.getName())
+                            .memberPicture(member.getPicture())
+                            .build();
+
+                    PostListResponse.Directory directoryInfo = PostListResponse.Directory.builder()
+                            .directoryId(directory.getId())
+                            .directoryName(directory.getName())
+                            .build();
+
+                    PostListResponse.Highlight highlightInfo = PostListResponse.Highlight.builder()
+                            .highlightColors(highlightColors)
+                            .highlightNumber(highlightColors.size())
+                            .firstHighlightColor(highlightColors.isEmpty() ? null : highlightColors.get(0))
+                            .firstHighlightContent(highlights.isEmpty() ? null : highlights.get(0).getContent())
+                            .build();
+
+                    PostListResponse.Info info = PostListResponse.Info.builder()
+                            .isLikedByCurrentUser(null) // implement this logic as needed
+                            .isBookmarkedByCurrentUser(null) // implement this logic as needed
+                            .relatedFeedNumber(null) // implement this logic as needed
+                            .build();
+
+                    return PostListResponse.builder()
+                            .post(postInfo)
+                            .member(memberInfo)
+                            .directory(directoryInfo)
+                            .highlight(highlightInfo)
+                            .info(info)
+                            .build();
+                }).collect(Collectors.toList());
+
+        return new PageImpl<>(postListResponses, posts.getPageable(), posts.getTotalElements());
+    }
 
     // 현재 사용자가 게시물을 좋아요 했는지 확인하는 예시 메서드
     private boolean checkIfLikedByCurrentUser(Post post) {

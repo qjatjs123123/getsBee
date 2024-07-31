@@ -1,9 +1,16 @@
 package com.ssafy.getsbee.domain.post.dto.request;
 
+import lombok.Builder;
+
 public record PostListRequest (
         Long directoryId,
-        String memberId,
+        Long memberId,
         String query,
-        Boolean following
+        Boolean following,
+        Integer page,
+        Integer size
 ){
+    @Builder
+    public PostListRequest{
+    }
 }

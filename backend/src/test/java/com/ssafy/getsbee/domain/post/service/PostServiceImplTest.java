@@ -2,6 +2,7 @@ package com.ssafy.getsbee.domain.post.service;
 
 import com.ssafy.getsbee.GetsbeeApplication;
 import com.ssafy.getsbee.domain.highlight.entity.Type;
+import com.ssafy.getsbee.domain.post.dto.request.PostListRequest;
 import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.domain.post.repository.PostRepository;
@@ -13,10 +14,14 @@ import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.highlight.entity.Highlight;
 import com.ssafy.getsbee.domain.highlight.repository.HighlightRepository;
+import com.ssafy.getsbee.global.util.SecurityUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(classes = GetsbeeApplication.class)
 @Transactional
-//@ActiveProfiles("local")
+@ActiveProfiles("local")
 class PostServiceImplTest {
 
     @Autowired
@@ -103,30 +108,41 @@ class PostServiceImplTest {
 
     @Test
     void showPostListByDirectoryId() {
-//        System.out.println("-----------show PostListByDirectoryId----------");
-        List<PostListResponse> postListResponses = postService.showPostListByDirectoryId(temporaryDirectory.getId());
+        System.out.println("---------showPostListByDirectoryId---------");
+        // Create Pageable object for pagination
+        Pageable pageable = PageRequest.of(0, 10);
 
-        assertNotNull(postListResponses);
-        assertEquals(2, postListResponses.size());
+        // Create a PostListRequest for the temporary directory
+        PostListRequest postListRequest = PostListRequest.builder()
+                .directoryId(temporaryDirectory.getId())
+                .page(0)
+                .build();
 
+        // Fetch the post list responses for the given directory
+        Page<PostListResponse> postListResponses = postService.showPostList(postListRequest);
+
+        // Assertions to verify the fetched data
+        assertNotNull(postListResponses, "Post list should not be null");
+        assertEquals(2, postListResponses.getTotalElements(), "Total number of posts should be 2");
+
+        // Validate details of the first post
         PostListResponse post1 = postListResponses.stream()
                 .filter(p -> p.post().title().equals("Post 1"))
                 .findFirst()
                 .orElse(null);
+        assertNotNull(post1, "Post 1 should not be null");
+        assertEquals("Post 1", post1.post().title(), "Post 1 title should match");
+        assertEquals("https://example.com/post1", post1.post().url(), "Post 1 URL should match");
+        assertEquals("AAAAAA", post1.highlight().firstHighlightColor(), "Post 1 first highlight color should match");
 
-        assertNotNull(post1);
-        assertEquals("Post 1", post1.post().title());
-        assertEquals("https://example.com/post1", post1.post().url());
-        assertEquals("AAAAAA", post1.highlight().firstHighlightColor());
-
+        // Validate details of the second post
         PostListResponse post2 = postListResponses.stream()
                 .filter(p -> p.post().title().equals("Post 2"))
                 .findFirst()
                 .orElse(null);
-
-        assertNotNull(post2);
-        assertEquals("Post 2", post2.post().title());
-        assertEquals("https://example.com/post2", post2.post().url());
-        assertEquals("BBBBBB", post2.highlight().firstHighlightColor());
+        assertNotNull(post2, "Post 2 should not be null");
+        assertEquals("Post 2", post2.post().title(), "Post 2 title should match");
+        assertEquals("https://example.com/post2", post2.post().url(), "Post 2 URL should match");
+        assertEquals("BBBBBB", post2.highlight().firstHighlightColor(), "Post 2 first highlight color should match");
     }
 }
