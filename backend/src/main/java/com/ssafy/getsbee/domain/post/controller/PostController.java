@@ -71,5 +71,6 @@ public class PostController {
         }else{
             throw new BadRequestException(INVALID_POST_REQUEST);
         }
+        return null;
     }
 }

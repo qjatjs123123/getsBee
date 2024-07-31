@@ -1,6 +1,5 @@
 package com.ssafy.getsbee.domain.post.service;
 
-import com.ssafy.getsbee.domain.post.dto.request.PostListRequest;
 import com.ssafy.getsbee.domain.post.dto.request.UpdatePostRequest;
 import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostResponse;
@@ -24,5 +23,5 @@ public interface PostService {
 
     List<PostListResponse> showPostListByMemberId(Long memberId);
 
-    List<PostListResponse> showPostListByDirectoryId(Long memberId);
+    List<PostListResponse> showPostListByDirectoryId(Long directoryId);
 }
