@@ -99,18 +99,24 @@ public class DirectoryServiceImpl implements DirectoryService {
         directoryRepository.createDefaultDirectoriesForMember(member);
     }
 
+    @Override
+    public String findFullNameByDirectory(Directory directory) {
+        if(directory.getDepth()==1) return directory.getName();
+        return directory.getParentDirectory().getName() + " / " +directory.getName()
+        return "";
+    }
+
     private void filterDirectoriesByAuth(List<Directory> directories) {
         directories.removeIf(directory -> directory.getDepth() == 1 && (directory.getName().equals("Temporary") ||
                 directory.getName().equals("Bookmark")));
     }
 
     private List<DirectoryResponse> assembleDirectories(List<Directory> directories) {
-        System.out.println("assemble directories: " + directories);
-
         Map<Long, DirectoryResponse> directoryMap = new HashMap<>();
 
         for (Directory directory : directories) {
             if(directory.getDepth()==0) continue;
+            if(directory.getDepth() == 2) directory.changeName(findFullNameByDirectory(directory));
             DirectoryResponse response = DirectoryResponse.fromEntity(directory);
             directoryMap.put(directory.getId(), response);
         }
