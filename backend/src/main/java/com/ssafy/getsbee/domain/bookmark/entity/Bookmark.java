@@ -1,5 +1,6 @@
 package com.ssafy.getsbee.domain.bookmark.entity;
 
+import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.global.common.entity.BaseTimeEntity;
@@ -32,21 +33,18 @@ public class Bookmark extends BaseTimeEntity {
     @JoinColumn(name = "post_id")
     private Post post;
 
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name="directory_id")
+    private Directory directory;
+
     @Column(name = "is_deleted", columnDefinition = "tinyint(1) not null default 0")
     private Boolean isDeleted;
 
     @Builder
-    public Bookmark(Long id, Member member, Post post, Boolean isDeleted) {
-        this.id = id;
+    public Bookmark(Member member, Post post, Directory directory) {
         this.member = member;
         this.post = post;
-        this.isDeleted = isDeleted;
-    }
-
-    @Builder
-    public Bookmark(Member member, Post post) {
-        this.member = member;
-        this.post = post;
+        this.directory = directory;
         this.isDeleted = false;
     }
 
