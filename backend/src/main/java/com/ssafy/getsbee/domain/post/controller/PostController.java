@@ -31,12 +31,12 @@ public class PostController {
         postService.deletePost(postId, SecurityUtil.getCurrentMemberId());
     }
 
-    @PostMapping("/bookmark/{post-id}")
+    @PostMapping("/{post-id}/bookmarks")
     public void addBookmark(@PathVariable("post-id") Long postId) {
         postService.addBookmark(postId, SecurityUtil.getCurrentMemberId());
     }
 
-    @DeleteMapping("/bookmark/{post-id}")
+    @DeleteMapping("/{post-id}/bookmarks")
     public void deleteBookmark(@PathVariable("post-id") Long postId) {
         postService.deleteBookmark(postId, SecurityUtil.getCurrentMemberId());
     }

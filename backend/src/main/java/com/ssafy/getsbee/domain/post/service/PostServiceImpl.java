@@ -81,7 +81,7 @@ public class PostServiceImpl implements PostService {
 
         //좋아요 여부 필요
         Boolean isBookmark = bookmarkRepository.findByPostAndMember(post, member).isPresent();
-        post.changeDirectory(directoryRepository.findBookmarkDirectoryByMember(member));
+        post.changeDirectory(directoryRepository.findTemporaryDirectoryByMember(member));
 
         post.increaseViewCount();
         return PostResponse.from(post, highlightResponses,
@@ -94,7 +94,8 @@ public class PostServiceImpl implements PostService {
         Post post = findById(postId);
 
         Bookmark bookmark = bookmarkRepository.findByPostAndMember(post, member)
-                .orElseGet(() -> bookmarkRepository.save(new Bookmark(member, post)));
+                .orElseGet(() -> bookmarkRepository.save(new Bookmark(member, post,
+                        directoryRepository.findBookmarkDirectoryByMember(member))));
 
         if (!bookmark.getIsDeleted()) {
             bookmark.changeBookmark();

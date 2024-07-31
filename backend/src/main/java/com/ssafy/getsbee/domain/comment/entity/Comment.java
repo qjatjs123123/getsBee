@@ -16,8 +16,9 @@ import static jakarta.persistence.FetchType.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE comment SET is_deleted = true WHERE comment_id = ?")
+@SQLDelete(sql = "UPDATE comments SET is_deleted = true WHERE comment_id = ?")
 @SQLRestriction("is_deleted = false")
+@Table(name="comments")
 public class Comment extends BaseTimeEntity {
 
     @Id

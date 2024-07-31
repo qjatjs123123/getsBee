@@ -68,24 +68,8 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "directory_id")
     private Directory directory;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
-    private List<Comment> comments = new ArrayList<>();
-
-    public Post(Long id, String title, String url, String note, String thumbnailUrl, Boolean isPublic, Long viewCount, Long likeCount, Long bookmarkCount, Boolean isDeleted, Member member, List<Highlight> highlights, Directory directory) {
-        this.id = id;
-        this.title = title;
-        this.url = url;
-        this.note = note;
-        this.thumbnailUrl = thumbnailUrl;
-        this.isPublic = isPublic;
-        this.viewCount = viewCount;
-        this.likeCount = likeCount;
-        this.bookmarkCount = bookmarkCount;
-        this.isDeleted = isDeleted;
-        this.member = member;
-        this.highlights = highlights;
-        this.directory = directory;
-    }
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Comment> comments;
 
     @Builder
     public Post(String title, String url, String thumbnailUrl, Member member, Directory directory) {
