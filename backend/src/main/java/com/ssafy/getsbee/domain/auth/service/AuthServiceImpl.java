@@ -2,7 +2,7 @@ package com.ssafy.getsbee.domain.auth.service;
 
 import com.ssafy.getsbee.domain.auth.dto.request.LoginRequest;
 import com.ssafy.getsbee.domain.auth.dto.request.TokenRequest;
-import com.ssafy.getsbee.domain.auth.dto.response.AccessTokenResponse;
+import com.ssafy.getsbee.domain.auth.dto.response.TokenResponse;
 import com.ssafy.getsbee.domain.auth.entity.RefreshToken;
 import com.ssafy.getsbee.domain.auth.repository.RefreshTokenRedisRepository;
 import com.ssafy.getsbee.domain.directory.service.DirectoryService;
@@ -12,14 +12,13 @@ import com.ssafy.getsbee.domain.member.repository.MemberRepository;
 import com.ssafy.getsbee.domain.member.service.MemberService;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.util.JwtUtil;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.google.api.client.json.webtoken.JsonWebToken.*;
+import static com.ssafy.getsbee.domain.member.entity.Provider.*;
 import static com.ssafy.getsbee.global.consts.StaticConst.*;
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
 
@@ -36,26 +35,33 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public AccessTokenResponse login(LoginRequest request, HttpServletResponse response) {
-        Payload payload = googleOidcTokenVerifier.verify(request.idToken());
+    public TokenResponse login(LoginRequest request) {
+        Payload payload = validateIdToken(request);
         Member member = memberRepository.findByProviderAndEmail(request.provider(), payload.get(CLAIM_EMAIL).toString())
                 .orElseGet(() -> signup(request.provider(), payload));
         member.updateInfo(payload);
-        return createTokens(member, response);
+        return createTokens(member);
     }
 
     @Override
     @Transactional
-    public AccessTokenResponse reissueToken(TokenRequest request, HttpServletResponse response, String refreshToken) {
-        Authentication authentication = validateTokens(request.accessToken(), refreshToken);
-        return createTokens(memberService.findById(Long.parseLong(authentication.getName())), response);
+    public TokenResponse reissueToken(TokenRequest request) {
+        Authentication authentication = validateTokens(request.accessToken(), request.refreshToken());
+        return createTokens(memberService.findById(Long.parseLong(authentication.getName())));
     }
 
     @Override
     @Transactional
-    public void logout(TokenRequest request, String refreshToken) {
-        RefreshToken existedRefreshToken = findRefreshToken(refreshToken);
-        refreshTokenRedisRepository.delete(existedRefreshToken);
+    public void logout(TokenRequest request) {
+        refreshTokenRedisRepository.findById(request.refreshToken())
+                .ifPresent(refreshTokenRedisRepository::delete);
+    }
+
+    private Payload validateIdToken(LoginRequest request) {
+        if (request.provider() == GOOGLE) {
+            return googleOidcTokenVerifier.verify(request.idToken());
+        }
+        throw new BadRequestException(INVALID_INPUT_VALUE);
     }
 
     private Member signup(Provider provider, Payload payload) {
@@ -64,17 +70,9 @@ public class AuthServiceImpl implements AuthService {
         return member;
     }
 
-    private AccessTokenResponse createTokens(Member member, HttpServletResponse response) {
+    private TokenResponse createTokens(Member member) {
         RefreshToken refreshToken = refreshTokenRedisRepository.save(jwtUtil.getRefreshToken(member.getId()));
-        response.addCookie(createRefreshTokenCookie(refreshToken.getToken()));
-        return AccessTokenResponse.of(BEARER_TYPE, jwtUtil.generateAccessToken(member));
-    }
-
-    private Cookie createRefreshTokenCookie(String refreshToken) {
-        Cookie cookie = new Cookie(REFRESH_TOKEN, refreshToken);
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
-        return cookie;
+        return TokenResponse.of(BEARER_TYPE, jwtUtil.generateAccessToken(member), refreshToken.getToken());
     }
 
     private Authentication validateTokens(String accessToken, String refreshToken) {
