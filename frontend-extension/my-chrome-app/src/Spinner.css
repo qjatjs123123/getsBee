@@ -1,14 +1,20 @@
 .spinner {
     border: 8px solid rgba(0, 0, 0, 0.1); /* 경계 색상 */
     border-radius: 50%;
-    border-top: 8px solid #3498db; /* 회전하는 부분 색상 */
+    border-top: 8px solid #FFE285; /* 회전하는 부분 색상 */
     width: 50px;
     height: 50px;
     animation: spin 1s linear infinite; /* 애니메이션 */
     margin: auto; /* 중앙 정렬 */
     display: block; /* 블록 레벨 요소 */
   }
-  
+  .spinnerContainer {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+  }
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }

@@ -1,9 +1,18 @@
 .content-container {
     flex:7;
-    overflow: hidden;
+    overflow:auto;
     padding: 20px 0px;
 }
-.buttonDiv{
+.buttonDiv {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.error-container {
     height: 100%;
     width: 100%;
     display: flex;
@@ -22,3 +31,18 @@
     cursor: pointer;
     margin-top: 10px;
 }
+
+.content-container::-webkit-scrollbar {
+    width: 5px;
+    
+  }
+
+  .container::-webkit-scrollbar-thumb {
+    background-color: #FFE285;
+    border-radius: 10px;
+  }
+
+  .error-message {
+    color : crimson;
+    font-size: 18px;
+  }
