@@ -57,15 +57,15 @@ const GoogleOAuth: FC = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          withCredentials: true, // 쿠키를 포함하기 위해 필요
         },
       );
 
       if (response.data.isSuccess) {
         // 로컬 스토리지에 액세스 토큰을 저장
         localStorage.setItem('accessToken', response.data.data.accessToken);
-        console.log('Access Token Expires In:', response.data.data.accessTokenExpiresIn);
-        console.log('Refresh Token has been set in the browser cookies');
+        console.log(response);
+        console.log('Access Token:', response.data.data.accessToken);
+        console.log('Refresh Token:', response.data.data.refreshToken);
       } else {
         console.error('Authentication failed:', response.data.message);
       }

@@ -22,11 +22,11 @@ const Menu = () => {
     <div className="flex md:flex-row items-stretch h-80">
       <div className="flex flex-col items-center justify-center py-8 px-4 md:px-8 bg-[#FFF6E3] w-full md:w-2/5 rounded-l-lg">
         <img src={yellowBeeIcon} alt="Yellow Bee Icon" className="w-40 mb-8" />
-        <h2 className="text-2xl font-bold text-gray-800 text-center">환영합니다!</h2>
+        <h2 className="text-2xl font-bold text-[#8D8D8D] text-center">환영합니다!</h2>
       </div>
 
       <div className="flex flex-col items-center justify-center py-8 px-4 md:px-8 bg-white w-full md:w-3/5 rounded-r-lg">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-8">소셜 계정으로 로그인</h2>
+        <h2 className="text-2xl font-semibold text-[#8D8D8D] mb-8">소셜 계정으로 로그인</h2>
         <GoogleOAuth w-full max-w-xs />
       </div>
     </div>
