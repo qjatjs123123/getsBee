@@ -1,32 +1,47 @@
 /* eslint-disable no-undef */
-window.addEventListener("load", () => {
+window.addEventListener("load", async () => {
+  chrome.storage.local.set({ resultArr: [] }, () => {});
+
+  function highlightRecommend(resultArr, contentArr) {
+    console.log(contentArr, resultArr);
+  }
+
   function extractTextNodes(node) {
     let textNodes = [];
 
     // 재귀적으로 모든 자식 노드를 탐색합니다
-    function traverse(currentNode) {
+    function traverse(currentNode, insideTargetTag) {
       // 텍스트 노드인 경우
       if (currentNode.nodeType === Node.TEXT_NODE) {
         const textContent = currentNode.textContent.trim();
-        if (textContent) {
-          if (textContent.length > 20 && textContent.length < 200)
+        if (textContent && insideTargetTag) {
+          if (textContent.length > 20 && textContent.length < 200) {
             textNodes.push(textContent);
+          }
         }
       }
 
       // 자식 노드를 재귀적으로 탐색합니다
       if (currentNode.nodeType === Node.ELEMENT_NODE) {
-        Array.from(currentNode.childNodes).forEach((child) => traverse(child));
+        const tagName = currentNode.tagName.toLowerCase();
+        const isTargetTag =
+          tagName === "p" || tagName === "span" || tagName === "div";
+
+        // 현재 태그가 목표 태그인지 확인
+        Array.from(currentNode.childNodes).forEach((child) =>
+          traverse(child, insideTargetTag || isTargetTag)
+        );
       }
     }
 
-    traverse(node);
+    traverse(node, false);
     return textNodes;
   }
 
   // 예: 페이지의 텍스트 내용을 가져와 Background Script에 전송
 
   function sendPageContent() {
+    console.log(extractTextNodes(document.body));
     chrome.runtime.sendMessage({
       pageContentArr: extractTextNodes(document.body),
       hostName: getDomain(),
@@ -40,10 +55,8 @@ window.addEventListener("load", () => {
     if (message.type === "TAB_CHANGED") {
       // 탭이 변경되면 페이지 내용을 다시 전송
       sendPageContent();
-    }
-
-    if (message.recommendArr) {
-      console.log(message.recommendArr);
+    } else if (message.type === "RECOMMEND_CLICKED") {
+      highlightRecommend(message.resultArr, message.contentArr);
     }
   });
 

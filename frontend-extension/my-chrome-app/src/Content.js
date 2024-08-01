@@ -7,6 +7,7 @@ import Item from "./Item";
 
 function Content() {
   const [content, setContent] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [result, setResult] = useState([]);
   const [loading, setLoading] = useState(false); // 로딩 상태 초기값을 false로 설정
   const [error, setError] = useState(false);
@@ -20,9 +21,12 @@ function Content() {
         setContent(result.pageContentArr);
       }
     });
+
     chrome.storage.local.get(["resultArr"], (result) => {
-      if (result.resultArr.length !== 0) {
-        setResult(result.resultArr);
+      const tmp = result.resultArr;
+
+      if (tmp.length !== 0) {
+        setResult(tmp);
       }
     });
   }, []);
@@ -30,16 +34,50 @@ function Content() {
   // GPT-3 모델 실행 함수
   async function run(model) {
     try {
-      let prompt =
-        "이 배열에서 해당 중요한 문장을 추천해줘, 응답해줄 때 인덱스로 이루어진 배열만을 보내고 나머지는 절대 보내지마 그리고 반드시 최대 8개까지 보내 또한 본문과 관련된 내용을 추천해주어야 됨, array를 문자열로 변환해서 응답해줘, 예를 들어서 [0, 1, 2]를 문자열로 응답해줘";
-      prompt += JSON.stringify(content);
+      let prompt = `
+      다음 문장 배열에서 중요하다고 생각되는 문장들의 인덱스를 추천해 주세요. 다음 조건을 만족해야 합니다:
+      1. 결과는 인덱스 번호로만 이루어진 배열 형태로 제공되어야 하며, 본문 내용은 포함하지 마세요.
+      2. 최대 8개의 인덱스를 포함해야 합니다.
+      3. 응답은 문자열 형식이어야 하며, 배열의 형태로 문자열로 변환하여 제공해 주세요. 예를 들어, [0, 1, 2] 형식으로 응답해 주세요.
+      4. 선택된 인덱스는 본문 내용과 관련이 있어야 합니다.
+      
+      본문 배열 예시:
+      [1: "문장 A", 2: "문장 B", 3: "문장 C", 4: "문장 D", "문장 E"]
+      
+      중요한 문장들의 인덱스가 1, 3, 2번이라면, 응답은 다음과 같아야 합니다:
+      [1, 3, 2]
+      `;
+      // 객체를 생성하기 위해 reduce 사용
+      if (content.length === 0) {
+        setLoading(false);
+        setErrorMessage("본문에 내용이 부족합니다.");
+        setError(true);
+        return;
+      }
+
+      const result1 = content.reduce((acc, item, index) => {
+        acc[index] = item;
+        return acc;
+      }, {});
+      prompt += JSON.stringify(result1);
+
       const result = await model.generateContent(prompt);
       const response = await result.response;
       const text = await response.text();
-      setResult(JSON.parse(text));
-
-      chrome.storage.local.set({ resultArr: JSON.parse(text) }, () => {});
+      let jsonData = "";
+      try {
+        jsonData = text.split("```")[1].split("json")[1];
+      } catch (er) {
+        jsonData = text;
+      }
+      setResult(JSON.parse(jsonData));
+      chrome.runtime.sendMessage({
+        type: "RECOMMEND_CLICKED",
+        resultArr: JSON.parse(jsonData),
+        contentArr: content,
+      });
     } catch (error) {
+      setErrorMessage("본문이 너무 깁니다.");
       setError(true);
     }
     setLoading(false); // 응답을 받은 후 로딩 상태를 false로 설정
@@ -63,7 +101,7 @@ function Content() {
     if (error) {
       return (
         <div className="error-container">
-          <div className="error-message">에러가 발생했습니다.</div>
+          <div className="error-message">{errorMessage}</div>
         </div>
       );
     }
@@ -78,10 +116,8 @@ function Content() {
         </div>
       );
     }
-
-    return result.map((idx) => (
-      <Item key={idx} content={content[Number(idx)]} />
-    ));
+    console.log(result[0], content);
+    return result.map((idx) => <Item key={idx} content={content[idx]} />);
   };
 
   return (
