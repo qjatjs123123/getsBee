@@ -13,11 +13,13 @@ public class FollowServiceImpl implements FollowService{
 
     private final FollowRepository followRepository;
 
-    void createFollow(Member member, Directory directory) {
+    @Override
+    public void createFollow(Member member, Directory directory) {
         followRepository.createFollow(member, directory);
     }
 
-    void DeleteFollow(Follow follow) {
+    @Override
+    public void DeleteFollow(Follow follow) {
         followRepository.delete(follow);
     }
 }
