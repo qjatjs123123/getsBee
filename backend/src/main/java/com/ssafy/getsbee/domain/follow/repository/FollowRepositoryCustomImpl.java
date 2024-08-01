@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
+import static com.ssafy.getsbee.domain.directory.entity.QDirectory.*;
 import static com.ssafy.getsbee.domain.follow.entity.QFollow.follow;
 
 @Repository
@@ -41,7 +44,6 @@ public class FollowRepositoryCustomImpl implements FollowRepositoryCustom{
                 .fetchOne();
     }
 
-
     @Override
     public Long countMemberFollowings(Member member) { //멤버가 팔로잉중인 디렉토리 수
         return queryFactory
@@ -58,5 +60,15 @@ public class FollowRepositoryCustomImpl implements FollowRepositoryCustom{
                 .from(follow)
                 .where(follow.followedDirectory.eq(directory))
                 .fetchOne();
+    }
+
+    @Override
+    public List<Directory> findFollowingDirectories(Member member) {
+        return queryFactory
+                .select(directory)
+                .from(follow)
+                .join(follow.followedDirectory, directory).fetchJoin()
+                .where(follow.followingMember.eq(member))
+                .fetch();
     }
 }

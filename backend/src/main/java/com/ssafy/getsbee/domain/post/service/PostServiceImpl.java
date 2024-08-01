@@ -4,6 +4,7 @@ import com.ssafy.getsbee.domain.bookmark.entity.Bookmark;
 import com.ssafy.getsbee.domain.bookmark.repository.BookmarkRepository;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
+import com.ssafy.getsbee.domain.follow.repository.FollowRepository;
 import com.ssafy.getsbee.domain.highlight.entity.Highlight;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
 import com.ssafy.getsbee.domain.highlight.repository.HighlightRepository;
@@ -17,6 +18,8 @@ import com.ssafy.getsbee.domain.post.dto.response.PostResponse;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.domain.post.repository.PostRepository;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
+import com.ssafy.getsbee.global.error.exception.NotFoundException;
+import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -37,6 +40,7 @@ public class PostServiceImpl implements PostService {
     private final DirectoryRepository directoryRepository;
     private final BookmarkRepository bookmarkRepository;
     private final HighlightRepository highlightRepository;
+    private final FollowRepository followRepository;
 
     private static final Integer DEFAULT_PAGE_SIZE = 20;
     private final MemberRepository memberRepository;
@@ -144,7 +148,7 @@ public class PostServiceImpl implements PostService {
         }else if(postListRequest.memberId() != null){
             return showPostListByMemberId(postListRequest.memberId(), pageable);
         }else if(postListRequest.following()!=null){
-
+            return followingPostListByMemberId(SecurityUtil.getCurrentMemberId(), pageable);
         }else if(postListRequest.query()!=null){
             //다현이 검색 로직
         }else{
@@ -153,7 +157,14 @@ public class PostServiceImpl implements PostService {
         return null;
     }
 
-    public Page<PostListResponse> showPostListByMemberId(Long memberId, Pageable pageable) {
+    private Page<PostListResponse> followingPostListByMemberId(Long memberId, Pageable pageable) {
+        Member member = memberService.findById(memberId);
+        List<Directory> directories = followRepository.findFollowingDirectories(member);
+        Page<Post> posts = postRepository.findAllByDirectories(directories, pageable);
+        return makePostListResponseWithPosts(posts);
+    }
+
+    private Page<PostListResponse> showPostListByMemberId(Long memberId, Pageable pageable) {
         Page<Post> posts = postRepository.findAllByMemberId(memberId, pageable);
         return makePostListResponseWithPosts(posts);
     }
@@ -172,9 +183,8 @@ public class PostServiceImpl implements PostService {
                             .collect(Collectors.toList());
 
                     Member member = post.getMember();
-                    Directory directory = post.getDirectory(); // or fetch from directoryRepository if necessary
+                    Directory directory = post.getDirectory();
 
-                    // Create PostListResponse object using builders
                     PostListResponse.Post postInfo = PostListResponse.Post.builder()
                             .postId(post.getId())
                             .title(post.getTitle())
@@ -207,9 +217,9 @@ public class PostServiceImpl implements PostService {
                             .build();
 
                     PostListResponse.Info info = PostListResponse.Info.builder()
-                            .isLikedByCurrentUser(null) // implement this logic as needed
-                            .isBookmarkedByCurrentUser(null) // implement this logic as needed
-                            .relatedFeedNumber(null) // implement this logic as needed
+                            .isLikedByCurrentUser(false) // 구현 예정
+                            .isBookmarkedByCurrentUser(checkIfBookmarkedByCurrentUser(post))
+                            .relatedFeedNumber(null) // 구현 예정
                             .build();
 
                     return PostListResponse.builder()
@@ -224,16 +234,16 @@ public class PostServiceImpl implements PostService {
         return new PageImpl<>(postListResponses, posts.getPageable(), posts.getTotalElements());
     }
 
-    // 현재 사용자가 게시물을 좋아요 했는지 확인하는 예시 메서드
     private boolean checkIfLikedByCurrentUser(Post post) {
-        // 실제 로직 구현 필요
+        // 로직 구현 필요
         return false;
     }
 
-    // 현재 사용자가 게시물을 북마크 했는지 확인하는 예시 메서드
     private boolean checkIfBookmarkedByCurrentUser(Post post) {
-        // 실제 로직 구현 필요
-        return false;
+        Member currentMember = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .orElseThrow(() -> new NotFoundException(MEMBER_NOT_FOUND));
+
+        return bookmarkRepository.findByPostAndMember(post, currentMember).isPresent();
     }
 
 

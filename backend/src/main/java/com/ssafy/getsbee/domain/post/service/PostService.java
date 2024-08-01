@@ -5,7 +5,6 @@ import com.ssafy.getsbee.domain.post.dto.request.UpdatePostRequest;
 import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostResponse;
 import org.springframework.data.domain.Page;
-import java.util.List;
 
 public interface PostService {
 
