@@ -8,10 +8,9 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
-import static com.ssafy.getsbee.domain.directory.entity.QDirectory.*;
+import static com.ssafy.getsbee.domain.directory.entity.QDirectory.directory;
 import static com.ssafy.getsbee.domain.follow.entity.QFollow.follow;
 
 @Repository
@@ -71,4 +70,5 @@ public class FollowRepositoryCustomImpl implements FollowRepositoryCustom{
                 .where(follow.followingMember.eq(member))
                 .fetch();
     }
+
 }

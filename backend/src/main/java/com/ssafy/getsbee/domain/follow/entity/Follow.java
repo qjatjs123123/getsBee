@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import static jakarta.persistence.FetchType.*;
 
@@ -17,7 +17,7 @@ import static jakarta.persistence.FetchType.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE follow SET is_deleted = true WHERE follow_id = ?")
-@Where(clause = "is_deleted = false")
+@SQLRestriction("is_deleted = false")
 public class Follow extends BaseTimeEntity {
 
     @Id
