@@ -1,11 +1,14 @@
 package com.ssafy.getsbee.domain.post.controller;
 
+import com.ssafy.getsbee.domain.post.dto.request.PostListRequest;
 import com.ssafy.getsbee.domain.post.dto.request.UpdatePostRequest;
+import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostResponse;
 import com.ssafy.getsbee.domain.post.service.PostService;
 import com.ssafy.getsbee.global.util.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -49,5 +52,10 @@ public class PostController {
     @DeleteMapping("/{post-id}/likes")
     public void unlikePost(@PathVariable("post-id") Long postId){
         postService.likePost(postId, SecurityUtil.getCurrentMemberId());
+    }
+
+    @GetMapping("/")
+    public Page<PostListResponse> showPostList(PostListRequest postListRequest){
+        return postService.showPostList(postListRequest);
     }
 }

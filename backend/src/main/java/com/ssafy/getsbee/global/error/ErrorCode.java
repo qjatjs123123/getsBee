@@ -38,6 +38,7 @@ public enum ErrorCode {
     /** Post */
     DUPLICATE_POST(BAD_REQUEST, "POST000", "이미 존재하는 포스트 입니다."),
     POST_NOT_FOUND(BAD_REQUEST, "POST001", "해당 포스트는 존재하지 않습니다."),
+    INVALID_POST_REQUEST(BAD_REQUEST, "POST002", "잘못된 포스트 리스트 요청입니다."),
 
     /** Highlight */
     DUPLICATE_HIGHLIGHT(BAD_REQUEST, "HIGHLIGHT000", "이미 존재하는 하이라이트 입니다."),

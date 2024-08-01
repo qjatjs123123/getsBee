@@ -105,8 +105,6 @@ public class DirectoryServiceImpl implements DirectoryService {
     }
 
     private List<DirectoryResponse> assembleDirectories(List<Directory> directories) {
-        System.out.println("assemble directories: " + directories);
-
         Map<Long, DirectoryResponse> directoryMap = new HashMap<>();
 
         for (Directory directory : directories) {
