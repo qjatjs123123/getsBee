@@ -69,6 +69,10 @@ public class Directory extends BaseTimeEntity {
         this.isDeleted = isDeleted;
     }
 
+    public void changeName(String newName) {
+        this.name = newName;
+    }
+
     public void changeDirectoryInfo(String name, int depth, Directory prevDirectory, Directory nextDirectory,
                                     Directory parentDirectory) {
         this.name = name;

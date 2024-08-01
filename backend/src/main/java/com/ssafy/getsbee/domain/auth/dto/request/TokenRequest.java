@@ -1,6 +1,11 @@
 package com.ssafy.getsbee.domain.auth.dto.request;
 
+import jakarta.validation.constraints.NotNull;
+
 public record TokenRequest(
-        String accessToken
+        @NotNull
+        String accessToken,
+        @NotNull
+        String refreshToken
 ) {
 }
