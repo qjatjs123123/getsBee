@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(classes = GetsbeeApplication.class)
 @Transactional
-@ActiveProfiles("local")
+//@ActiveProfiles("local")
 class PostServiceImplTest {
 
     @Autowired
@@ -53,10 +53,11 @@ class PostServiceImplTest {
     private HighlightRepository highlightRepository;
 
     private Directory temporaryDirectory;
+    private Member member;
 
     @BeforeEach
     void setUp() {
-        Member member = Member.builder()
+        member = Member.builder()
                 .email("example@example.com")
                 .provider(Provider.GOOGLE)
                 .authority(Authority.ROLE_USER)
@@ -109,37 +110,31 @@ class PostServiceImplTest {
     @Test
     void showPostListByDirectoryId() {
         System.out.println("---------showPostListByDirectoryId---------");
-        // Create Pageable object for pagination
-        Pageable pageable = PageRequest.of(0, 10);
-
-        // Create a PostListRequest for the temporary directory
         PostListRequest postListRequest = PostListRequest.builder()
                 .directoryId(temporaryDirectory.getId())
                 .page(0)
                 .build();
 
-        // Fetch the post list responses for the given directory
         Page<PostListResponse> postListResponses = postService.showPostList(postListRequest);
 
-        // Assertions to verify the fetched data
         assertNotNull(postListResponses, "Post list should not be null");
         assertEquals(2, postListResponses.getTotalElements(), "Total number of posts should be 2");
 
-        // Validate details of the first post
         PostListResponse post1 = postListResponses.stream()
                 .filter(p -> p.post().title().equals("Post 1"))
                 .findFirst()
                 .orElse(null);
+
         assertNotNull(post1, "Post 1 should not be null");
         assertEquals("Post 1", post1.post().title(), "Post 1 title should match");
         assertEquals("https://example.com/post1", post1.post().url(), "Post 1 URL should match");
         assertEquals("AAAAAA", post1.highlight().firstHighlightColor(), "Post 1 first highlight color should match");
 
-        // Validate details of the second post
         PostListResponse post2 = postListResponses.stream()
                 .filter(p -> p.post().title().equals("Post 2"))
                 .findFirst()
                 .orElse(null);
+
         assertNotNull(post2, "Post 2 should not be null");
         assertEquals("Post 2", post2.post().title(), "Post 2 title should match");
         assertEquals("https://example.com/post2", post2.post().url(), "Post 2 URL should match");

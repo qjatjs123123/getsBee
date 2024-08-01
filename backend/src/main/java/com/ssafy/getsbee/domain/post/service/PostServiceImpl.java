@@ -18,10 +18,7 @@ import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.domain.post.repository.PostRepository;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -136,11 +133,11 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<PostListResponse> showPostList(PostListRequest postListRequest) {
-        if(postListRequest.page()==null){
+        if (postListRequest.page() == null) {
             throw new BadRequestException(INVALID_POST_REQUEST);
         }
         int size = postListRequest.size() == null ? DEFAULT_PAGE_SIZE : postListRequest.size();
-        Pageable pageable = PageRequest.of(postListRequest.page(), postListRequest.page()+size);
+        Pageable pageable = PageRequest.of(postListRequest.page(), size, Sort.by(Sort.Direction.DESC,"createdAt"));
 
         if(postListRequest.directoryId() != null){
             return showPostListByDirectoryId(postListRequest.directoryId(), pageable);
