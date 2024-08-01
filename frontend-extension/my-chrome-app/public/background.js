@@ -6,9 +6,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // eslint-disable-next-line no-undef
     chrome.storage.local.set(
       { pageContentArr: message.pageContentArr, hostName: message.hostName },
-      () => {
-        console.log(message.hostName);
-      }
+      () => {}
     );
   }
+});
+
+// background.js (백그라운드 스크립트)
+chrome.tabs.onActivated.addListener((activeInfo) => {
+  chrome.storage.local.set({ resultArr: [] }, () => {});
+  chrome.tabs.sendMessage(activeInfo.tabId, {
+    type: "TAB_CHANGED",
+    tabId: activeInfo.tabId,
+  });
 });

@@ -5,6 +5,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 5px 0px;
 }
 .header-container .getsbee-icon {
     flex: 1;

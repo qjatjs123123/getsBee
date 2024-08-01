@@ -9,7 +9,7 @@ window.addEventListener("load", () => {
       if (currentNode.nodeType === Node.TEXT_NODE) {
         const textContent = currentNode.textContent.trim();
         if (textContent) {
-          if (textContent.length > 20 && textContent.length < 100)
+          if (textContent.length > 20 && textContent.length < 200)
             textNodes.push(textContent);
         }
       }
@@ -26,10 +26,25 @@ window.addEventListener("load", () => {
 
   // 예: 페이지의 텍스트 내용을 가져와 Background Script에 전송
 
-  // 데이터 전송
-  chrome.runtime.sendMessage({
-    pageContentArr: extractTextNodes(document.body),
-    hostName: getDomain(),
+  function sendPageContent() {
+    chrome.runtime.sendMessage({
+      pageContentArr: extractTextNodes(document.body),
+      hostName: getDomain(),
+    });
+  }
+
+  // 페이지 로드 시 데이터 전송
+  sendPageContent();
+
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === "TAB_CHANGED") {
+      // 탭이 변경되면 페이지 내용을 다시 전송
+      sendPageContent();
+    }
+
+    if (message.recommendArr) {
+      console.log(message.recommendArr);
+    }
   });
 
   loadFontAwesome();
