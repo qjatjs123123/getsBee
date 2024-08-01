@@ -61,7 +61,8 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+//    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Highlight> highlights;
 
     @ManyToOne(fetch = LAZY)

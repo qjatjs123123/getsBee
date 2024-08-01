@@ -12,6 +12,7 @@ import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.service.MemberService;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.domain.post.repository.PostRepository;
+import com.ssafy.getsbee.domain.post.service.PostElasticService;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.error.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
@@ -24,14 +25,11 @@ import static com.ssafy.getsbee.global.error.ErrorCode.*;
 @RequiredArgsConstructor
 public class HighlightServiceImpl implements HighlightService {
 
-    // 의존성 주입
-    // 1. 생성자 주입 : @RequiredArgsConstructor 생성자 -> 한번 생성하면 그 뒤로 수정하지 않기 때문
-    // 2. 필드 주입 : @Autowired 로 private final service 명시
-    // 3. 수정자 주입 : setMemberService set 메서드로 주입
     private final HighlightRepository highlightRepository;
     private final MemberService memberService;
     private final PostRepository postRepository;
     private final DirectoryRepository directoryRepository;
+    private final PostElasticService postElasticService;
 
     @Override
     @Transactional
@@ -48,6 +46,8 @@ public class HighlightServiceImpl implements HighlightService {
 
         Highlight highlight = request.toHighlightEntity(post);
         highlightRepository.save(highlight);
+
+        postElasticService.savePostDocument(highlight);
         return HighlightResponse.of(highlight.getId());
     }
 
@@ -61,8 +61,10 @@ public class HighlightServiceImpl implements HighlightService {
         if (highlight.getPost().getMember() != member) {
             throw new ForbiddenException(_FORBIDDEN);
         }
+
         Post post = highlight.getPost();
-        highlightRepository.deleteById(highlightId);
+        postElasticService.deleteHighlightDocument(highlight);
+        highlightRepository.delete(highlight);
 
         if(post.getHighlights().isEmpty() && post.getNote().isEmpty()){
             postRepository.delete(post);

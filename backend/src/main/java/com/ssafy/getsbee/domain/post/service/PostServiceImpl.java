@@ -31,6 +31,7 @@ public class PostServiceImpl implements PostService {
     private final DirectoryRepository directoryRepository;
     private final BookmarkRepository bookmarkRepository;
     private final HighlightRepository highlightRepository;
+    private final PostElasticService postElasticService;
 
     @Override
     @Transactional
@@ -41,6 +42,8 @@ public class PostServiceImpl implements PostService {
         if (isNotOwner(post.getMember(), member)) {
             throw new BadRequestException(_FORBIDDEN);
         }
+
+        postElasticService.deletePostDocument(post);
         postRepository.delete(post);
     }
 
@@ -98,7 +101,7 @@ public class PostServiceImpl implements PostService {
                         directoryRepository.findBookmarkDirectoryByMember(member))));
 
         if (!bookmark.getIsDeleted()) {
-            bookmark.changeBookmark();
+            bookmark.addBookmark();
         }
     }
 
@@ -109,7 +112,7 @@ public class PostServiceImpl implements PostService {
 
         Bookmark bookmark = bookmarkRepository.findByPostAndMember(post, member)
                 .orElseThrow(() -> new BadRequestException(BOOKMARK_NOT_FOUND));
-        bookmark.changeBookmark();
+        bookmark.removeBookmark();
     }
 
     @Override

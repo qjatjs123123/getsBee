@@ -55,10 +55,19 @@ public enum ErrorCode {
 
     /** Bookmark */
     DUPLICATE_BOOKMARK(BAD_REQUEST, "BOOKMARK000", "이미 존재하는 북마크 입니다."),
-    BOOKMARK_NOT_FOUND(BAD_REQUEST, "BOOKMARK001", "해당 하이라이트는 존재하지 않습니다.");
+    BOOKMARK_NOT_FOUND(BAD_REQUEST, "BOOKMARK001", "해당 하이라이트는 존재하지 않습니다."),
     /** Like */
 
     /** Follow */
+
+
+    /** PostDocument */
+    DUPLICATE_POSTDOCUMENT(BAD_REQUEST, "POSTDOCUMENT000", "이미 존재하는 포스트 도큐먼트 입니다."),
+    POSTDOCUMENT_NOT_FOUND(BAD_REQUEST, "POSTDOCUMENT001", "해당 포스트 도큐먼트는 존재하지 않습니다."),
+
+    /** highlightDocument */
+    DUPLICATE_HIGHLIGHTDOCUMENT(BAD_REQUEST, "HIGHLIGHTDOCUMENT000", "이미 존재하는 하이라이트 도규먼트 입니다."),
+    HIGHLIGHTDOCUMENT_NOT_FOUND(BAD_REQUEST, "HIGHLIGHTDOCUMENT001", "해당 하이라이트 도큐먼트는 존재하지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
