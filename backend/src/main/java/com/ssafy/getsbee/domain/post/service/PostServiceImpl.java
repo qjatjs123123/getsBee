@@ -18,6 +18,7 @@ import com.ssafy.getsbee.domain.post.dto.response.PostResponse;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.domain.post.repository.PostRepository;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
+import com.ssafy.getsbee.global.error.exception.NotFoundException;
 import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -216,8 +217,8 @@ public class PostServiceImpl implements PostService {
                             .build();
 
                     PostListResponse.Info info = PostListResponse.Info.builder()
-                            .isLikedByCurrentUser(null) // 구현 예정
-                            .isBookmarkedByCurrentUser(null) // 구현 예정
+                            .isLikedByCurrentUser(false) // 구현 예정
+                            .isBookmarkedByCurrentUser(checkIfBookmarkedByCurrentUser(post))
                             .relatedFeedNumber(null) // 구현 예정
                             .build();
 
@@ -239,8 +240,10 @@ public class PostServiceImpl implements PostService {
     }
 
     private boolean checkIfBookmarkedByCurrentUser(Post post) {
-        // 로직 구현 필요
-        return false;
+        Member currentMember = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .orElseThrow(() -> new NotFoundException(MEMBER_NOT_FOUND));
+
+        return bookmarkRepository.findByPostAndMember(post, currentMember).isPresent();
     }
 
 
