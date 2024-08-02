@@ -7,9 +7,10 @@ import com.ssafy.getsbee.domain.post.repository.PostElasticRepository;
 import com.ssafy.getsbee.global.error.ErrorCode;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.stereotype.Service;
 
@@ -60,39 +61,40 @@ public class PostElasticServiceImpl implements PostElasticService {
     }
 
     @Override
-    public List<PostDocument> findByKeyword(String keyword) {
+    public List<SearchHit<PostDocument>> findByKeyword(String keyword, Pageable pageable) {
 
-//        Query query = NativeQuery.builder()
-//                .withQuery(q -> q
-//                        .matchAll(ma -> ma))  // 모든 문서를 매칭하는 쿼리
-//                .withFilter(q -> q
-//                        .bool(b -> b
-//                                .must(m -> m
-//                                        .moreLikeThis(ml -> ml.fields("title", "highlights.content")
-//                                                .like(l ->l.text(keyword))  // 키워드 분석기 설정
-//                                                .minTermFreq(1)    // 최소 용어 빈도 설정
-//                                                .minDocFreq(1)     // 최소 문서 빈도 설정
-//                                        )
-//                                )
-//                                .filter(f -> f
-//                                        .bool(bf -> bf
-//                                                .must(mt -> mt
-//                                                        .term(t -> t.field("isPublic").value(true))  // isPublic이 true인 문서 필터링
-//                                                )
-//                                                .must(mt -> mt
-//                                                        .term(t -> t.field("isDeleted").value(false))  // isDeleted가 false인 문서 필터링
-//                                                )
-//                                        )
-//                                )
-//                        )
-//                )
-//                .withPageable(PageRequest.of(1, 10))  // 페이지 설정: 1페이지, 페이지당 10개 문서
-//                .build();
-//        ElasticsearchAggregation aggregations = (ElasticsearchAggregation) operations.search(query, PostDocument.class, index);
-//        return operations.search(query, PostDocument.class, index);
+        NativeQuery query = NativeQuery.builder()
+                .withQuery(q -> q
+                        .moreLikeThis(mlt -> mlt
+                                .fields("title", "highlights.content")
+                                .like(l -> l.text(keyword))
+                                .minTermFreq(1)
+                                .minDocFreq(1)
+                        )
+                )
+                .withFilter(q -> q
+                        .bool(b -> b
+                                .must(m -> m
+                                        .term(t -> t.field("isPublic").value(true))
+                                )
+                                .must(m -> m
+                                        .term(t -> t.field("isDeleted").value(false))
+                                )
+                                .must(m -> m
+                                        .term(t -> t.field("highlights.isDeleted").value(false))
+                                )
+                        )
+                )
+                .withPageable(pageable)
+                .build();
 
-        return postElasticRepository.findAllByTitleIsLikeOrHighlightsContentIsLikeAndIsDeletedFalseAndIsPublicTrueAndHighlightsIsDeletedFalse(keyword, keyword);
+        List<SearchHit<PostDocument>> result = operations.search(query, PostDocument.class).stream().toList();
+        System.out.println(result);
+
+        return result;
+
+        //return postElasticRepository.findAllByTitleIsLikeOrHighlightsContentIsLikeAndIsDeletedFalseAndIsPublicTrue(keyword, keyword, pageable);
+        // return postElasticRepository.findAllByTitleIsLikeOrHighlightsContentIsLikeAndIsDeletedFalseAndIsPublicTrueAndHighlightsIsDeletedFalse(keyword, keyword);
     }
-
 
 }

@@ -4,17 +4,21 @@ import com.ssafy.getsbee.domain.post.dto.request.KeywordRequest;
 import com.ssafy.getsbee.domain.post.dto.request.UpdatePostRequest;
 import com.ssafy.getsbee.domain.post.dto.response.PostResponse;
 import com.ssafy.getsbee.domain.post.entity.PostDocument;
-import com.ssafy.getsbee.domain.post.repository.PostElasticRepository;
 import com.ssafy.getsbee.domain.post.service.PostElasticService;
 import com.ssafy.getsbee.domain.post.service.PostService;
 import com.ssafy.getsbee.global.util.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.util.Streamable;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/posts")
@@ -61,7 +65,7 @@ public class PostController {
     }
 
     @PostMapping("/test")
-    public List<PostDocument> test(@RequestBody KeywordRequest request){
-        return postElasticService.findByKeyword(request.keyword());
+    public List<SearchHit<PostDocument>> test(@RequestBody KeywordRequest request){
+        return postElasticService.findByKeyword(request.keyword(), PageRequest.of(request.pageNumber(), request.pageSize()));
     }
 }
