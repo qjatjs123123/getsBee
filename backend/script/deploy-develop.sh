@@ -32,7 +32,7 @@ fi
 
 docker container rm getsbee-backend-develop
 
-if docker images | grep -q "hoshogi/getsbee-backend-develop; then
+if docker images | grep -q "hoshogi/getsbee-backend-develop"; then
   echo "Removing existing docker image..."
   docker rmi hoshogi/getsbee-backend-develop:latest
 fi
