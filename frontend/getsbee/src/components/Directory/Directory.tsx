@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Badge } from 'primereact/badge';
 
 interface Directory {
   directoryId: number;
@@ -34,8 +33,8 @@ const Directory: React.FC<DirectoryProps> = ({ directory }) => {
   const badge = directory.name === 'Temporary' ? '9' : '';
 
   return (
-    <div className={`pl-${directory.depth * 1} my-1 `}>
-      <div>
+    <div className={`pl-${directory.depth * 1} my-1`}>
+      <div className="flex items-center">
         {directory.children.length > 0 && (
           <i
             className={`pi ${isExpanded ? 'pi-sort-up-fill' : 'pi-sort-down-fill'} text-[#8D8D8D] hover:text-[#07294D] cursor-pointer mr-1`}
@@ -50,12 +49,12 @@ const Directory: React.FC<DirectoryProps> = ({ directory }) => {
           {directory.name}
         </span>
         {badge && (
-          <Badge
-            value={badge}
-            severity="danger" // 뱃지 색상 (danger는 빨간색, primary는 파란색 등)
-            className="ml-3"
-            style={{ fontSize: '14px' }}
-          />
+          <span
+            className="ml-2 w-4 h-4 rounded-full flex items-center justify-center text-bold text-white"
+            style={{ backgroundColor: 'red', fontSize: '10px' }}
+          >
+            {badge}
+          </span>
         )}
       </div>
       {isExpanded && directory.children.length > 0 && (

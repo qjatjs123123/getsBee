@@ -28,3 +28,12 @@
 body {
   font-family: 'Roboto', sans-serif;
 }
+
+/* src/index.css 또는 다른 글로벌 CSS 파일 */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Opera */
+}
