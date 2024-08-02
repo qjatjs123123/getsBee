@@ -23,9 +23,9 @@ echo "Current PID: $CURRENT_PID"
 if [ -z "$CURRENT_PID" ]; then
 	echo "> 현재 구동중인 어플리케이션이 없으므로 종료하지 않습니다."
 else
-	if docker container inspect tomorrow-home-server > /dev/null 2>&1; then
+	if docker container inspect getsbee-backend-develop > /dev/null 2>&1; then
 		echo "Stopping and removing existing docker container..."
-		docker container stop tomorrow-home-server
+		docker container stop getsbee-backend-develop
 		sleep 10
 	fi
 fi
