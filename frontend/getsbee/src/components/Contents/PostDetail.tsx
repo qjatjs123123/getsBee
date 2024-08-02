@@ -1,15 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, KeyboardEvent } from 'react';
 import { Divider } from 'primereact/divider';
 import { InputTextarea } from 'primereact/inputtextarea';
-
+import DirSelection from '../Directory/DirSelection';
 import Highlight from './Highlight';
+import PostUpdate from './PostUpdate';
 import publicIcon from '../../assets/publicIcon.png';
 import privateIcon from '../../assets/privateIcon.png';
 
+interface Highlight {
+  content: string;
+  color: string;
+}
+
+interface Comment {
+  id: string;
+  name: string;
+  comment: string;
+  date: string;
+  avatar: string;
+}
+
+interface Post {
+  title: string;
+  url: string;
+  viewCount: string;
+  likeCount: string;
+  directoryName: string;
+  isPublic: boolean;
+  isLike: boolean;
+  note: string;
+  avatar: string;
+  highlights: Highlight[];
+  comments: Comment[];
+}
+
 function PostDetail() {
   const [value, setValue] = useState<string>('');
-
-  const post = {
+  const [isEditing, setIsEditing] = useState(false);
+  const [post, setPost] = useState<Post>({
     title: 'There are many variations of passages of Lorem Ipsum ',
     url: 'https://www.figma.com/design/6haHr5BJLpFYfi0soGyEYu/',
     viewCount: '3.7k',
@@ -32,17 +60,33 @@ function PostDetail() {
     ],
     comments: [
       {
+        id: '1',
         name: 'Hong Bumsun',
         comment: '좋은 글 잘 보았습니다.',
         date: '2024/07/31 10:27',
         avatar: 'https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png',
       },
     ],
-  };
+  });
 
   const publicClass = post.isPublic ? 'bg-[#DBEAFE] text-[#3B559C]' : 'bg-red-200 text-red-800';
   const publicText = post.isPublic ? 'Public' : 'Private';
   const iconSrc = post.isPublic ? publicIcon : privateIcon;
+
+  const handleUpdateSave = (updatedPost: Post) => {
+    setPost(updatedPost);
+    setIsEditing(false);
+  };
+
+  const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      setIsEditing(true);
+    }
+  };
+
+  if (isEditing) {
+    return <PostUpdate post={post} onSave={handleUpdateSave} onCancel={() => setIsEditing(false)} />;
+  }
 
   return (
     <div style={{ width: '500px', height: 'auto' }}>
@@ -52,6 +96,9 @@ function PostDetail() {
             <img className="flex w-[20px] h-[20px] mr-1" src={iconSrc} alt="statusIcon" />
             {publicText}
           </span>
+        </div>
+        <div className="flex items-center">
+          <DirSelection />
         </div>
       </div>
       <div className="flex mt-3">
@@ -82,7 +129,15 @@ function PostDetail() {
       <div className="flex justify-between items-center mt-3 ml-3">
         <h2 className="text-[18px] font-bold">Highlights</h2>
         <div className="flex">
-          <i className="pi pi-file-edit mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer" title="Edit" />
+          <i
+            className="pi pi-file-edit mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer"
+            title="Edit"
+            onClick={() => setIsEditing(true)}
+            onKeyPress={handleKeyPress}
+            tabIndex={0}
+            role="button"
+            aria-label="Edit"
+          />
           <i className="pi pi-heart mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer" title="Like" />
           <i className="pi pi-share-alt mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer" title="Share" />
           <i className="pi pi-bookmark mr-4 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer" title="Bookmark" />
@@ -90,7 +145,7 @@ function PostDetail() {
       </div>
       <div className="mt-4 ml-6">
         {post.highlights.map((highlight) => (
-          <Highlight text={highlight.content} color={highlight.color} className="mb-4" />
+          <Highlight key={highlight.content} text={highlight.content} color={highlight.color} className="mb-4" />
         ))}
       </div>
       <div className="flex mt-3 ml-3">
@@ -129,9 +184,9 @@ function PostDetail() {
       </div>
       <div className="ml-3">
         {post.comments.map((comment) => (
-          <div className="flex items-start">
-            <img src={comment.avatar} alt="avatar" className="mt-3 w-[30px] h-[30px] rounded-full" />
-            <div className="mt-2 ml-3 flex-1">
+          <div key={comment.id} className="flex items-start mt-3">
+            <img src={comment.avatar} alt="avatar" className="w-[30px] h-[30px] rounded-full" />
+            <div className="ml-3 flex-1">
               <div className="flex items-center">
                 <p className="font-semibold mr-2">{comment.name}</p>
                 <p className="text-[12px]" style={{ color: '#8D8D8D' }}>
