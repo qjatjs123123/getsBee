@@ -5,6 +5,8 @@ import com.ssafy.getsbee.domain.post.dto.request.UpdatePostRequest;
 import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostResponse;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.parameters.P;
 
 public interface PostService {
 
@@ -22,5 +24,5 @@ public interface PostService {
 
     void unlikePost(Long postId, Long memberId);
 
-    Page<PostListResponse> showPostList(PostListRequest postListRequest);
+    Page<PostListResponse> showPostList(PostListRequest postListRequest, Pageable pageable);
 }

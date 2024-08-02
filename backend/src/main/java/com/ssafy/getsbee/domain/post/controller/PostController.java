@@ -9,6 +9,7 @@ import com.ssafy.getsbee.global.util.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -55,7 +56,7 @@ public class PostController {
     }
 
     @GetMapping("/")
-    public Page<PostListResponse> showPostList(PostListRequest postListRequest){
-        return postService.showPostList(postListRequest);
+    public Page<PostListResponse> showPostList(PostListRequest postListRequest, Pageable pageable){
+        return postService.showPostList(postListRequest, pageable);
     }
 }

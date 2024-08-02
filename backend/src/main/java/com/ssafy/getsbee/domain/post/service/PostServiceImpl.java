@@ -136,12 +136,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<PostListResponse> showPostList(PostListRequest postListRequest) {
-        if (postListRequest.page() == null) {
-            throw new BadRequestException(INVALID_POST_REQUEST);
-        }
-        int size = postListRequest.size() == null ? DEFAULT_PAGE_SIZE : postListRequest.size();
-        Pageable pageable = PageRequest.of(postListRequest.page(), size, Sort.by(Sort.Direction.DESC,"createdAt"));
+    public Page<PostListResponse> showPostList(PostListRequest postListRequest, Pageable pageable) {
 
         if(postListRequest.directoryId() != null){
             return showPostListByDirectoryId(postListRequest.directoryId(), pageable);
