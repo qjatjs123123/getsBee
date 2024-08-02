@@ -9,6 +9,7 @@ function insertHighLightAPI(data, colorh) {
 
     insertHighLight(data);
     const highlightRange = createRangeObject(data);
+    console.log(data);
     const textNodes = findTextNodesInRange(highlightRange);
     highlightTextNodes(textNodes, highlightRange, data.color, colorh);
   } catch (error) {

@@ -95,7 +95,6 @@ function findTextNodesInRange(range) {
       node.childNodes.forEach(recurse);
     }
   }
-
   recurse(range.commonAncestorContainer);
   return textNodes.filter((node) => range.intersectsNode(node));
 }

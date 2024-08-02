@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { Avatar } from 'primereact/avatar';
 import logoIcon from '../../assets/logoIcon.png';
 import settingIcon from '../../assets/settingIcon.png';
-import Directory from './Directory';
+import Directory from '../Directory/Directory';
+import '../../index.css';
 
 const SideBar: React.FC = () => {
   const directories = [
@@ -198,7 +199,7 @@ const SideBar: React.FC = () => {
         </div>
         <hr className="w-[80%] mt-5" style={{ borderTop: '1px solid #EDDEEA' }} />
       </div>
-      <div className="mt-3 flexflex-col items-start px-8 overflow-y-auto">
+      <div className="mt-3 flexflex-col items-start px-8 overflow-y-auto scrollbar-hide">
         <div className="text-[20px] font-bold" style={{ color: '#253746' }}>
           {user.name}&apos;s
         </div>

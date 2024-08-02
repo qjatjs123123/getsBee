@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "FrequencyOf",
-  "description": "Counts the number of words in the body text of any webpage",
+  "name": "getsBee",
+  "description": "highlight sentences and share",
   "version": "1.0",
   "action": {
     "default_popup": "index.html",
@@ -10,7 +10,7 @@
   "background": {
     "service_worker": "background.js"
   },
-  "permissions": ["activeTab", "scripting", "storage"],
+  "permissions": ["activeTab", "scripting", "storage", "tabs"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
