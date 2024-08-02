@@ -28,3 +28,8 @@
 body {
   font-family: 'Roboto', sans-serif;
 }
+
+.p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight .p-menuitem-link {
+  background-color: #f3f4f6;
+  color: #374151;
+}
