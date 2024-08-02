@@ -7,10 +7,13 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
-public interface PostElasticRepository extends ElasticsearchRepository<PostDocument, String> {
+public interface PostElasticRepository extends ElasticsearchRepository<PostDocument, Long> {
 
-    Page<PostDocument> findAllByTitleIsLikeOrHighlightsContentIsLikeAndIsDeletedFalseAndIsPublicTrue(String title, String highlightsContent, Pageable pageable);
+    Page<PostDocument> findAllByPostIdLessThanAndAllContentIsLikeOrderByPostIdDesc(Long postId, String keyword, Pageable pageable);
+
+    Optional<PostDocument> findByPostId(Long postId);
 }

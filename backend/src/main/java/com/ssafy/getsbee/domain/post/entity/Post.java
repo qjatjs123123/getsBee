@@ -62,8 +62,7 @@ public class Post extends BaseTimeEntity {
     private Member member;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
-//    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private List<Highlight> highlights;
+    private List<Highlight> highlights = new ArrayList<>();
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "directory_id")
@@ -98,5 +97,13 @@ public class Post extends BaseTimeEntity {
 
     public void changeDirectory(Directory directory) {
         this.directory = directory;
+    }
+
+    public void addHighlight(Highlight highlight) {
+        this.getHighlights().add(highlight);
+    }
+
+    public void deleteHighlight(Highlight highlight) {
+        this.getHighlights().remove(highlight);
     }
 }

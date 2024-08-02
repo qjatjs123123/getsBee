@@ -11,9 +11,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.util.Streamable;
+import org.springframework.data.web.PagedModel;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
@@ -65,7 +67,8 @@ public class PostController {
     }
 
     @PostMapping("/test")
-    public List<SearchHit<PostDocument>> test(@RequestBody KeywordRequest request){
-        return postElasticService.findByKeyword(request.keyword(), PageRequest.of(request.pageNumber(), request.pageSize()));
+    public Page<PostDocument> test(@RequestBody KeywordRequest request, Pageable pageable,
+                                         @RequestParam("postId") Long postId){
+        return postElasticService.findByKeyword(request.keyword(), pageable, postId);
     }
 }

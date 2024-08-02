@@ -47,7 +47,6 @@ logging:
   level:
     org.elasticsearch: DEBUG
     org.springframework.data.elasticsearch.core: DEBUG
-
 ---
 spring:
   config:

@@ -65,6 +65,9 @@ public class PostServiceImpl implements PostService {
                 .collect(Collectors.toList()));
 
         post.updatePost(request.note(), directory, request.isPublic());
+
+        postElasticService.updatePostDocument(post);
+
         postRepository.save(post);
     }
 

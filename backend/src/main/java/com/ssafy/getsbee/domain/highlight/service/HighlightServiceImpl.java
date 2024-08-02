@@ -66,7 +66,7 @@ public class HighlightServiceImpl implements HighlightService {
         postElasticService.deleteHighlightDocument(highlight);
         highlightRepository.delete(highlight);
 
-        if(post.getHighlights().isEmpty() && post.getNote().isEmpty()){
+        if(post.getHighlights() == null && post.getNote()== null){
             postRepository.delete(post);
         }
     }

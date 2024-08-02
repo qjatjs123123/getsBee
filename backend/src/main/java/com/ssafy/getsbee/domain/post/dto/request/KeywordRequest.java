@@ -4,11 +4,11 @@ import jakarta.validation.constraints.NotNull;
 
 public record KeywordRequest (
         @NotNull
-        String keyword,
-
-        @NotNull
-        Integer pageNumber,
-
-        @NotNull
-        Integer pageSize
+        String keyword
+//
+//        @NotNull
+//        Integer pageNumber,
+//
+//        @NotNull
+//        Integer pageSize
 ){}
