@@ -68,7 +68,6 @@ function createRangeObject(rangeData) {
 
   highlightRange.setStart(startNode, rangeData.startOffset);
   highlightRange.setEnd(endNode, rangeData.lastOffset);
-
   return highlightRange;
 }
 

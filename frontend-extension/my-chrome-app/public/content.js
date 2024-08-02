@@ -1,49 +1,82 @@
+let textNodesArr = [];
+let textContents = [];
 /* eslint-disable no-undef */
-window.addEventListener("load", () => {
-  function extractTextNodes(node) {
-    let textNodes = [];
 
-    // 재귀적으로 모든 자식 노드를 탐색합니다
+window.addEventListener("load", () => {
+  chrome.storage.local.set({ resultArr: [] }, () => {});
+  extractTextNodes(getStart());
+
+  function getStart() {
+    if (getDomain() === "n.news.naver.com") {
+      const articles = document.getElementsByTagName("article");
+      return articles.length > 0 ? articles[0] : document.body;
+    }
+    return document.body;
+  }
+
+  function highlightRecommend(resultArr) {
+    for (let i = 0; i < resultArr.length; i++) {
+      const range = textNodesArr[resultArr[i]];
+      dragHighlight(range, YELLOW_COLOR, YELLOW_COLOR_H);
+    }
+  }
+
+  function extractTextNodes(node) {
     function traverse(currentNode) {
-      // 텍스트 노드인 경우
       if (currentNode.nodeType === Node.TEXT_NODE) {
+        const parentElement = currentNode.parentNode;
+        const tagName = parentElement.tagName.toLowerCase();
+
+        const isTargetTag =
+          tagName === "p" ||
+          tagName === "span" ||
+          tagName === "div" ||
+          tagName === "li" ||
+          tagName === "article";
+        if (!isTargetTag) return;
+
         const textContent = currentNode.textContent.trim();
-        if (textContent) {
-          if (textContent.length > 20 && textContent.length < 200)
-            textNodes.push(textContent);
+
+        if (textContent && textContent.length > 20) {
+          const sentences = textContent
+            .split(".")
+            .map((sentence) => sentence.trim())
+            .filter((sentence) => sentence.length > 0);
+
+          let startIndex = 0;
+          sentences.forEach((sentence) => {
+            textContents.push(sentence);
+            const range = document.createRange();
+            startIndex = currentNode.textContent.indexOf(sentence, startIndex);
+            range.setStart(currentNode, startIndex);
+            range.setEnd(currentNode, startIndex + sentence.length);
+            startIndex += sentence.length;
+            textNodesArr.push(range);
+          });
         }
       }
 
-      // 자식 노드를 재귀적으로 탐색합니다
       if (currentNode.nodeType === Node.ELEMENT_NODE) {
         Array.from(currentNode.childNodes).forEach((child) => traverse(child));
       }
     }
 
     traverse(node);
-    return textNodes;
   }
-
-  // 예: 페이지의 텍스트 내용을 가져와 Background Script에 전송
 
   function sendPageContent() {
     chrome.runtime.sendMessage({
-      pageContentArr: extractTextNodes(document.body),
+      pageContentArr: textContents,
       hostName: getDomain(),
     });
   }
 
-  // 페이지 로드 시 데이터 전송
   sendPageContent();
-
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === "TAB_CHANGED") {
-      // 탭이 변경되면 페이지 내용을 다시 전송
       sendPageContent();
-    }
-
-    if (message.recommendArr) {
-      console.log(message.recommendArr);
+    } else if (message.type === "RECOMMEND_CLICKED") {
+      highlightRecommend(message.resultArr);
     }
   });
 
@@ -126,6 +159,7 @@ window.addEventListener("load", () => {
 
     return button;
   }
+
   function loadFontAwesome() {
     const link = document.createElement("link");
     link.href =
@@ -134,6 +168,7 @@ window.addEventListener("load", () => {
     link.type = "text/css";
     document.head.appendChild(link);
   }
+
   function decideDragOrUpdate(color, colorh) {
     if (isTextSelected(selection.getRangeAt(0)))
       dragHighlight(selection.getRangeAt(0), color, colorh);
@@ -161,7 +196,6 @@ window.addEventListener("load", () => {
 
   document.addEventListener("mouseup", (event) => {
     hideTooltip();
-    // selection 예외처리
     selection = window.getSelection();
     if (!isValidSelection(selection)) return;
 
@@ -181,7 +215,7 @@ window.addEventListener("load", () => {
 });
 
 function displayTooltip(left, top) {
-  tooltip.style.left = `${left}px`; // 범위 옆에 나타나도록 오프셋 설정
+  tooltip.style.left = `${left}px`;
   tooltip.style.top = `${top}px`;
   tooltip.style.visibility = "visible";
   tooltip.style.opacity = "1";
