@@ -4,7 +4,7 @@ import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import userIcon from '../../assets/userIcon.png';
 import yellowBeeIcon from '../../assets/yellowBeeIcon.png';
-import GoogleOAuth from '../GoogleOAuth';
+import GoogleOAuth from './GoogleOAuth';
 import { userState } from '../../recoil/userState';
 import PopupMenu from './PopupMenu';
 
@@ -44,7 +44,7 @@ const Menu = () => {
         text
         severity="secondary"
         aria-label="Bookmark"
-        className="focus:outline-none focus:shadow-none m-0 p-0"
+        className="focus:outline-none focus:shadow-none p-0 mr-[20px]"
       >
         <img src={userIcon} alt="Myhive Icon" className="h-12" />
       </Button>

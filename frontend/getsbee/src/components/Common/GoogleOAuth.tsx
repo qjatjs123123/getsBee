@@ -3,7 +3,7 @@ import axios from 'axios';
 import { GoogleLogin, GoogleOAuthProvider, CredentialResponse } from '@react-oauth/google';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { useRecoilState } from 'recoil';
-import { userState } from '../recoil/userState';
+import { userState } from '../../recoil/userState';
 
 interface GoogleJwtPayload extends JwtPayload {
   email: string;
