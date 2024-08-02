@@ -51,7 +51,7 @@ const treeData = [
   },
 ];
 
-const TreeSelection = () => {
+const DirSelection = () => {
   const [value, setValue] = useState<string>();
 
   const onChange = (newValue: string) => {
@@ -78,4 +78,4 @@ const TreeSelection = () => {
   );
 };
 
-export default TreeSelection;
+export default DirSelection;
