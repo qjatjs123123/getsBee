@@ -12,4 +12,6 @@ public interface PostRepositoryCustom {
     Page<Post> findAllByMemberId(Long memberId, Pageable pageable);
 
     Page<Post> findAllByDirectories(List<Directory> directories, Pageable pageable);
+
+    Page<Post> findAllByDirectoryId(Long directoryId, Pageable pageable);
 }
