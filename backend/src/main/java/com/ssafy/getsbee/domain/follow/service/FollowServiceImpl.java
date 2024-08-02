@@ -4,9 +4,12 @@ import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.directory.service.DirectoryService;
 import com.ssafy.getsbee.domain.follow.dto.response.FollowDirectoryResponse;
+import com.ssafy.getsbee.domain.follow.dto.response.HiveInfoResponse;
 import com.ssafy.getsbee.domain.follow.repository.FollowRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.repository.MemberRepository;
+import com.ssafy.getsbee.domain.post.repository.PostRepository;
+import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.error.exception.NotFoundException;
 import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.ssafy.getsbee.domain.follow.entity.Follow;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
@@ -26,17 +30,29 @@ public class FollowServiceImpl implements FollowService{
     private final MemberRepository memberRepository;
     private final DirectoryRepository directoryRepository;
     private final DirectoryService directoryService;
+    private final PostRepository postRepository;
 
     @Override
     public void createFollow(Long directoryId) {
         Directory directory = directoryRepository.findDirectoryById(directoryId);
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        Member currentMember = memberRepository.findById(currentMemberId).orElse(null);
+        Member currentMember = memberRepository.findById(currentMemberId).orElseThrow(
+                ()->new NotFoundException(MEMBER_NOT_FOUND));
+
+        if(directory.getDepth()==0 || Objects.equals(directory.getName(), "Temporary") || Objects.equals(directory.getName(), "Bookmark")) {
+            throw new BadRequestException(WRONG_DIRECTORY_FOLLOW);
+        }
         followRepository.createFollow(currentMember, directory);
     }
 
     @Override
     public void deleteFollow(Long followId) {
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        Member currentMember = memberRepository.findById(currentMemberId).orElse(null);
+        Follow follow = followRepository.findById(followId).orElseThrow(
+                ()->new NotFoundException(FOLLOW_NOT_FOUND));
+
+        if(!follow.getFollowingMember().equals(currentMember)) throw new BadRequestException(UNFOLLOW_FAILED);
         followRepository.deleteById(followId);
     }
 
@@ -92,5 +108,35 @@ public class FollowServiceImpl implements FollowService{
                             .build();
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public HiveInfoResponse getHiveInfo() {
+        return HiveInfoResponse.builder()
+                .follower(countFollowers())
+                .following(countFollowingDirectories())
+                .postNumber(countPosts())
+                .build();
+    }
+
+    private Long countFollowingDirectories() { //멤버가 팔로잉 중인 디렉토리 수
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        Member currentMember = memberRepository.findById(currentMemberId)
+                .orElseThrow(()-> new NotFoundException(MEMBER_NOT_FOUND));
+        return followRepository.countMemberFollowings(currentMember);
+    }
+
+    private Long countFollowers() { // 멤버의 디렉토리를 팔로우중인 유저의 수
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        Member currentMember = memberRepository.findById(currentMemberId)
+                .orElseThrow(()-> new NotFoundException(MEMBER_NOT_FOUND));
+        return followRepository.countMemberFollowers(currentMember);
+    }
+
+    private Long countPosts() { // 유저가 작성한 포스트 수
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        Member currentMember = memberRepository.findById(currentMemberId)
+                .orElseThrow(()-> new NotFoundException(MEMBER_NOT_FOUND));
+        return postRepository.countPostsByMember(currentMember);
     }
 }

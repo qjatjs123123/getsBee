@@ -56,10 +56,13 @@ public enum ErrorCode {
 
     /** Bookmark */
     DUPLICATE_BOOKMARK(BAD_REQUEST, "BOOKMARK000", "이미 존재하는 북마크 입니다."),
-    BOOKMARK_NOT_FOUND(BAD_REQUEST, "BOOKMARK001", "해당 하이라이트는 존재하지 않습니다.");
+    BOOKMARK_NOT_FOUND(BAD_REQUEST, "BOOKMARK001", "해당 하이라이트는 존재하지 않습니다."),
     /** Like */
 
     /** Follow */
+    WRONG_DIRECTORY_FOLLOW(BAD_REQUEST, "FOLLOW000", "해당 디렉토리는 팔로우 할 수 없습니다."),
+    FOLLOW_NOT_FOUND(BAD_REQUEST, "FOLLOW001", "해당 팔로우를 찾을 수 없습니다."),
+    UNFOLLOW_FAILED(BAD_REQUEST, "FOLLOW002", "잘못된 팔로우 취소 요청입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

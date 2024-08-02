@@ -37,7 +37,7 @@ public class FollowRepositoryCustomImpl implements FollowRepositoryCustom{
     @Override
     public Long countMemberFollowers(Member member) { //맴버의 디렉토리를 팔로우하는 사람들의 수
         return queryFactory
-                .select(follow.count())
+                .select(follow.followingMember.countDistinct())
                 .from(follow)
                 .where(follow.followedMember.eq(member))
                 .fetchOne();
@@ -62,7 +62,7 @@ public class FollowRepositoryCustomImpl implements FollowRepositoryCustom{
     }
 
     @Override
-    public List<Directory> findFollowingDirectories(Member member) {
+    public List<Directory> findFollowingDirectories(Member member) { // 멤버가 팔로잉중인 디렉토리
         return queryFactory
                 .select(directory)
                 .from(follow)
@@ -70,5 +70,4 @@ public class FollowRepositoryCustomImpl implements FollowRepositoryCustom{
                 .where(follow.followingMember.eq(member))
                 .fetch();
     }
-
 }
