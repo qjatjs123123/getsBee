@@ -7,6 +7,8 @@
     animation: spin 1s linear infinite; /* 애니메이션 */
     margin: auto; /* 중앙 정렬 */
     display: block; /* 블록 레벨 요소 */
+    background-color: transparent;
+
   }
   .spinnerContainer {
     display: flex;
@@ -14,6 +16,8 @@
     width: 100%;
     height: 100%;
     justify-content: center;
+    background-color: transparent;
+
   }
   @keyframes spin {
     0% { transform: rotate(0deg); }

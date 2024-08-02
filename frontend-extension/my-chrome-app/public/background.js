@@ -49,13 +49,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 // );
 
 // 탭 활성화 감지
-// chrome.tabs.onActivated.addListener((activeInfo) => {
-//   chrome.storage.local.set({ resultArr: [] }, () => {});
-//   chrome.tabs.sendMessage(activeInfo.tabId, {
-//     type: "TAB_CHANGED",
-//     tabId: activeInfo.tabId,
-//   });
-// });
+chrome.tabs.onActivated.addListener((activeInfo) => {
+  chrome.storage.local.set({ resultArr: [] }, () => {});
+  chrome.tabs.sendMessage(activeInfo.tabId, {
+    type: "TAB_CHANGED",
+    tabId: activeInfo.tabId,
+  });
+});
 
 // // 메시지 수신 및 데이터 저장
 // chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {

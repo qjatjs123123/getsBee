@@ -30,7 +30,15 @@ function Content() {
       }
     });
   }, []);
+  function getHighlightArr() {
+    const tmp = [];
+    for (let i = 0; i < result.length; i++) {
+      const range = content[result[i]];
 
+      tmp.push(range);
+    }
+    return tmp;
+  }
   // GPT-3 모델 실행 함수
   async function run(model) {
     try {
@@ -42,9 +50,9 @@ function Content() {
       4. 선택된 인덱스는 본문 내용과 관련이 있어야 합니다.
       
       본문 배열 예시:
-      [1: "문장 A", 2: "문장 B", 3: "문장 C", 4: "문장 D", "문장 E"]
+      [1: "문장 A", 2: "문장 B", 3: "문장 C", 4: "문장 D", 5: "문장 E"]
       
-      중요한 문장들의 인덱스가 1, 3, 2번이라면, 응답은 다음과 같아야 합니다:
+      전체적인 내용을 빠르게 파악할 수 있는 핵심 문장들의 인덱스가 1, 3, 2번이라면, 응답은 다음과 같아야 합니다:
       [1, 3, 2]
       `;
       // 객체를 생성하기 위해 reduce 사용
@@ -74,7 +82,7 @@ function Content() {
       chrome.runtime.sendMessage({
         type: "RECOMMEND_CLICKED",
         resultArr: JSON.parse(jsonData),
-        contentArr: content,
+        contentArr: getHighlightArr(),
       });
     } catch (error) {
       setErrorMessage("본문이 너무 깁니다.");
@@ -116,7 +124,6 @@ function Content() {
         </div>
       );
     }
-    console.log(result[0], content);
     return result.map((idx) => <Item key={idx} content={content[idx]} />);
   };
 
