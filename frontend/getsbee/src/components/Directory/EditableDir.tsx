@@ -25,7 +25,7 @@ interface TreeNode {
   children: TreeNode[];
 }
 
-const EditableTree: React.FC = () => {
+const EditableDir: React.FC = () => {
   const [nodes, setNodes] = useState<TreeNode[]>([
     {
       key: '2',
@@ -238,4 +238,4 @@ const EditableTree: React.FC = () => {
   );
 };
 
-export default EditableTree;
+export default EditableDir;
