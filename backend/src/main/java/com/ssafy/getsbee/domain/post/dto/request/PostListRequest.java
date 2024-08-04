@@ -6,9 +6,7 @@ public record PostListRequest (
         Long directoryId,
         Long memberId,
         String query,
-        Boolean following,
-        Integer page,
-        Integer size
+        Boolean following
 ){
     @Builder
     public PostListRequest{

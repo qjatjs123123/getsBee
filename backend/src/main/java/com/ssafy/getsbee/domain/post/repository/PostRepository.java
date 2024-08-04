@@ -13,6 +13,4 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostRepositor
     Optional<Post> findByMemberAndUrl(Member member, String url);
 
     Optional<Post> findById(Long postId);
-
-    Page<Post> findAllByDirectoryId(Long directoryId, Pageable pageable);
 }

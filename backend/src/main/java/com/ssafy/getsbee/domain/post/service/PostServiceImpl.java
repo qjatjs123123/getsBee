@@ -136,19 +136,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<PostListResponse> showPostList(PostListRequest postListRequest) {
-        if (postListRequest.page() == null) {
-            throw new BadRequestException(INVALID_POST_REQUEST);
-        }
-        int size = postListRequest.size() == null ? DEFAULT_PAGE_SIZE : postListRequest.size();
-        Pageable pageable = PageRequest.of(postListRequest.page(), size, Sort.by(Sort.Direction.DESC,"createdAt"));
+    public Slice<PostListResponse> showPostList(PostListRequest postListRequest, Long cursor, Pageable pageable) {
 
         if(postListRequest.directoryId() != null){
-            return showPostListByDirectoryId(postListRequest.directoryId(), pageable);
+            return showPostListByDirectoryId(postListRequest.directoryId(), cursor, pageable);
         }else if(postListRequest.memberId() != null){
-            return showPostListByMemberId(postListRequest.memberId(), pageable);
+            return showPostListByMemberId(postListRequest.memberId(), cursor, pageable);
         }else if(postListRequest.following()!=null){
-            return followingPostListByMemberId(SecurityUtil.getCurrentMemberId(), pageable);
+            return followingPostListByMemberId(SecurityUtil.getCurrentMemberId(), cursor, pageable);
         }else if(postListRequest.query()!=null){
             //다현이 검색 로직
         }else{
@@ -157,24 +152,24 @@ public class PostServiceImpl implements PostService {
         return null;
     }
 
-    private Page<PostListResponse> followingPostListByMemberId(Long memberId, Pageable pageable) {
+    private Slice<PostListResponse> followingPostListByMemberId(Long memberId, Long cursor, Pageable pageable) {
         Member member = memberService.findById(memberId);
         List<Directory> directories = followRepository.findFollowingDirectories(member);
-        Page<Post> posts = postRepository.findAllByDirectories(directories, pageable);
+        Slice<Post> posts = postRepository.findAllByDirectories(directories, cursor, pageable);
         return makePostListResponseWithPosts(posts);
     }
 
-    private Page<PostListResponse> showPostListByMemberId(Long memberId, Pageable pageable) {
-        Page<Post> posts = postRepository.findAllByMemberId(memberId, pageable);
+    private Slice<PostListResponse> showPostListByMemberId(Long memberId, Long cursor, Pageable pageable) {
+        Slice<Post> posts = postRepository.findAllByMemberId(memberId, cursor, pageable);
         return makePostListResponseWithPosts(posts);
     }
 
-    private Page<PostListResponse> showPostListByDirectoryId(Long directoryId, Pageable pageable) {
-        Page<Post> posts = postRepository.findAllByDirectoryId(directoryId, pageable);
+    private Slice<PostListResponse> showPostListByDirectoryId(Long directoryId, Long cursor, Pageable pageable) {
+        Slice<Post> posts = postRepository.findAllByDirectoryId(directoryId, cursor, pageable);
         return makePostListResponseWithPosts(posts);
     }
 
-    private Page<PostListResponse> makePostListResponseWithPosts(Page<Post> posts) {
+    private Slice<PostListResponse> makePostListResponseWithPosts(Slice<Post> posts) {
         List<PostListResponse> postListResponses = posts.stream()
                 .map(post -> {
                     List<Highlight> highlights = highlightRepository.findAllByPostId(post.getId()).orElse(new ArrayList<>());
@@ -231,7 +226,7 @@ public class PostServiceImpl implements PostService {
                             .build();
                 }).collect(Collectors.toList());
 
-        return new PageImpl<>(postListResponses, posts.getPageable(), posts.getTotalElements());
+        return new SliceImpl<>(postListResponses, posts.getPageable(), posts.hasNext());
     }
 
     private boolean checkIfLikedByCurrentUser(Post post) {
