@@ -4,9 +4,7 @@ import com.ssafy.getsbee.block.dto.request.BlockRequest;
 import com.ssafy.getsbee.block.dto.response.BlockResponse;
 import com.ssafy.getsbee.block.entity.Block;
 import com.ssafy.getsbee.block.repository.BlockRepository;
-import com.ssafy.getsbee.domain.member.repository.MemberRepository;
 import com.ssafy.getsbee.domain.member.service.MemberService;
-import com.ssafy.getsbee.global.error.ErrorCode;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.error.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
@@ -32,18 +30,17 @@ public class BlockServiceImpl implements BlockService {
     }
 
     @Override
+    @Transactional
     public List<BlockResponse> addBlock(BlockRequest request, Long memberId) {
         blockRepository.save(request.toEntity(memberService.findById(memberId)));
         return getBlockResponseList(memberId);
     }
 
     @Override
+    @Transactional
     public List<BlockResponse> deleteBlock(Long blockId, Long memberId) {
-        Block block = blockRepository.findById(blockId)
-                .orElseThrow(() -> new BadRequestException(BLOCK_NOT_FOUND));
-        if (!Objects.equals(block.getMember().getId(), memberId)) {
-            throw new ForbiddenException(FORBIDDEN_USER);
-        }
+        Block block = findBlockById(blockId);
+        validateMember(block.getMember().getId(), memberId);
         blockRepository.delete(block);
         return getBlockResponseList(memberId);
     }
@@ -52,5 +49,16 @@ public class BlockServiceImpl implements BlockService {
         return blockRepository.findAllByMember(memberService.findById(memberId)).stream()
                 .map(BlockResponse::of)
                 .toList();
+    }
+
+    private Block findBlockById(Long blockId) {
+        return blockRepository.findById(blockId)
+                .orElseThrow(() -> new BadRequestException(BLOCK_NOT_FOUND));
+    }
+
+    private void validateMember(Long blockMemberId, Long requestMemberId) {
+        if (!Objects.equals(blockMemberId, requestMemberId)) {
+            throw new ForbiddenException(FORBIDDEN_USER);
+        }
     }
 }
