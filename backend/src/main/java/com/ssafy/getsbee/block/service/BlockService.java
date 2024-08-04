@@ -9,4 +9,5 @@ public interface BlockService {
 
     List<BlockResponse> showBlockList(Long memberId);
     List<BlockResponse> addBlock(BlockRequest request, Long memberId);
+    List<BlockResponse> deleteBlock(Long blockId, Long memberId);
 }

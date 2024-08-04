@@ -26,4 +26,9 @@ public class BlockController {
     public List<BlockResponse> addBlock(@Valid @RequestBody BlockRequest request) {
         return blockService.addBlock(request, SecurityUtil.getCurrentMemberId());
     }
+
+    @DeleteMapping("/{block-id}")
+    public List<BlockResponse> deleteBlock(@PathVariable("block-id") Long blockId) {
+        return blockService.deleteBlock(blockId, SecurityUtil.getCurrentMemberId());
+    }
 }
