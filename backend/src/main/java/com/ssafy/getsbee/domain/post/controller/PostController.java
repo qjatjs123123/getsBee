@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,7 +23,6 @@ public class PostController {
     @GetMapping("/{post-id}")
     public PostResponse showPostInfo(@PathVariable("post-id") Long postId){
         return postService.showPostInfo(postId, SecurityUtil.getCurrentMemberId());
-
     }
 
     @PatchMapping("/{post-id}")
@@ -56,7 +56,7 @@ public class PostController {
     }
 
     @GetMapping("/")
-    public Page<PostListResponse> showPostList(PostListRequest postListRequest, Pageable pageable){
-        return postService.showPostList(postListRequest, pageable);
+    public Slice<PostListResponse> showPostList(PostListRequest postListRequest, Long cursor, Pageable pageable){
+        return postService.showPostList(postListRequest, cursor, pageable);
     }
 }
