@@ -26,6 +26,8 @@ public class DirectoryServiceImpl implements DirectoryService {
     private final MemberRepository memberRepository;
     private final DirectoryElasticService directoryElasticService;
 
+    private int ROOT_DEPTH = 0;
+
     @Override
     public List<DirectoryResponse> findAllByMember(Member member) {
         List<Directory> directories = directoryRepository.findAllByMember(member);
@@ -65,9 +67,11 @@ public class DirectoryServiceImpl implements DirectoryService {
 
 
         for(Directory directory : existingDirectories){
+            if(directory.getDepth()==ROOT_DEPTH) continue;
             if(!requestDirectoryIds.contains(directory.getId())){
                 if(directory.getName().equals("Bookmark") || directory.getName().equals("Temporary")||
                         directory.getName().equals("Root")) {
+                    System.out.println("deleting: " + directory.getName());
                     throw new BadRequestException(CANT_DELETE_DEFAULT_DIRECTORY);
                 }
                 //TODO : 여기서 삭제됨
@@ -107,18 +111,23 @@ public class DirectoryServiceImpl implements DirectoryService {
         directoryRepository.createDefaultDirectoriesForMember(member);
     }
 
+    @Override
+    public String findFullNameByDirectory(Directory directory) {
+        if(directory.getDepth()==1) return directory.getName();
+        return directory.getParentDirectory().getName() + " / " +directory.getName();
+    }
+
     private void filterDirectoriesByAuth(List<Directory> directories) {
         directories.removeIf(directory -> directory.getDepth() == 1 && (directory.getName().equals("Temporary") ||
                 directory.getName().equals("Bookmark")));
     }
 
     private List<DirectoryResponse> assembleDirectories(List<Directory> directories) {
-        System.out.println("assemble directories: " + directories);
-
         Map<Long, DirectoryResponse> directoryMap = new HashMap<>();
 
         for (Directory directory : directories) {
             if(directory.getDepth()==0) continue;
+            if(directory.getDepth() == 2) directory.changeName(findFullNameByDirectory(directory));
             DirectoryResponse response = DirectoryResponse.fromEntity(directory);
             directoryMap.put(directory.getId(), response);
         }

@@ -198,9 +198,9 @@ class DirectoryServiceImplTest {
         assertEquals("Third Folder", thirdFolder.name(), "Third Folder 폴더의 이름이 맞다");
 
         assertEquals(3, thirdFolder.children().size(), "Third Folder의 child는 3개");
-        assertEquals("Child2 modified name", thirdFolder.children().get(0).name(), "첫번째 child는 Child2 modified name");
-        assertEquals("Child3", thirdFolder.children().get(1).name(), "두번째 child는 Child3");
-        assertEquals("Child4", thirdFolder.children().get(2).name(), "세번째 child는 Child4");
+        assertEquals("Third Folder / Child2 modified name", thirdFolder.children().get(0).name(), "첫번째 child의 이름은 Third Folder / Child2 modified name");
+        assertEquals("Third Folder / Child3", thirdFolder.children().get(1).name(), "두번째 child의 이름은 Third Folder /  Child3");
+        assertEquals("Third Folder / Child4", thirdFolder.children().get(2).name(), "세번째 child의 이름은 Third Folder /  Child4");
     }
 
 }

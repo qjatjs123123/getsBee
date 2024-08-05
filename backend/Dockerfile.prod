@@ -1,0 +1,12 @@
+FROM openjdk:17-jdk-slim
+
+RUN	apt-get -y update
+
+# run application
+WORKDIR /home/ubuntu
+COPY /build/libs/getsbee-0.0.1-SNAPSHOT.jar app.jar
+COPY /.env-production .env-production
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-Dspring.profiles.active=production", "-jar", "app.jar"]

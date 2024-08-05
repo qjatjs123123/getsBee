@@ -1,26 +1,18 @@
 package com.ssafy.getsbee.domain.post.controller;
 
-import com.ssafy.getsbee.domain.post.dto.request.KeywordRequest;
+import com.ssafy.getsbee.domain.post.dto.request.PostListRequest;
 import com.ssafy.getsbee.domain.post.dto.request.UpdatePostRequest;
+import com.ssafy.getsbee.domain.post.dto.response.LikePostResponse;
+import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostResponse;
-import com.ssafy.getsbee.domain.post.entity.PostDocument;
 import com.ssafy.getsbee.domain.post.service.PostElasticService;
 import com.ssafy.getsbee.domain.post.service.PostService;
 import com.ssafy.getsbee.global.util.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.SearchHit;
-import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.util.Streamable;
-import org.springframework.data.web.PagedModel;
+import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
-
-import java.util.List;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/posts")
@@ -28,12 +20,10 @@ import java.util.stream.Stream;
 public class PostController {
 
     private final PostService postService;
-    private final PostElasticService postElasticService;
 
     @GetMapping("/{post-id}")
     public PostResponse showPostInfo(@PathVariable("post-id") Long postId){
         return postService.showPostInfo(postId, SecurityUtil.getCurrentMemberId());
-
     }
 
     @PatchMapping("/{post-id}")
@@ -57,18 +47,17 @@ public class PostController {
     }
 
     @PostMapping("/{post-id}/likes")
-    public void likePost(@PathVariable("post-id") Long postId){
-        postService.likePost(postId, SecurityUtil.getCurrentMemberId());
+    public LikePostResponse likePost(@PathVariable("post-id") Long postId){
+        return postService.likePost(postId, SecurityUtil.getCurrentMemberId());
     }
 
     @DeleteMapping("/{post-id}/likes")
-    public void unlikePost(@PathVariable("post-id") Long postId){
-        postService.likePost(postId, SecurityUtil.getCurrentMemberId());
+    public LikePostResponse unlikePost(@PathVariable("post-id") Long postId){
+        return postService.unlikePost(postId, SecurityUtil.getCurrentMemberId());
     }
 
-//    @PostMapping("/test")
-//    public Page<PostDocument> test(@RequestBody KeywordRequest request, Pageable pageable,
-//                                         @RequestParam("postId") Long postId){
-//        return postElasticService.findByKeyword(request.keyword(), pageable, postId);
-//    }
+    @GetMapping("/")
+    public Slice<PostListResponse> showPostList(PostListRequest postListRequest, Long cursor, Pageable pageable){
+        return postService.showPostList(postListRequest, cursor, pageable);
+    }
 }

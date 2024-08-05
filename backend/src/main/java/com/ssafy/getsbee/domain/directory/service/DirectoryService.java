@@ -14,4 +14,6 @@ public interface DirectoryService {
     List<DirectoryResponse> modifyDirectories(List<DirectoryRequest> directoryRequests);
 
     void createDefaultDirectoriesForMember(Member member);
+
+    String findFullNameByDirectory(Directory directory);
 }

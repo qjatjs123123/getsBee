@@ -98,12 +98,20 @@ public class Post extends BaseTimeEntity {
     public void changeDirectory(Directory directory) {
         this.directory = directory;
     }
-
+    
     public void addHighlight(Highlight highlight) {
         this.getHighlights().add(highlight);
     }
 
     public void deleteHighlight(Highlight highlight) {
         this.getHighlights().remove(highlight);
+    }
+
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        this.likeCount--;
     }
 }

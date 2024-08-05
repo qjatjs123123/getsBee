@@ -38,6 +38,7 @@ public enum ErrorCode {
     /** Post */
     DUPLICATE_POST(BAD_REQUEST, "POST000", "이미 존재하는 포스트 입니다."),
     POST_NOT_FOUND(BAD_REQUEST, "POST001", "해당 포스트는 존재하지 않습니다."),
+    INVALID_POST_REQUEST(BAD_REQUEST, "POST002", "잘못된 포스트 리스트 요청입니다."),
 
     /** Highlight */
     DUPLICATE_HIGHLIGHT(BAD_REQUEST, "HIGHLIGHT000", "이미 존재하는 하이라이트 입니다."),
@@ -48,7 +49,15 @@ public enum ErrorCode {
     NEXT_DIRECTORY_NOT_FOUND(BAD_REQUEST, "DIR001", "다음 디렉토리를 찾을 수 없습니다."),
     PREV_DIRECTORY_NOT_FOUND(BAD_REQUEST, "DIR002", "이전 디렉토리를 찾을 수 없습니다."),
     CANT_DELETE_DEFAULT_DIRECTORY(BAD_REQUEST, "DIR003", "기본 디렉토리는 삭제할 수 없습니다."),
+
     /** Category */
+
+    /** Block */
+    BLOCK_NOT_FOUND(BAD_REQUEST, "BLOCK000", "해당 차단 도메인이 존재하지 않습니다."),
+
+    /** Like */
+    LIKE_NOT_FOUND(BAD_REQUEST, "LIKE000", "해당 좋아요가 존재하지 않습니다."),
+    DUPLICATE_LIKE(BAD_REQUEST, "LIKE001", "이미 존재하는 좋아요 입니다."),
 
     /** Comment */
     COMMENT_NOT_FOUND(BAD_REQUEST, "COMMENT000", "해당 댓글을 찾을 수 없습니다."),
@@ -59,6 +68,9 @@ public enum ErrorCode {
     /** Like */
 
     /** Follow */
+    WRONG_DIRECTORY_FOLLOW(BAD_REQUEST, "FOLLOW000", "해당 디렉토리는 팔로우 할 수 없습니다."),
+    FOLLOW_NOT_FOUND(BAD_REQUEST, "FOLLOW001", "해당 팔로우를 찾을 수 없습니다."),
+    UNFOLLOW_FAILED(BAD_REQUEST, "FOLLOW002", "잘못된 팔로우 취소 요청입니다."),
 
 
     /** PostDocument */
