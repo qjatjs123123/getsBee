@@ -1,6 +1,7 @@
 package com.ssafy.getsbee.domain.block.entity;
 
 import com.ssafy.getsbee.domain.member.entity.Member;
+import com.ssafy.getsbee.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -16,7 +17,7 @@ import static jakarta.persistence.FetchType.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE block SET is_deleted = true WHERE block_id = ?")
 @SQLRestriction("is_deleted = false")
-public class Block {
+public class Block extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
