@@ -5,9 +5,9 @@ import Menu from './Menu';
 
 function Header() {
   return (
-    <div className="flex justify-between ">
-      <Link to="/home" className="flex items-center ml-[20px] mt-[24px] font-bold">
-        <img className="w-[160px] h-[32px] mr-[12px]" src={logoIcon} alt="beeIcon" />
+    <div className="flex items-center justify-between">
+      <Link to="/home" className="flex items-center font-bold">
+        <img className="w-[160px] ml-[20px] mt-[24px] mb-[24px]" src={logoIcon} alt="beeIcon" />
       </Link>
       <MainSearchBar />
       <Menu />

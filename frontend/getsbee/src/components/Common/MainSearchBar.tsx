@@ -15,12 +15,12 @@ const MainSearchBar: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center">
+    <form onSubmit={handleSubmit} className="flex items-center w-full max-w-md">
       <InputText
         value={value}
         onChange={(e: ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}
         placeholder="Search"
-        className="border-0 border-b-2 border-gray-300 w-1/2 text-center focus:border-yellow-500 focus:ring-0 bg-transparent rounded-none mr-2"
+        className="border-0 border-b-2 border-gray-300 flex-grow text-center focus:border-yellow-500 focus:ring-0 bg-transparent rounded-none mr-2"
       />
       <Button
         type="submit"
@@ -28,9 +28,9 @@ const MainSearchBar: React.FC = () => {
         text
         severity="secondary"
         aria-label="Bookmark"
-        className="focus:outline-none focus:shadow-none m-0 p-0"
+        className="focus:outline-none focus:shadow-none m-0 p-0 flex-shrink-0"
       >
-        <img src={searchIcon} alt="Search Icon" className="w-10 h-10" />
+        <img src={searchIcon} alt="Search Icon" className="w-10" />
       </Button>
     </form>
   );

@@ -59,7 +59,7 @@ const PopupMenu: React.FC = () => {
         text
         severity="secondary"
         aria-label="Bookmark"
-        className="p-2 focus:outline-none focus:shadow-none m-0 p-0"
+        className="p-2 focus:outline-none focus:shadow-none p-0 mr-[20px]"
       >
         <Avatar image={user.picture || userIcon} size="large" shape="circle" className="w-12 h-12" />
       </Button>
