@@ -1,7 +1,7 @@
-package com.ssafy.getsbee.block.service;
+package com.ssafy.getsbee.domain.block.service;
 
-import com.ssafy.getsbee.block.dto.request.BlockRequest;
-import com.ssafy.getsbee.block.dto.response.BlockResponse;
+import com.ssafy.getsbee.domain.block.dto.request.BlockRequest;
+import com.ssafy.getsbee.domain.block.dto.response.BlockResponse;
 
 import java.util.List;
 

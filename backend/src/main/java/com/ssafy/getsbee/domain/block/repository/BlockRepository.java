@@ -1,6 +1,6 @@
-package com.ssafy.getsbee.block.repository;
+package com.ssafy.getsbee.domain.block.repository;
 
-import com.ssafy.getsbee.block.entity.Block;
+import com.ssafy.getsbee.domain.block.entity.Block;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 

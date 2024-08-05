@@ -1,6 +1,6 @@
-package com.ssafy.getsbee.block.dto.response;
+package com.ssafy.getsbee.domain.block.dto.response;
 
-import com.ssafy.getsbee.block.entity.Block;
+import com.ssafy.getsbee.domain.block.entity.Block;
 
 public record BlockResponse(
         Long blockId,

@@ -1,4 +1,4 @@
-package com.ssafy.getsbee.block.entity;
+package com.ssafy.getsbee.domain.block.entity;
 
 import com.ssafy.getsbee.domain.member.entity.Member;
 import jakarta.persistence.*;

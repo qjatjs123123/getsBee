@@ -1,9 +1,9 @@
-package com.ssafy.getsbee.block.service;
+package com.ssafy.getsbee.domain.block.service;
 
-import com.ssafy.getsbee.block.dto.request.BlockRequest;
-import com.ssafy.getsbee.block.dto.response.BlockResponse;
-import com.ssafy.getsbee.block.entity.Block;
-import com.ssafy.getsbee.block.repository.BlockRepository;
+import com.ssafy.getsbee.domain.block.dto.request.BlockRequest;
+import com.ssafy.getsbee.domain.block.dto.response.BlockResponse;
+import com.ssafy.getsbee.domain.block.entity.Block;
+import com.ssafy.getsbee.domain.block.repository.BlockRepository;
 import com.ssafy.getsbee.domain.member.service.MemberService;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.error.exception.ForbiddenException;
