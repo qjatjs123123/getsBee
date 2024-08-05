@@ -198,6 +198,7 @@ public class PostServiceImpl implements PostService {
                     List<Highlight> highlights = highlightRepository.findAllByPostId(post.getId()).orElse(new ArrayList<>());
                     List<String> highlightColors = highlights.stream()
                             .map(Highlight::getColor)
+                            .distinct()
                             .collect(Collectors.toList());
 
                     Member member = post.getMember();
