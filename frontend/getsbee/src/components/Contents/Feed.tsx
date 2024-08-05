@@ -16,13 +16,15 @@ export default function Feed() {
 
   const headerTemplate = () => {
     return (
-      <div className="flex items-center">
-        <div className="flex items-center gap-2">
-          <Avatar image={user.avatar} size="large" shape="circle" />
-          <div className="ml-2 flex flex-col justify-center">
-            <h2 className="text-sm font-bold text-gray-600">{user.name}</h2>
+      <div className="flex mb-3">
+        <div className="flex items-center justify-between w-[450px]">
+          <div className="flex items-center">
+            <Avatar image={user.avatar} size="normal" shape="circle" />
+            <div className="ml-2 flex justify-center">
+              <h2 className="text-sm font-bold text-gray-600">{user.name}</h2>
+            </div>
           </div>
-          <div className="ml-2 flex flex-col justify-center">
+          <div className="ml-2 flex justify-end">
             <p className="mt-1 mb-1 text-xs text-gray-600 font-medium">{user.date}</p>
           </div>
         </div>
@@ -32,12 +34,12 @@ export default function Feed() {
 
   const footerTemplate = () => {
     return (
-      <div className="flex items-center justify-between p-0">
+      <div className="flex items-center justify-between p-[3px]">
         <div className="flex items-center gap-2">
           <img className="custom-image" src={honeyCombg} alt="honeyComb" />
           <p className="m-0 font-bold opacity-50">100</p>
         </div>
-        <div className="flex flex-wrap items-center justify-end gap-3">
+        <div className="flex flex-wrap items-center justify-end">
           <div className="flex items-center">
             <Button icon="pi pi-bookmark" style={{ color: '#8F8F8F' }} severity="secondary" rounded text />
             <Button icon="pi pi-share-alt" style={{ color: '#8F8F8F' }} rounded text />
