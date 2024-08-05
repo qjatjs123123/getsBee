@@ -57,7 +57,7 @@ const RecommendItem = () => {
   );
 
   return (
-    <div className="card flex justify-content-center">
+    <div className="card flex justify-content-center transform scale-90">
       <Card
         title={data.post.title}
         subTitle={`${data.member.memberName}/${data.directory.directoryName}`}
