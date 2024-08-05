@@ -42,7 +42,7 @@ const MainSearchBar: React.FC = () => {
         aria-label="Search"
         className="focus:outline-none focus:shadow-none m-0 p-0 flex-shrink-0"
       >
-        <img src={searchIcon} alt="Search Icon" className="w-10" />
+        <img src={searchIcon} alt="Search Icon" className="w-6" />
       </Button>
     </form>
   );

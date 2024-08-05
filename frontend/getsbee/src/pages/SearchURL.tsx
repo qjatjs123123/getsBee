@@ -11,13 +11,11 @@ const SearchURL: React.FC = () => {
     <div className="flex flex-col h-screen">
       <Header />
       <div className="flex justify-center flex-grow overflow-hidden">
-        <div className="w-[88%] flex flex-col">
+        <div className="w-[80%] flex flex-col">
           <SearchTab />
           <div className="flex flex-grow overflow-hidden">
-            <div className="w-[600px] p-4 border-r overflow-y-auto scrollbar-hide">
-              <div className="mt-4">
-                <Feed />
-              </div>
+            <div className="w-[600px] p-1 border-r overflow-y-auto scrollbar-hide">
+              <Feed />
               <div className="mt-4">
                 <Feed />
               </div>
@@ -30,13 +28,13 @@ const SearchURL: React.FC = () => {
             </div>
             <div className="flex flex-col flex-grow p-4 items-start overflow-y-auto scrollbar-hide">
               <div className="flex items-center">
-                <img src={honeyComb} alt="honeyComb" className="w-10" />
-                <p className="ml-1 text-[#CC9C00] font-semibold text-[24px]">Others&apos; Highlights</p>
+                <img src={honeyComb} alt="honeyComb" className="w-9" />
+                <p className="ml-1 text-[#CC9C00] font-semibold text-[22px]">Others&apos; Highlights</p>
               </div>
-              <div className="mt-4 border-b">
+              <div className="border-b transform scale-[95%]">
                 <FeedDetail />
               </div>
-              <div className="mt-4 border-b">
+              <div className="border-b transform scale-[95%]">
                 <FeedDetail />
               </div>
             </div>

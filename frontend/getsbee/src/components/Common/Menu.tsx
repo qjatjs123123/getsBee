@@ -46,7 +46,7 @@ const Menu = () => {
         aria-label="Bookmark"
         className="focus:outline-none focus:shadow-none p-0 mr-[20px]"
       >
-        <img src={userIcon} alt="Myhive Icon" className="h-12" />
+        <img src={userIcon} alt="Myhive Icon" className="h-8" />
       </Button>
       <Dialog
         visible={visible}

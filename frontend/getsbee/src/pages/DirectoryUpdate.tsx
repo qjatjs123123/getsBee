@@ -20,7 +20,7 @@ const MyHive: React.FC = () => {
       </div>
       <div className="flex flex-col w-4/5 ml-2">
         <div className="flex justify-between items-center border-b ml-2">
-          <div className="mt-[60px] mb-[10px]">
+          <div className="mt-[75px] mb-[5px]">
             <DirectoryNav userName={userName} directories={directories} postCount={postCount} />
           </div>
           <div>

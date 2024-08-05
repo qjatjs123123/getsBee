@@ -10,7 +10,7 @@ const SearchDirectory: React.FC = () => {
     <div className="flex flex-col h-screen">
       <Header />
       <div className="flex justify-center flex-grow overflow-hidden">
-        <div className="w-[88%] flex flex-col">
+        <div className="w-[80%] flex flex-col">
           <SearchTab />
           <div className="mt-5 p-5">
             <div className="grid gap-x-0 gap-y-14 grid-cols-3 justify-items-center">{followItems}</div>
