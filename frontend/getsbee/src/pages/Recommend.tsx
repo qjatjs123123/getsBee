@@ -5,7 +5,7 @@ import NoUserInfo from '../components/Recommend/NoUserInfo';
 import RecommendItem from '../components/Recommend/RecommendItem';
 
 const Recommend = () => {
-  const [isRegisted] = useState<boolean>(true);
+  const [isRegisted] = useState<boolean>(false);
   const recommendItems = [
     { id: 1, name: 'Item 1', description: 'Description for item 1' },
     { id: 2, name: 'Item 2', description: 'Description for item 2' },
