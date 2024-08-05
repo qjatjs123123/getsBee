@@ -44,10 +44,9 @@ public class PostServiceImpl implements PostService {
     private final DirectoryRepository directoryRepository;
     private final BookmarkRepository bookmarkRepository;
     private final HighlightRepository highlightRepository;
+    private final PostElasticService postElasticService;
     private final FollowRepository followRepository;
     private final LikeRepository likeRepository;
-
-    private static final Integer DEFAULT_PAGE_SIZE = 20;
     private final MemberRepository memberRepository;
 
     @Override
@@ -59,6 +58,8 @@ public class PostServiceImpl implements PostService {
         if (isNotOwner(post.getMember(), member)) {
             throw new BadRequestException(_FORBIDDEN);
         }
+
+        postElasticService.deletePostDocument(post);
         postRepository.delete(post);
     }
 
@@ -75,12 +76,18 @@ public class PostServiceImpl implements PostService {
         Directory directory = directoryRepository.findDirectoryById(request.directoryId());
 
         // 하이라이트 삭제
-        highlightRepository.deleteAll(request.deleteHighlightIds().stream()
-                .map(highlightId -> highlightRepository.findById(highlightId).orElseThrow(() -> new BadRequestException(HIGHLIGHT_NOT_FOUND)))
-                .collect(Collectors.toList()));
+        List<Highlight> list = new ArrayList<>();
+        for (Long highlightId : request.deleteHighlightIds()) {
+            Highlight highlight = highlightRepository.findById(highlightId).orElseThrow(() -> new BadRequestException(HIGHLIGHT_NOT_FOUND));
+            list.add(highlight);
+            post.deleteHighlight(highlight);
+        }
+        highlightRepository.deleteAll(list);
 
         post.updatePost(request.note(), directory, request.isPublic());
+
         postRepository.save(post);
+        postElasticService.updatePostDocument(post);
     }
 
     @Override
@@ -116,7 +123,7 @@ public class PostServiceImpl implements PostService {
                         directoryRepository.findBookmarkDirectoryByMember(member))));
 
         if (!bookmark.getIsDeleted()) {
-            bookmark.changeBookmark();
+            bookmark.addBookmark();
         }
     }
 
@@ -127,7 +134,7 @@ public class PostServiceImpl implements PostService {
 
         Bookmark bookmark = bookmarkRepository.findByPostAndMember(post, member)
                 .orElseThrow(() -> new BadRequestException(BOOKMARK_NOT_FOUND));
-        bookmark.changeBookmark();
+        bookmark.removeBookmark();
     }
 
     @Override
@@ -200,7 +207,7 @@ public class PostServiceImpl implements PostService {
     private Slice<PostListResponse> makePostListResponseWithPosts(Slice<Post> posts) {
         List<PostListResponse> postListResponses = posts.stream()
                 .map(post -> {
-                    List<Highlight> highlights = highlightRepository.findAllByPostId(post.getId()).orElse(new ArrayList<>());
+                    List<Highlight> highlights = highlightRepository.findAllByPost(post);
                     List<String> highlightColors = highlights.stream()
                             .map(Highlight::getColor)
                             .distinct()

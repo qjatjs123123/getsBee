@@ -70,7 +70,21 @@ public enum ErrorCode {
     /** Follow */
     WRONG_DIRECTORY_FOLLOW(BAD_REQUEST, "FOLLOW000", "해당 디렉토리는 팔로우 할 수 없습니다."),
     FOLLOW_NOT_FOUND(BAD_REQUEST, "FOLLOW001", "해당 팔로우를 찾을 수 없습니다."),
-    UNFOLLOW_FAILED(BAD_REQUEST, "FOLLOW002", "잘못된 팔로우 취소 요청입니다.");
+    UNFOLLOW_FAILED(BAD_REQUEST, "FOLLOW002", "잘못된 팔로우 취소 요청입니다."),
+
+
+    /** PostDocument */
+    DUPLICATE_POSTDOCUMENT(BAD_REQUEST, "POSTDOCUMENT000", "이미 존재하는 포스트 도큐먼트 입니다."),
+    POSTDOCUMENT_NOT_FOUND(BAD_REQUEST, "POSTDOCUMENT001", "해당 포스트 도큐먼트는 존재하지 않습니다."),
+
+    /** highlightDocument */
+    DUPLICATE_HIGHLIGHTDOCUMENT(BAD_REQUEST, "HIGHLIGHTDOCUMENT000", "이미 존재하는 하이라이트 도규먼트 입니다."),
+    HIGHLIGHTDOCUMENT_NOT_FOUND(BAD_REQUEST, "HIGHLIGHTDOCUMENT001", "해당 하이라이트 도큐먼트는 존재하지 않습니다."),
+
+    /** DirectoryDocument */
+    DUPLICATE_DIRECTORYDOCUMENT(BAD_REQUEST, "DIRECTORYDOCUMENT000", "이미 존재하는 디렉토리 도규먼트 입니다."),
+    DIRECTORYDOCUMENT_NOT_FOUND(BAD_REQUEST, "DIRECTORYDOCUMENT001", "해당 디렉토리 도큐먼트는 존재하지 않습니다.");
+
 
     private final HttpStatus httpStatus;
     private final String code;

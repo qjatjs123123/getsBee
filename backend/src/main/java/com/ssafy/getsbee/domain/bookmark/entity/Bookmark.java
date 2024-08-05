@@ -51,4 +51,12 @@ public class Bookmark extends BaseTimeEntity {
     public void changeBookmark() {
         this.isDeleted = !this.isDeleted;
     }
+
+    public void addBookmark(){
+        this.isDeleted = false;
+    }
+
+    public void removeBookmark(){
+        this.isDeleted = true;
+    }
 }

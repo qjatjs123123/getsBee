@@ -7,6 +7,8 @@ import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.repository.MemberRepository;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
+import com.ssafy.getsbee.global.error.exception.NotFoundException;
+import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,15 +24,16 @@ public class DirectoryServiceImpl implements DirectoryService {
 
     private final DirectoryRepository directoryRepository;
     private final MemberRepository memberRepository;
+    private final DirectoryElasticService directoryElasticService;
 
     private int ROOT_DEPTH = 0;
 
     @Override
     public List<DirectoryResponse> findAllByMember(Member member) {
         List<Directory> directories = directoryRepository.findAllByMember(member);
-//        if(SecurityUtil.getCurrentMemberId() != member.getId()){
-//            filterDirectoriesByAuth(directories);
-//        }
+        if(!SecurityUtil.getCurrentMemberId().equals(member.getId())){
+            filterDirectoriesByAuth(directories);
+        }
         return assembleDirectories(directories);
     }
 
@@ -39,7 +42,7 @@ public class DirectoryServiceImpl implements DirectoryService {
     public List<DirectoryResponse> modifyDirectories(List<DirectoryRequest> directoryRequests) {
 
         Long memberId = directoryRequests.get(0).memberId();
-        // if(!SecurityUtil.getCurrentMemberId().equals(memberId)) throw new UnauthorizedException(FORBIDDEN_USER);
+         if(!SecurityUtil.getCurrentMemberId().equals(memberId)) throw new NotFoundException(MEMBER_NOT_FOUND);
         Member member = memberRepository.getReferenceById(memberId);
         List<Directory> existingDirectories = directoryRepository.findAllByMember(member);
 
@@ -50,6 +53,9 @@ public class DirectoryServiceImpl implements DirectoryService {
             if(DR.directoryId().startsWith("T")){
                 Directory newDirectory = directoryRepository.createNewDirectoryForMember(member, DR.name());
                 tempIdToId.put(DR.directoryId(), newDirectory.getId());
+
+                //TODO : 여기서 디렉토리 생성됨
+                directoryElasticService.saveDirectoryDocument(newDirectory);
             }
         }
 
@@ -68,6 +74,8 @@ public class DirectoryServiceImpl implements DirectoryService {
                     System.out.println("deleting: " + directory.getName());
                     throw new BadRequestException(CANT_DELETE_DEFAULT_DIRECTORY);
                 }
+                //TODO : 여기서 삭제됨
+                directoryElasticService.deleteDirectoryDocument(directory);
                 directoryRepository.delete(directory);
             }
         }
@@ -186,6 +194,8 @@ public class DirectoryServiceImpl implements DirectoryService {
     private boolean isDirectoryChanged(Directory existingDirectory, DirectoryRequest DR, Long newPrevDirectoryId,
                                        Long newNextDirectoryId, Long newParentDirectoryId) {
         if (!existingDirectory.getName().equals(DR.name())) {
+            //TODO : 여기 이름 바뀜
+            directoryElasticService.updateDirectoryDocument(existingDirectory);
             return true;
         }
 
