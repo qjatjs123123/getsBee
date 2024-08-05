@@ -166,16 +166,19 @@ public class PostServiceImpl implements PostService {
         }else if(postListRequest.memberId() != null){
             return showPostListByMemberId(postListRequest.memberId(), cursor, pageable);
         }else if(postListRequest.following()!=null){
-            return followingPostListByMemberId(SecurityUtil.getCurrentMemberId(), cursor, pageable);
+            return showFollowingPostListByMemberId(SecurityUtil.getCurrentMemberId(), cursor, pageable);
         }else if(postListRequest.query()!=null){
-            //다현이 검색 로직
+            return showPostListByKeyword(postListRequest.query());
         }else{
             throw new BadRequestException(INVALID_POST_REQUEST);
         }
-        return null;
     }
 
-    private Slice<PostListResponse> followingPostListByMemberId(Long memberId, Long cursor, Pageable pageable) {
+    private Slice<PostListResponse> showPostListByKeyword(String query) {
+//        List<Post> posts = elastic
+    }
+
+    private Slice<PostListResponse> showFollowingPostListByMemberId(Long memberId, Long cursor, Pageable pageable) {
         Member member = memberService.findById(memberId);
         System.out.println("dd");
         List<Directory> directories = followRepository.findFollowingDirectories(member);
