@@ -27,7 +27,7 @@ const NoUserInfo = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+    <div className="flex flex-col items-center mt-[80px] p-4">
       <div className="text-center max-w-2xl">
         <p className="text-2xl font-black text-[#253746] mb-2">포스트를 추천받고 싶으신가요?</p>
         <p className="text-lg text-[#8D8D8D] mb-6">지금 정보를 입력하고 개인 맞춤 피드를 추천받아 보세요!</p>

@@ -6,7 +6,7 @@ import Menu from './Menu';
 function Header() {
   return (
     <div className="flex items-center justify-between">
-      <Link to="/home" className="flex items-center font-bold">
+      <Link to="/" className="flex items-center font-bold">
         <img className="w-[160px] ml-[20px] mt-[24px] mb-[24px]" src={logoIcon} alt="beeIcon" />
       </Link>
       <MainSearchBar />

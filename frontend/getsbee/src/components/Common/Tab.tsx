@@ -1,19 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TabMenu, TabMenuTabChangeEvent } from 'primereact/tabmenu';
 
 const Tab: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
   const items = [
-    { label: 'Router Link', url: '/tabmenu' },
+    { label: 'Following', url: '/' },
     {
-      label: 'Programmatic',
-      command: () => {
-        // Add your command logic here
-      },
+      label: 'For you',
+      url: '/recommend',
     },
-    { label: 'External', url: 'https://react.dev/' },
   ];
+
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path === '/recommend') {
+      setActiveIndex(1);
+    } else {
+      setActiveIndex(0);
+    }
+  }, []);
 
   const onTabChange = (e: TabMenuTabChangeEvent) => {
     setActiveIndex(e.index);
