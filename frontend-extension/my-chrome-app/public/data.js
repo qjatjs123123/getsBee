@@ -65,7 +65,6 @@ function createRangeObject(rangeData) {
 
   // Create a range for highlighting
   const highlightRange = document.createRange();
-
   highlightRange.setStart(startNode, rangeData.startOffset);
   highlightRange.setEnd(endNode, rangeData.lastOffset);
   return highlightRange;

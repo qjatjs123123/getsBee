@@ -10,11 +10,12 @@ function Footer() {
     // eslint-disable-next-line no-undef
     // 페이지 로드 시 chrome.storage에서 데이터 가져오기
     // eslint-disable-next-line no-undef
-    chrome.storage.local.get(["hostName"], (result) => {
-      if (result.hostName) {
-        setDomain(result.hostName);
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      if (message.data.hostName) {
+        setDomain(message.data.hostName);
       }
     });
+
   }, []);
   return (
     <>

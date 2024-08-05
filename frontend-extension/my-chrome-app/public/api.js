@@ -9,9 +9,13 @@ function insertHighLightAPI(data, colorh) {
 
     insertHighLight(data);
     const highlightRange = createRangeObject(data);
-    console.log(data);
     const textNodes = findTextNodesInRange(highlightRange);
-    highlightTextNodes(textNodes, highlightRange, data.color, colorh);
+    highlightTextNodes(
+      textNodes,
+      highlightRange,
+      data.color,
+      getHoverColor(data.color)
+    );
   } catch (error) {
     return "ERROR";
   }

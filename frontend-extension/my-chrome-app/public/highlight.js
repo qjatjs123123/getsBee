@@ -68,7 +68,6 @@ function dragHighlight(range, color, colorh) {
     lastOffset: range.endOffset,
     color: color,
   });
-
   // 하이라이트 저장 API 호출
   insertHighLightAPI(rangeData);
 }
