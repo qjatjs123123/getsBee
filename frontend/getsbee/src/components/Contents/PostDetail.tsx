@@ -37,6 +37,7 @@ interface Post {
 function PostDetail() {
   const [value, setValue] = useState<string>('');
   const [isEditing, setIsEditing] = useState(false);
+  const [isMyPost] = useState(false);
   const [post, setPost] = useState<Post>({
     title: 'There are many variations of passages of Lorem Ipsum ',
     url: 'https://www.figma.com/design/6haHr5BJLpFYfi0soGyEYu/',
@@ -89,20 +90,20 @@ function PostDetail() {
   }
 
   return (
-    <div style={{ width: '500px', height: 'auto' }}>
+    <div className="mb-4" style={{ width: '500px', height: 'auto' }}>
       <div className="flex justify-between mt-3">
-        <div className="flex items-center">
-          <span className={`flex items-center text-[12px] font-semibold px-2 py-1 rounded-full ${publicClass}`}>
-            <img className="flex w-[20px] h-[20px] mr-1" src={iconSrc} alt="statusIcon" />
-            {publicText}
-          </span>
-        </div>
-        <div className="flex items-center">
-          <DirSelection />
-        </div>
+        {isMyPost && (
+          <div className="flex items-center">
+            <span className={`flex items-center text-[12px] font-semibold px-2 py-1 rounded-full ${publicClass}`}>
+              <img className="flex w-[20px] h-[20px] mr-1" src={iconSrc} alt="statusIcon" />
+              {publicText}
+            </span>
+          </div>
+        )}
+        <div className="flex items-center">{isMyPost && <DirSelection />}</div>
       </div>
       <div className="flex mt-3">
-        <img src={post.avatar} alt={post.title} className="mt-3 ml-3 w-[100px] h-[100px]" />
+        <img src={post.avatar} alt={post.title} className="mt-3 ml-3 w-[80px] h-[80px]" />
         <div className="ml-4 flex-1">
           <p className="text-[14px] font-semibold" style={{ color: '#8D8D8D' }}>
             {post.directoryName}
@@ -129,15 +130,17 @@ function PostDetail() {
       <div className="flex justify-between items-center mt-3 ml-3">
         <h2 className="text-[18px] font-bold">Highlights</h2>
         <div className="flex">
-          <i
-            className="pi pi-file-edit mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer"
-            title="Edit"
-            onClick={() => setIsEditing(true)}
-            onKeyPress={handleKeyPress}
-            tabIndex={0}
-            role="button"
-            aria-label="Edit"
-          />
+          {isMyPost && (
+            <i
+              className="pi pi-file-edit mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer"
+              title="Edit"
+              onClick={() => setIsEditing(true)}
+              onKeyPress={handleKeyPress}
+              tabIndex={0}
+              role="button"
+              aria-label="Edit"
+            />
+          )}
           <i className="pi pi-heart mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer" title="Like" />
           <i className="pi pi-share-alt mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer" title="Share" />
           <i className="pi pi-bookmark mr-4 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer" title="Bookmark" />
