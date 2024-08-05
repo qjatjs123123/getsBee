@@ -163,7 +163,7 @@ const SideBar: React.FC = () => {
 
   return (
     <aside className="fixed h-full w-[224px] bg-[#fff6e3] rounded-r-[28px] flex flex-col">
-      <Link to="/home" className="flex items-center ml-[20px] mt-[24px] font-bold">
+      <Link to="/" className="flex items-center ml-[20px] mt-[24px] font-bold">
         <img className="w-[160px] h-[32px] mr-[12px]" src={logoIcon} alt="beeIcon" />
       </Link>
       <div className="flex flex-col items-center mt-6">
