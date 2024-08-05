@@ -2,6 +2,7 @@ package com.ssafy.getsbee.domain.post.controller;
 
 import com.ssafy.getsbee.domain.post.dto.request.PostListRequest;
 import com.ssafy.getsbee.domain.post.dto.request.UpdatePostRequest;
+import com.ssafy.getsbee.domain.post.dto.response.LikePostResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostResponse;
 import com.ssafy.getsbee.domain.post.service.PostService;
@@ -46,13 +47,13 @@ public class PostController {
     }
 
     @PostMapping("/{post-id}/likes")
-    public void likePost(@PathVariable("post-id") Long postId){
-        postService.likePost(postId, SecurityUtil.getCurrentMemberId());
+    public LikePostResponse likePost(@PathVariable("post-id") Long postId){
+        return postService.likePost(postId, SecurityUtil.getCurrentMemberId());
     }
 
     @DeleteMapping("/{post-id}/likes")
-    public void unlikePost(@PathVariable("post-id") Long postId){
-        postService.likePost(postId, SecurityUtil.getCurrentMemberId());
+    public LikePostResponse unlikePost(@PathVariable("post-id") Long postId){
+        return postService.unlikePost(postId, SecurityUtil.getCurrentMemberId());
     }
 
     @GetMapping("/")
