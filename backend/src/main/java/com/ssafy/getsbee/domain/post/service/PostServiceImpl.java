@@ -40,7 +40,7 @@ import static com.ssafy.getsbee.global.error.ErrorCode.*;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
-    private final MemberService memberService; // 순환 참조
+    private final MemberService memberService;
     private final DirectoryRepository directoryRepository;
     private final BookmarkRepository bookmarkRepository;
     private final HighlightRepository highlightRepository;
@@ -175,14 +175,23 @@ public class PostServiceImpl implements PostService {
         }else if(postListRequest.following()!=null){
             return showFollowingPostListByMemberId(SecurityUtil.getCurrentMemberId(), cursor, pageable);
         }else if(postListRequest.query()!=null){
-            return showPostListByKeyword(postListRequest.query());
+            return showPostListByKeyword(postListRequest.query(), pageable, cursor);
         }else{
             throw new BadRequestException(INVALID_POST_REQUEST);
         }
     }
 
-    private Slice<PostListResponse> showPostListByKeyword(String query) {
-//        List<Post> posts = elastic
+    @Transactional(readOnly = true)
+    public Slice<PostListResponse> showPostListByKeyword(String query, Pageable pageable, Long cursor) {
+        Slice<Long> postIds = postElasticService.findByKeyword(query, pageable, cursor);
+
+        List<Post> posts = postIds.getContent().stream()
+                .map(postId -> postRepository.findById(postId)
+                        .orElseThrow(() -> new BadRequestException(POST_NOT_FOUND)))
+                .collect(Collectors.toList());
+
+        Slice<Post> postSlice = new SliceImpl<>(posts, pageable, postIds.hasNext());
+        return makePostListResponseWithPosts(postSlice);
     }
 
     private Slice<PostListResponse> showFollowingPostListByMemberId(Long memberId, Long cursor, Pageable pageable) {
@@ -248,7 +257,7 @@ public class PostServiceImpl implements PostService {
                             .build();
 
                     PostListResponse.Info info = PostListResponse.Info.builder()
-                            .isLikedByCurrentUser(false) // 구현 예정
+                            .isLikedByCurrentUser(checkIfLikedByCurrentUser(post)) // 구현 예정
                             .isBookmarkedByCurrentUser(checkIfBookmarkedByCurrentUser(post))
                             .relatedFeedNumber(null) // 구현 예정
                             .build();
@@ -266,17 +275,15 @@ public class PostServiceImpl implements PostService {
     }
 
     private boolean checkIfLikedByCurrentUser(Post post) {
-        // 로직 구현 필요
-        return false;
+        Member currentMember = memberService.findById(SecurityUtil.getCurrentMemberId());
+        return likeRepository.findByMemberAndPost(currentMember, post).isPresent();
     }
 
     private boolean checkIfBookmarkedByCurrentUser(Post post) {
         Member currentMember = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NotFoundException(MEMBER_NOT_FOUND));
-
         return bookmarkRepository.findByPostAndMember(post, currentMember).isPresent();
     }
-
 
     private Post findById(Long postId) {
         return postRepository.findById(postId)

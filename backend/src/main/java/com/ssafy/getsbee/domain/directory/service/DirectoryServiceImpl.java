@@ -3,6 +3,8 @@ package com.ssafy.getsbee.domain.directory.service;
 import com.ssafy.getsbee.domain.directory.dto.request.DirectoryRequest;
 import com.ssafy.getsbee.domain.directory.dto.response.DirectoryResponse;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
+import com.ssafy.getsbee.domain.directory.entity.DirectoryDocument;
+import com.ssafy.getsbee.domain.directory.repository.DirectoryElasticRepository;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.repository.MemberRepository;
@@ -10,6 +12,8 @@ import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.error.exception.NotFoundException;
 import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,8 +29,9 @@ public class DirectoryServiceImpl implements DirectoryService {
     private final DirectoryRepository directoryRepository;
     private final MemberRepository memberRepository;
     private final DirectoryElasticService directoryElasticService;
+    private final DirectoryElasticRepository directoryElasticRepository;
 
-    private int ROOT_DEPTH = 0;
+    private final int ROOT_DEPTH = 0;
 
     @Override
     public List<DirectoryResponse> findAllByMember(Member member) {
@@ -115,6 +120,12 @@ public class DirectoryServiceImpl implements DirectoryService {
     public String findFullNameByDirectory(Directory directory) {
         if(directory.getDepth()==1) return directory.getName();
         return directory.getParentDirectory().getName() + " / " +directory.getName();
+    }
+
+    @Override
+    public Slice<DirectoryResponse> showDirectoriesBySearch(String query, Pageable pageable, Long cursor) {
+        Slice<DirectoryDocument> directoryDocuments = directoryElasticRepository.findAllByDirectoryIdLessThanAndDirectoryNameIsLikeOrderByDirectoryIdDesc(cursor, query, pageable);
+        directoryDocuments.getContent().stream().
     }
 
     private void filterDirectoriesByAuth(List<Directory> directories) {

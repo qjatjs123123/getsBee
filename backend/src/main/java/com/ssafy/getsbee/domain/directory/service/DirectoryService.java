@@ -4,6 +4,8 @@ import com.ssafy.getsbee.domain.directory.dto.request.DirectoryRequest;
 import com.ssafy.getsbee.domain.directory.dto.response.DirectoryResponse;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.member.entity.Member;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 import java.util.List;
 
@@ -16,4 +18,6 @@ public interface DirectoryService {
     void createDefaultDirectoriesForMember(Member member);
 
     String findFullNameByDirectory(Directory directory);
+
+    Slice<DirectoryResponse> showDirectoriesBySearch(String query, Pageable pageable, Long cursor);
 }
