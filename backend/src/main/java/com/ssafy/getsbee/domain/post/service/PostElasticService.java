@@ -5,6 +5,7 @@ import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.domain.post.entity.PostDocument;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 public interface PostElasticService {
 
@@ -14,7 +15,7 @@ public interface PostElasticService {
 
     void deleteHighlightDocument(Highlight highlight);
 
-    Page<PostDocument> findByKeyword(String keyword, Pageable pageable, Long postId);
+    Slice<Long> findByKeyword(String keyword, Pageable pageable, Long postId);
 
     void updatePostDocument(Post post);
 }

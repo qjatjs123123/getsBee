@@ -7,11 +7,11 @@ import com.ssafy.getsbee.domain.post.repository.PostElasticRepository;
 import com.ssafy.getsbee.domain.post.repository.PostRepository;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.ssafy.getsbee.global.error.ErrorCode.POSTDOCUMENT_NOT_FOUND;
 import static com.ssafy.getsbee.global.error.ErrorCode.POST_NOT_FOUND;
@@ -23,9 +23,6 @@ public class PostElasticServiceImpl implements PostElasticService {
 
     private final PostRepository postRepository;
     private final PostElasticRepository postElasticRepository;
-    private final ElasticsearchOperations operations;
-
-    IndexCoordinates index = IndexCoordinates.of("post");
 
     @Override
     public void savePostDocument(Highlight highlight) {
@@ -52,6 +49,10 @@ public class PostElasticServiceImpl implements PostElasticService {
         PostDocument postDocument = postElasticRepository.findByPostId(post.getId()).
                 orElseThrow(()-> new BadRequestException(POSTDOCUMENT_NOT_FOUND));
 
+        for(Highlight highlight : post.getHighlights()) {
+
+            System.out.println(highlight.getContent() + " ");
+        }
         postDocument.updatePostDocument(post);
         postElasticRepository.save(postDocument);
     }
@@ -70,8 +71,20 @@ public class PostElasticServiceImpl implements PostElasticService {
     }
 
     @Override
-    public Page<PostDocument> findByKeyword(String keyword, Pageable pageable, Long postId) {
-        return postElasticRepository.findAllByPostIdLessThanAndAllContentIsLikeOrderByPostIdDesc(postId, keyword, pageable);
+    public Slice<Long> findByKeyword(String keyword, Pageable pageable, Long postId) {
+        Pageable pageable1 = PageRequest.ofSize(pageable.getPageSize() + 1);
+
+        Page<PostDocument> page = postElasticRepository.findAllByPostIdLessThanAndAllContentIsLikeOrderByPostIdDesc(postId, keyword, pageable1);
+
+        boolean hasNext;
+        List<Long> postIds = new ArrayList<>();
+        page.getContent().stream().map(PostDocument::getPostId).forEach(postIds::add);
+        if(page.getTotalElements() == pageable.getPageSize() + 1) {
+            hasNext = true;
+            postIds.remove(postIds.size() - 1);
+        }else hasNext = false;
+
+        return new SliceImpl<>(postIds, pageable, hasNext);
     }
 
 }

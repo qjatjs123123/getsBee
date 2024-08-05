@@ -67,7 +67,12 @@ public enum ErrorCode {
 
     /** highlightDocument */
     DUPLICATE_HIGHLIGHTDOCUMENT(BAD_REQUEST, "HIGHLIGHTDOCUMENT000", "이미 존재하는 하이라이트 도규먼트 입니다."),
-    HIGHLIGHTDOCUMENT_NOT_FOUND(BAD_REQUEST, "HIGHLIGHTDOCUMENT001", "해당 하이라이트 도큐먼트는 존재하지 않습니다.");
+    HIGHLIGHTDOCUMENT_NOT_FOUND(BAD_REQUEST, "HIGHLIGHTDOCUMENT001", "해당 하이라이트 도큐먼트는 존재하지 않습니다."),
+
+    /** DirectoryDocument */
+    DUPLICATE_DIRECTORYDOCUMENT(BAD_REQUEST, "DIRECTORYDOCUMENT000", "이미 존재하는 디렉토리 도규먼트 입니다."),
+    DIRECTORYDOCUMENT_NOT_FOUND(BAD_REQUEST, "DIRECTORYDOCUMENT001", "해당 디렉토리 도큐먼트는 존재하지 않습니다.");
+
 
     private final HttpStatus httpStatus;
     private final String code;

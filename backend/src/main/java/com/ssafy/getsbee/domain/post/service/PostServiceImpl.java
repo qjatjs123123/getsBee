@@ -5,6 +5,7 @@ import com.ssafy.getsbee.domain.bookmark.repository.BookmarkRepository;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
+import com.ssafy.getsbee.domain.highlight.entity.Highlight;
 import com.ssafy.getsbee.domain.highlight.repository.HighlightRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.service.MemberService;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,15 +62,18 @@ public class PostServiceImpl implements PostService {
         Directory directory = directoryRepository.findDirectoryById(request.directoryId());
 
         // 하이라이트 삭제
-        highlightRepository.deleteAll(request.deleteHighlightIds().stream()
-                .map(highlightId -> highlightRepository.findById(highlightId).orElseThrow(() -> new BadRequestException(HIGHLIGHT_NOT_FOUND)))
-                .collect(Collectors.toList()));
+        List<Highlight> list = new ArrayList<>();
+        for (Long highlightId : request.deleteHighlightIds()) {
+            Highlight highlight = highlightRepository.findById(highlightId).orElseThrow(() -> new BadRequestException(HIGHLIGHT_NOT_FOUND));
+            list.add(highlight);
+            post.deleteHighlight(highlight);
+        }
+        highlightRepository.deleteAll(list);
 
         post.updatePost(request.note(), directory, request.isPublic());
 
-        postElasticService.updatePostDocument(post);
-
         postRepository.save(post);
+        postElasticService.updatePostDocument(post);
     }
 
     @Override

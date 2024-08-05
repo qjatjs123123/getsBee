@@ -72,7 +72,7 @@ public class PostDocument {
         StringBuilder str = new StringBuilder();
 
         for (Highlight highlight : post.getHighlights()) {
-            if (!highlight.getIsDeleted()) str.append(highlight.getContent());
+            if (!highlight.getIsDeleted()) str.append(highlight.getContent()).append(" ");
         }
 
         String note = post.getNote() != null ? post.getNote() : "";

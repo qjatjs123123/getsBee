@@ -24,6 +24,7 @@ public class DirectoryServiceImpl implements DirectoryService {
 
     private final DirectoryRepository directoryRepository;
     private final MemberRepository memberRepository;
+    private final DirectoryElasticService directoryElasticService;
 
     @Override
     public List<DirectoryResponse> findAllByMember(Member member) {
@@ -48,9 +49,11 @@ public class DirectoryServiceImpl implements DirectoryService {
         // ADD
         for(DirectoryRequest DR : directoryRequests){
             if(DR.directoryId().startsWith("T")){
-                //TODO : 여기서 디렉토리 생성됨
                 Directory newDirectory = directoryRepository.createNewDirectoryForMember(member, DR.name());
                 tempIdToId.put(DR.directoryId(), newDirectory.getId());
+
+                //TODO : 여기서 디렉토리 생성됨
+                directoryElasticService.saveDirectoryDocument(newDirectory);
             }
         }
 
@@ -68,6 +71,7 @@ public class DirectoryServiceImpl implements DirectoryService {
                     throw new BadRequestException(CANT_DELETE_DEFAULT_DIRECTORY);
                 }
                 //TODO : 여기서 삭제됨
+                directoryElasticService.deleteDirectoryDocument(directory);
                 directoryRepository.delete(directory);
             }
         }
@@ -182,6 +186,7 @@ public class DirectoryServiceImpl implements DirectoryService {
                                        Long newNextDirectoryId, Long newParentDirectoryId) {
         if (!existingDirectory.getName().equals(DR.name())) {
             //TODO : 여기 이름 바뀜
+            directoryElasticService.updateDirectoryDocument(existingDirectory);
             return true;
         }
 

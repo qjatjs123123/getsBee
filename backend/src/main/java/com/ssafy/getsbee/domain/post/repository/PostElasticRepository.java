@@ -11,7 +11,7 @@ import java.util.Optional;
 
 
 @Repository
-public interface PostElasticRepository extends ElasticsearchRepository<PostDocument, Long> {
+public interface PostElasticRepository extends ElasticsearchRepository<PostDocument, String> {
 
     Page<PostDocument> findAllByPostIdLessThanAndAllContentIsLikeOrderByPostIdDesc(Long postId, String keyword, Pageable pageable);
 

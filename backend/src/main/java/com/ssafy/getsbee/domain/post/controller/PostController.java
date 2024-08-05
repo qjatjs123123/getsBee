@@ -66,9 +66,9 @@ public class PostController {
         postService.likePost(postId, SecurityUtil.getCurrentMemberId());
     }
 
-    @PostMapping("/test")
-    public Page<PostDocument> test(@RequestBody KeywordRequest request, Pageable pageable,
-                                         @RequestParam("postId") Long postId){
-        return postElasticService.findByKeyword(request.keyword(), pageable, postId);
-    }
+//    @PostMapping("/test")
+//    public Page<PostDocument> test(@RequestBody KeywordRequest request, Pageable pageable,
+//                                         @RequestParam("postId") Long postId){
+//        return postElasticService.findByKeyword(request.keyword(), pageable, postId);
+//    }
 }
