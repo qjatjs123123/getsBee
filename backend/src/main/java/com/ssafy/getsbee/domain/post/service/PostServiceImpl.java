@@ -177,7 +177,9 @@ public class PostServiceImpl implements PostService {
 
     private Slice<PostListResponse> followingPostListByMemberId(Long memberId, Long cursor, Pageable pageable) {
         Member member = memberService.findById(memberId);
+        System.out.println("dd");
         List<Directory> directories = followRepository.findFollowingDirectories(member);
+        System.out.println("dd");
         Slice<Post> posts = postRepository.findAllByDirectories(directories, cursor, pageable);
         return makePostListResponseWithPosts(posts);
     }
