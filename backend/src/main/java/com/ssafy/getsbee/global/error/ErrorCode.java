@@ -49,7 +49,15 @@ public enum ErrorCode {
     NEXT_DIRECTORY_NOT_FOUND(BAD_REQUEST, "DIR001", "다음 디렉토리를 찾을 수 없습니다."),
     PREV_DIRECTORY_NOT_FOUND(BAD_REQUEST, "DIR002", "이전 디렉토리를 찾을 수 없습니다."),
     CANT_DELETE_DEFAULT_DIRECTORY(BAD_REQUEST, "DIR003", "기본 디렉토리는 삭제할 수 없습니다."),
+
     /** Category */
+
+    /** Block */
+    BLOCK_NOT_FOUND(BAD_REQUEST, "BLOCK000", "해당 차단 도메인이 존재하지 않습니다."),
+
+    /** Like */
+    LIKE_NOT_FOUND(BAD_REQUEST, "LIKE000", "해당 좋아요가 존재하지 않습니다."),
+    DUPLICATE_LIKE(BAD_REQUEST, "LIKE001", "이미 존재하는 좋아요 입니다."),
 
     /** Comment */
     COMMENT_NOT_FOUND(BAD_REQUEST, "COMMENT000", "해당 댓글을 찾을 수 없습니다."),

@@ -8,16 +8,20 @@ import com.ssafy.getsbee.domain.follow.repository.FollowRepository;
 import com.ssafy.getsbee.domain.highlight.entity.Highlight;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
 import com.ssafy.getsbee.domain.highlight.repository.HighlightRepository;
+import com.ssafy.getsbee.domain.like.entity.Like;
+import com.ssafy.getsbee.domain.like.repository.LikeRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.repository.MemberRepository;
 import com.ssafy.getsbee.domain.member.service.MemberService;
 import com.ssafy.getsbee.domain.post.dto.request.PostListRequest;
 import com.ssafy.getsbee.domain.post.dto.request.UpdatePostRequest;
+import com.ssafy.getsbee.domain.post.dto.response.LikePostResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostResponse;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.domain.post.repository.PostRepository;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
+import com.ssafy.getsbee.global.error.exception.ForbiddenException;
 import com.ssafy.getsbee.global.error.exception.NotFoundException;
 import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +45,7 @@ public class PostServiceImpl implements PostService {
     private final BookmarkRepository bookmarkRepository;
     private final HighlightRepository highlightRepository;
     private final FollowRepository followRepository;
+    private final LikeRepository likeRepository;
 
     private static final Integer DEFAULT_PAGE_SIZE = 20;
     private final MemberRepository memberRepository;
@@ -126,29 +131,42 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void likePost(Long postId, Long memberId) {
-
-    }
-
-    @Override
-    public void unlikePost(Long postId, Long memberId) {
-
-    }
-
-    @Override
-    public Page<PostListResponse> showPostList(PostListRequest postListRequest) {
-        if (postListRequest.page() == null) {
-            throw new BadRequestException(INVALID_POST_REQUEST);
+    @Transactional
+    public LikePostResponse likePost(Long postId, Long memberId) {
+        Post post = findById(postId);
+        Member member = memberService.findById(memberId);
+        if (likeRepository.findByMemberAndPost(member, post).isPresent()) {
+           throw new BadRequestException(DUPLICATE_LIKE);
         }
-        int size = postListRequest.size() == null ? DEFAULT_PAGE_SIZE : postListRequest.size();
-        Pageable pageable = PageRequest.of(postListRequest.page(), size, Sort.by(Sort.Direction.DESC,"createdAt"));
+        likeRepository.save(Like.of(member, post));
+        post.increaseLikeCount();
+        return LikePostResponse.of(post);
+    }
+
+    @Override
+    @Transactional
+    public LikePostResponse unlikePost(Long postId, Long memberId) {
+        Member member = memberService.findById(memberId);
+        Post post = findById(postId);
+        Like like = likeRepository.findByMemberAndPost(member, post)
+                .orElseThrow(() -> new BadRequestException(LIKE_NOT_FOUND));
+        if (isNotOwner(member, like.getMember())) {
+            throw new ForbiddenException(FORBIDDEN_USER);
+        }
+        likeRepository.delete(like);
+        post.decreaseLikeCount();
+        return LikePostResponse.of(post);
+    }
+
+    @Override
+    public Slice<PostListResponse> showPostList(PostListRequest postListRequest, Long cursor, Pageable pageable) {
 
         if(postListRequest.directoryId() != null){
-            return showPostListByDirectoryId(postListRequest.directoryId(), pageable);
+            return showPostListByDirectoryId(postListRequest.directoryId(), cursor, pageable);
         }else if(postListRequest.memberId() != null){
-            return showPostListByMemberId(postListRequest.memberId(), pageable);
+            return showPostListByMemberId(postListRequest.memberId(), cursor, pageable);
         }else if(postListRequest.following()!=null){
-            return followingPostListByMemberId(SecurityUtil.getCurrentMemberId(), pageable);
+            return followingPostListByMemberId(SecurityUtil.getCurrentMemberId(), cursor, pageable);
         }else if(postListRequest.query()!=null){
             //다현이 검색 로직
         }else{
@@ -157,24 +175,24 @@ public class PostServiceImpl implements PostService {
         return null;
     }
 
-    private Page<PostListResponse> followingPostListByMemberId(Long memberId, Pageable pageable) {
+    private Slice<PostListResponse> followingPostListByMemberId(Long memberId, Long cursor, Pageable pageable) {
         Member member = memberService.findById(memberId);
         List<Directory> directories = followRepository.findFollowingDirectories(member);
-        Page<Post> posts = postRepository.findAllByDirectories(directories, pageable);
+        Slice<Post> posts = postRepository.findAllByDirectories(directories, cursor, pageable);
         return makePostListResponseWithPosts(posts);
     }
 
-    private Page<PostListResponse> showPostListByMemberId(Long memberId, Pageable pageable) {
-        Page<Post> posts = postRepository.findAllByMemberId(memberId, pageable);
+    private Slice<PostListResponse> showPostListByMemberId(Long memberId, Long cursor, Pageable pageable) {
+        Slice<Post> posts = postRepository.findAllByMemberId(memberId, cursor, pageable);
         return makePostListResponseWithPosts(posts);
     }
 
-    private Page<PostListResponse> showPostListByDirectoryId(Long directoryId, Pageable pageable) {
-        Page<Post> posts = postRepository.findAllByDirectoryId(directoryId, pageable);
+    private Slice<PostListResponse> showPostListByDirectoryId(Long directoryId, Long cursor, Pageable pageable) {
+        Slice<Post> posts = postRepository.findAllByDirectoryId(directoryId, cursor, pageable);
         return makePostListResponseWithPosts(posts);
     }
 
-    private Page<PostListResponse> makePostListResponseWithPosts(Page<Post> posts) {
+    private Slice<PostListResponse> makePostListResponseWithPosts(Slice<Post> posts) {
         List<PostListResponse> postListResponses = posts.stream()
                 .map(post -> {
                     List<Highlight> highlights = highlightRepository.findAllByPostId(post.getId()).orElse(new ArrayList<>());
@@ -231,7 +249,7 @@ public class PostServiceImpl implements PostService {
                             .build();
                 }).collect(Collectors.toList());
 
-        return new PageImpl<>(postListResponses, posts.getPageable(), posts.getTotalElements());
+        return new SliceImpl<>(postListResponses, posts.getPageable(), posts.hasNext());
     }
 
     private boolean checkIfLikedByCurrentUser(Post post) {

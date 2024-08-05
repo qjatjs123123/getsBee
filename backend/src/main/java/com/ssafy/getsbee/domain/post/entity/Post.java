@@ -97,4 +97,12 @@ public class Post extends BaseTimeEntity {
     public void changeDirectory(Directory directory) {
         this.directory = directory;
     }
+
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        this.likeCount--;
+    }
 }
