@@ -48,7 +48,8 @@ public class FollowServiceImpl implements FollowService{
     @Override
     public void deleteFollow(Long followId) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        Member currentMember = memberRepository.findById(currentMemberId).orElse(null);
+        Member currentMember = memberRepository.findById(currentMemberId).orElseThrow(
+                ()->new NotFoundException(MEMBER_NOT_FOUND));
         Follow follow = followRepository.findById(followId).orElseThrow(
                 ()->new NotFoundException(FOLLOW_NOT_FOUND));
 
