@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
-import axios from 'axios';
 import { GoogleLogin, GoogleOAuthProvider, CredentialResponse } from '@react-oauth/google';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { useRecoilState } from 'recoil';
 import { userState } from '../../recoil/userState';
+import axios from '../../api/axiosConfig';
 
 interface GoogleJwtPayload extends JwtPayload {
   email: string;
@@ -14,7 +14,7 @@ interface GoogleJwtPayload extends JwtPayload {
 const GoogleOAuth: FC = () => {
   const [user, setUser] = useRecoilState(userState);
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-  const serverAuthEndpoint = import.meta.env.VITE_SERVER_AUTH_ENDPOINT;
+  const serverAuthEndpoint = '/auth/login';
 
   const handleLoginSuccess = async (credentialResponse: CredentialResponse) => {
     console.log(credentialResponse);
@@ -50,19 +50,13 @@ const GoogleOAuth: FC = () => {
 
   const sendTokenToServer = async (idToken: string) => {
     try {
-      const response = await axios.post(
-        serverAuthEndpoint,
-        { idToken, provider: 'GOOGLE' },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      );
+      const response = await axios.post(serverAuthEndpoint, { idToken, provider: 'GOOGLE' });
 
       if (response.data.isSuccess) {
         // 로컬 스토리지에 액세스 토큰을 저장
         localStorage.setItem('accessToken', response.data.data.accessToken);
+        localStorage.setItem('refreshToken', response.data.data.refreshToken);
+
         console.log(response);
         console.log('Access Token:', response.data.data.accessToken);
         console.log('Refresh Token:', response.data.data.refreshToken);
