@@ -1,17 +1,29 @@
-import React, { useState, FormEvent, ChangeEvent } from 'react';
+import React, { useState, useEffect, FormEvent, ChangeEvent } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
+import { useNavigate, useLocation } from 'react-router-dom';
 import searchIcon from '../../assets/searchIcon.png';
 
 const MainSearchBar: React.FC = () => {
   const [value, setValue] = useState<string>('');
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const query = new URLSearchParams(location.search);
+    const searchQuery = query.get('query');
+    if (searchQuery) {
+      setValue(searchQuery);
+    }
+  }, [location.search]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // submit 로직 추가 필요
-    console.log('Submitted value:', value);
-    // 제출 후 입력 필드를 초기화
-    setValue('');
+    navigate(`/search/post?query=${encodeURIComponent(value)}`);
+    // // submit 로직 추가 필요
+    // console.log('Submitted value:', value);
+    // // 제출 후 입력 필드를 초기화
+    // setValue('');
   };
 
   return (
@@ -27,7 +39,7 @@ const MainSearchBar: React.FC = () => {
         label=""
         text
         severity="secondary"
-        aria-label="Bookmark"
+        aria-label="Search"
         className="focus:outline-none focus:shadow-none m-0 p-0 flex-shrink-0"
       >
         <img src={searchIcon} alt="Search Icon" className="w-10" />
