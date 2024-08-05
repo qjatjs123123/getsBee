@@ -6,22 +6,23 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import static com.google.api.client.json.webtoken.JsonWebToken.*;
-import static com.google.auth.oauth2.TokenVerifier.*;
-import static com.ssafy.getsbee.global.error.ErrorCode.*;
+import static com.google.auth.oauth2.TokenVerifier.newBuilder;
+import static com.ssafy.getsbee.global.error.ErrorCode.INVALID_ID_TOKEN;
 
 @Component
-public class GoogleOidcTokenVerifier {
+public class IdTokenVerifyServiceImpl implements IdTokenVerifyService{
 
     @Value("${google.oidc.audience}")
     private String googleOidcAudience;
 
-    public Payload verify(String idToken) {
+    @Override
+    public Payload verifyGoogleIdToken(String idToken) {
         try {
             TokenVerifier tokenVerifier = newBuilder()
                     .setAudience(googleOidcAudience)
                     .build();
             return tokenVerifier.verify(idToken).getPayload();
-        } catch (VerificationException e) {
+        } catch (TokenVerifier.VerificationException e) {
             throw new BadRequestException(INVALID_ID_TOKEN);
         }
     }
