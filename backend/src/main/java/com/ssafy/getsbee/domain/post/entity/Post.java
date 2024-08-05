@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static jakarta.persistence.FetchType.*;
@@ -60,8 +61,8 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private List<Highlight> highlights;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<Highlight> highlights = new ArrayList<>();
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "directory_id")
@@ -96,6 +97,14 @@ public class Post extends BaseTimeEntity {
 
     public void changeDirectory(Directory directory) {
         this.directory = directory;
+    }
+    
+    public void addHighlight(Highlight highlight) {
+        this.getHighlights().add(highlight);
+    }
+
+    public void deleteHighlight(Highlight highlight) {
+        this.getHighlights().remove(highlight);
     }
 
     public void increaseLikeCount() {
