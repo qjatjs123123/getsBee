@@ -55,13 +55,16 @@ public enum ErrorCode {
     /** Block */
     BLOCK_NOT_FOUND(BAD_REQUEST, "BLOCK000", "해당 차단 도메인이 존재하지 않습니다."),
 
+    /** Like */
+    LIKE_NOT_FOUND(BAD_REQUEST, "LIKE000", "해당 좋아요가 존재하지 않습니다."),
+    DUPLICATE_LIKE(BAD_REQUEST, "LIKE001", "이미 존재하는 좋아요 입니다."),
+
     /** Comment */
     COMMENT_NOT_FOUND(BAD_REQUEST, "COMMENT000", "해당 댓글을 찾을 수 없습니다."),
 
     /** Bookmark */
     DUPLICATE_BOOKMARK(BAD_REQUEST, "BOOKMARK000", "이미 존재하는 북마크 입니다."),
     BOOKMARK_NOT_FOUND(BAD_REQUEST, "BOOKMARK001", "해당 하이라이트는 존재하지 않습니다.");
-    /** Like */
 
     /** Follow */
 

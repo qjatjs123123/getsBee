@@ -8,16 +8,20 @@ import com.ssafy.getsbee.domain.follow.repository.FollowRepository;
 import com.ssafy.getsbee.domain.highlight.entity.Highlight;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
 import com.ssafy.getsbee.domain.highlight.repository.HighlightRepository;
+import com.ssafy.getsbee.domain.like.entity.Like;
+import com.ssafy.getsbee.domain.like.repository.LikeRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.repository.MemberRepository;
 import com.ssafy.getsbee.domain.member.service.MemberService;
 import com.ssafy.getsbee.domain.post.dto.request.PostListRequest;
 import com.ssafy.getsbee.domain.post.dto.request.UpdatePostRequest;
+import com.ssafy.getsbee.domain.post.dto.response.LikePostResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostResponse;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.domain.post.repository.PostRepository;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
+import com.ssafy.getsbee.global.error.exception.ForbiddenException;
 import com.ssafy.getsbee.global.error.exception.NotFoundException;
 import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +45,7 @@ public class PostServiceImpl implements PostService {
     private final BookmarkRepository bookmarkRepository;
     private final HighlightRepository highlightRepository;
     private final FollowRepository followRepository;
+    private final LikeRepository likeRepository;
 
     private static final Integer DEFAULT_PAGE_SIZE = 20;
     private final MemberRepository memberRepository;
@@ -126,13 +131,31 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void likePost(Long postId, Long memberId) {
-
+    @Transactional
+    public LikePostResponse likePost(Long postId, Long memberId) {
+        Post post = findById(postId);
+        Member member = memberService.findById(memberId);
+        if (likeRepository.findByMemberAndPost(member, post).isPresent()) {
+           throw new BadRequestException(DUPLICATE_LIKE);
+        }
+        likeRepository.save(Like.of(member, post));
+        post.increaseLikeCount();
+        return LikePostResponse.of(post);
     }
 
     @Override
-    public void unlikePost(Long postId, Long memberId) {
-
+    @Transactional
+    public LikePostResponse unlikePost(Long postId, Long memberId) {
+        Member member = memberService.findById(memberId);
+        Post post = findById(postId);
+        Like like = likeRepository.findByMemberAndPost(member, post)
+                .orElseThrow(() -> new BadRequestException(LIKE_NOT_FOUND));
+        if (isNotOwner(member, like.getMember())) {
+            throw new ForbiddenException(FORBIDDEN_USER);
+        }
+        likeRepository.delete(like);
+        post.decreaseLikeCount();
+        return LikePostResponse.of(post);
     }
 
     @Override
