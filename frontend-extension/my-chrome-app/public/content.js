@@ -1,27 +1,31 @@
-let textNodesArr = [];
 let textContents = [];
+let resultArr = [];
+let articleNode = null;
+// 원본 HTML 상태를 저장할 변수
+let originalHTML = "";
+let MAX_INTERVAL = 10;
+let intervalCount = 0; //
 /* eslint-disable no-undef */
-
+let tooltip = "";
 window.addEventListener("load", () => {
-  chrome.storage.local.set({ resultArr: [] }, () => {});
-  extractTextNodes(getStart());
-
-  function getStart() {
+  sendPageContent();
+  init();
+  originalHTML = document.body.innerHTML;
+  setTimeout(() => {
     if (getDomain() === "n.news.naver.com") {
-      const articles = document.getElementsByTagName("article");
-      return articles.length > 0 ? articles[0] : document.body;
+      document.body.innerHTML = originalHTML;
+      init();
     }
-    return document.body;
-  }
+  }, 500);
 
   function highlightRecommend(resultArr) {
     for (let i = 0; i < resultArr.length; i++) {
-      const range = textNodesArr[resultArr[i]];
-      dragHighlight(range, YELLOW_COLOR, YELLOW_COLOR_H);
+      const target = resultArr[i];
+      recursion(document.body, target);
     }
   }
 
-  function extractTextNodes(node) {
+  function recursion(node, target) {
     function traverse(currentNode) {
       if (currentNode.nodeType === Node.TEXT_NODE) {
         const parentElement = currentNode.parentNode;
@@ -32,27 +36,25 @@ window.addEventListener("load", () => {
           tagName === "span" ||
           tagName === "div" ||
           tagName === "li" ||
-          tagName === "article";
+          tagName === "article" ||
+          tagName === "img";
         if (!isTargetTag) return;
 
         const textContent = currentNode.textContent.trim();
 
-        if (textContent && textContent.length > 20) {
-          const sentences = textContent
-            .split(".")
-            .map((sentence) => sentence.trim())
-            .filter((sentence) => sentence.length > 0);
-
-          let startIndex = 0;
-          sentences.forEach((sentence) => {
-            textContents.push(sentence);
+        if (
+          textContent &&
+          textContent.length > 20 &&
+          textContent.length <= 200
+        ) {
+          startIndex = currentNode.textContent.indexOf(target);
+          if (startIndex !== -1) {
             const range = document.createRange();
-            startIndex = currentNode.textContent.indexOf(sentence, startIndex);
             range.setStart(currentNode, startIndex);
-            range.setEnd(currentNode, startIndex + sentence.length);
-            startIndex += sentence.length;
-            textNodesArr.push(range);
-          });
+            range.setEnd(currentNode, startIndex + target.length);
+
+            dragHighlight(range, YELLOW_COLOR);
+          }
         }
       }
 
@@ -65,36 +67,38 @@ window.addEventListener("load", () => {
   }
 
   function sendPageContent() {
+    console.log("123");
     chrome.runtime.sendMessage({
-      pageContentArr: textContents,
+      type: "SEND_BROWSER_INFO",
       hostName: getDomain(),
+      resultArr: resultArr,
+      HTMLContent: document.documentElement.outerHTML,
     });
   }
 
-  sendPageContent();
+  function init() {
+    tooltip = createTooltip();
+    document.body.appendChild(tooltip);
+    loadFontAwesome();
+    const binButton = createIconButton("fa fa-trash-o", "25px", () => {
+      deleteHighlight();
+      hideTooltip();
+    });
+    COLORS.forEach(({ color, colorh }) => {
+      const colorButton = createColorButton(color, colorh);
+      tooltip.appendChild(colorButton);
+    });
+    tooltip.appendChild(binButton);
+  }
+
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === "TAB_CHANGED") {
       sendPageContent();
     } else if (message.type === "RECOMMEND_CLICKED") {
       highlightRecommend(message.resultArr);
+      resultArr = message.resultArr;
     }
   });
-
-  loadFontAwesome();
-
-  const tooltip = createTooltip();
-  document.body.appendChild(tooltip);
-
-  COLORS.forEach(({ color, colorh }) => {
-    const colorButton = createColorButton(color, colorh);
-    tooltip.appendChild(colorButton);
-  });
-
-  const binButton = createIconButton("fa fa-trash-o", "25px", () => {
-    deleteHighlight();
-    hideTooltip();
-  });
-  tooltip.appendChild(binButton);
 
   function createTooltip() {
     const tooltip = document.createElement("div");
