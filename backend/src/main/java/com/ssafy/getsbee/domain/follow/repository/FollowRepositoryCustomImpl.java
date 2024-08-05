@@ -24,14 +24,26 @@ public class FollowRepositoryCustomImpl implements FollowRepositoryCustom{
     @Override
     @Transactional
     public void createFollow(Member member, Directory directory) {
-        Follow follow = Follow.builder()
-                .followingMember(member)
-                .followedMember(directory.getMember())
-                .followedDirectory(directory)
-                .isDeleted(false)
-                .build();
+        // 이미 팔로우 관계가 있는지 확인
+        boolean alreadyFollowing = !queryFactory
+                .selectFrom(follow)
+                .where(
+                        follow.followingMember.eq(member)
+                                .and(follow.followedDirectory.eq(directory))
+                                .and(follow.isDeleted.isFalse())
+                )
+                .fetch().isEmpty();
 
-        em.persist(follow);
+        if (!alreadyFollowing) {
+            Follow follow = Follow.builder()
+                    .followingMember(member)
+                    .followedMember(directory.getMember())
+                    .followedDirectory(directory)
+                    .isDeleted(false)
+                    .build();
+
+            em.persist(follow);
+        }
     }
 
     @Override
@@ -62,11 +74,11 @@ public class FollowRepositoryCustomImpl implements FollowRepositoryCustom{
     }
 
     @Override
-    public List<Directory> findFollowingDirectories(Member member) { // 멤버가 팔로잉중인 디렉토리
+    public List<Directory> findFollowingDirectories(Member member) {
         return queryFactory
                 .select(directory)
                 .from(follow)
-                .join(follow.followedDirectory, directory).fetchJoin()
+                .join(follow.followedDirectory, directory)
                 .where(follow.followingMember.eq(member))
                 .fetch();
     }
