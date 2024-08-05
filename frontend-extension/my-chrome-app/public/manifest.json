@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "getsBee",
+  "description": "highlight sentences and share",
+  "version": "1.0",
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": "icon.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["storage", "tabs"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "data.js",
+        "content.js",
+        "highlight.js",
+        "constant.js",
+        "api.js",
+        "validation.js"
+      ],
+      "css": ["getsBeeCustom.css"],
+      "type": "module"
+    }
+  ],
+  "content_security_policy": {
+    "script-src": "'self' 'https://unpkg.com'",
+    "object-src": "'self'"
+  }
+}

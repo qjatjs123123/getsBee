@@ -1,0 +1,20 @@
+.item-container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 20px;
+}
+
+.item-bar {
+    background-color: #FFE285;
+    width: 4px;
+    border-radius: 5px;
+}
+.item-txt{
+    font-size: 12px;
+    color: #404040;
+    margin-left: 20px;
+    display: flex;
+    align-items: center;
+    width: calc(100% - 24px);
+}
