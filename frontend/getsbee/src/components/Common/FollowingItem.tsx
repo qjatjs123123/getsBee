@@ -25,7 +25,7 @@ function FollowingItem() {
 
   return (
     <div
-      className="relative border rounded-[6px]"
+      className="relative border rounded-[6px] transform scale-125"
       style={{
         width: '220px',
         height: '80px',
@@ -44,15 +44,13 @@ function FollowingItem() {
             </p>
           )}
         </div>
-        {isFollowing && (
-          <img
-            className="mt-1 mr-2 w-[20px] h-[20px] cursor-pointer"
-            src={isFollowing ? starIcon : stargIcon}
-            alt="starIcon"
-            onClick={handleStarClick}
-            onKeyPress={handleKeyPress}
-          />
-        )}
+        <img
+          className="mt-1 mr-2 w-[20px] h-[20px] cursor-pointer"
+          src={isFollowing ? starIcon : stargIcon}
+          alt="starIcon"
+          onClick={handleStarClick}
+          onKeyPress={handleKeyPress}
+        />
       </div>
 
       <div className="absolute bottom-2 left-2 flex items-center">

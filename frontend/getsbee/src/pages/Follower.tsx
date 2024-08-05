@@ -6,7 +6,7 @@ import userIcon2 from '../assets/userIcon2.png';
 import FollowSearchBar from '../components/Common/FollowSearchBar';
 import '../index.css';
 
-const Following: React.FC = () => {
+const Follower: React.FC = () => {
   const followItems = Array.from({ length: 7 }, (_, index) => <FollowingItem key={index} />);
 
   return (
@@ -35,4 +35,4 @@ const Following: React.FC = () => {
   );
 };
 
-export default Following;
+export default Follower;
