@@ -19,12 +19,12 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource configSource = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowCredentials(true);
         config.setAllowedOriginPatterns(List.of("*"));
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        config.setMaxAge(3600L);
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setExposedHeaders(Collections.singletonList(AUTHORIZATION_HEADER));
+        config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
 
         configSource.registerCorsConfiguration("/**", config);
         return new CorsFilter(configSource);
