@@ -20,7 +20,7 @@ const SubSearchBar: React.FC = () => {
         value={value}
         onChange={(e: ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}
         placeholder="Search"
-        className="border-0 border-b-2 border-gray-300 w-full text-center focus:border-yellow-500 focus:ring-0 bg-transparent rounded-none mr-2"
+        className="border-0 border-b-2 border-gray-300 w-[280px] text-center focus:border-yellow-500 focus:ring-0 bg-transparent rounded-none mr-2"
       />
       <Button
         type="submit"
@@ -30,7 +30,7 @@ const SubSearchBar: React.FC = () => {
         aria-label="Bookmark"
         className="focus:outline-none focus:shadow-none m-0 p-0"
       >
-        <img src={searchIcon} alt="Search Icon" className="w-8" />
+        <img src={searchIcon} alt="Search Icon" className="w-7" />
       </Button>
     </form>
   );
