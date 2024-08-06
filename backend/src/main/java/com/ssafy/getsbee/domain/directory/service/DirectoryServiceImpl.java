@@ -7,6 +7,7 @@ import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.entity.DirectoryDocument;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryElasticRepository;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
+import com.ssafy.getsbee.domain.follow.repository.FollowRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.repository.MemberRepository;
 import com.ssafy.getsbee.domain.post.repository.PostRepository;
@@ -16,6 +17,7 @@ import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +38,7 @@ public class DirectoryServiceImpl implements DirectoryService {
 
     private final int ROOT_DEPTH = 0;
     private final PostRepository postRepository;
+    private final FollowRepository followRepository;
 
     @Override
     public List<DirectoryResponse> findAllByMember(Member member) {
@@ -129,9 +132,12 @@ public class DirectoryServiceImpl implements DirectoryService {
     @Override
     public Slice<DirectorySearchResponse> showDirectoriesBySearch(String query, Pageable pageable, Long cursor) {
         Slice<DirectoryDocument> directoryDocuments = directoryElasticRepository.findAllByDirectoryIdLessThanAndDirectoryNameIsLikeOrderByDirectoryIdDesc(cursor, query, pageable);
-        directoryDocuments.getContent().stream()
-                .map(document->makeDirectoryResponseByDirectoryDocument(document))
+
+        List<DirectorySearchResponse> responses = directoryDocuments.getContent().stream()
+                .map(this::makeDirectoryResponseByDirectoryDocument)
                 .collect(Collectors.toList());
+
+        return new SliceImpl<>(responses, pageable, directoryDocuments.hasNext());
     }
 
     private DirectorySearchResponse makeDirectoryResponseByDirectoryDocument(DirectoryDocument document) {
@@ -142,8 +148,25 @@ public class DirectoryServiceImpl implements DirectoryService {
                 .postNumber(postRepository.countPostsByDirectory(directory))
                 .build();
 
-        DirectorySearchResponse.Member memberInfo = DirectorySearchResponse.Member.builder()
+        Member member = memberRepository.findById(document.getMemberId())
+                .orElseThrow(()->new NotFoundException(MEMBER_NOT_FOUND));
 
+        DirectorySearchResponse.Member memberInfo = DirectorySearchResponse.Member.builder()
+                .memberId(member.getId())
+                .memberName(member.getName())
+                .memberPicture(member.getPicture())
+                .build();
+
+        DirectorySearchResponse.Follow followInfo = DirectorySearchResponse.Follow.builder()
+                .isFollowedByCurrentUser(followRepository.findByFollowingMemberAndFollowedDirectory(member, directory)
+                        .isPresent())
+                .followCount(followRepository.countDirectoryFollowers(directory))
+                .build();
+
+        return DirectorySearchResponse.builder()
+                .directory(directoryInfo)
+                .member(memberInfo)
+                .follow(followInfo)
                 .build();
     }
 
@@ -180,7 +203,6 @@ public class DirectoryServiceImpl implements DirectoryService {
     }
 
     private void sortDirectories(List<DirectoryResponse> directories) {
-        System.out.println("sort Directories: " + directories);
         List<DirectoryResponse> sorted = new ArrayList<>();
         if(directories == null || directories.isEmpty()) return;
         DirectoryResponse first = directories.stream()
