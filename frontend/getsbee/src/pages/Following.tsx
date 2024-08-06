@@ -14,13 +14,13 @@ const Following: React.FC = () => {
       <div className="w-[224px]">
         <SideBar />
       </div>
-      <div className="flex flex-col w-4/5 ml-2">
-        <div className="flex justify-between items-center border-b ml-2">
-          <div className="flex mt-[60px] mb-[10px] ml-[10px]">
-            <img className="w-[32px] h-[32px] ml-4 mr-1" src={userIcon2} alt="userIcon" />
+      <div className="flex flex-col w-5/6 ml-2">
+        <div className="flex justify-between items-center border-b ml-6">
+          <div className="flex mt-[75px] mb-[5px] ml-[10px]">
+            <img className="w-[32px] h-[32px]" src={userIcon2} alt="userIcon" />
             <p className="flex items-center text-[#CC9C00] text-[20px] font-bold">following</p>
           </div>
-          <div>
+          <div className="mb-[35px] mr-[12px]">
             <Menu />
           </div>
         </div>
