@@ -1,6 +1,7 @@
 package com.ssafy.getsbee.domain.directory.controller;
 
 import com.ssafy.getsbee.domain.directory.dto.response.DirectoryResponse;
+import com.ssafy.getsbee.domain.directory.dto.response.DirectorySearchResponse;
 import com.ssafy.getsbee.domain.directory.service.DirectoryElasticServiceImpl;
 import com.ssafy.getsbee.domain.directory.service.DirectoryService;
 import com.ssafy.getsbee.domain.member.entity.Member;
@@ -31,7 +32,7 @@ public class DirectoryController {
     }
 
     @GetMapping("/search")
-    public Slice<DirectoryResponse> getDirectoriesBySearch(@RequestParam String query, Pageable pageable, Long cursor) {
+    public Slice<DirectorySearchResponse> getDirectoriesBySearch(@RequestParam String query, Pageable pageable, Long cursor) {
         return directoryService.showDirectoriesBySearch(query, pageable, cursor);
     }
 }
