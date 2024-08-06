@@ -132,26 +132,26 @@ public class DirectoryServiceImpl implements DirectoryService {
     @Override
     @Transactional
     public Slice<DirectorySearchResponse> showDirectoriesBySearch(String query, Pageable pageable, Long cursor) {
-//        Slice<DirectoryDocument> directoryDocuments = directoryElasticRepository.findAllByDirectoryIdLessThanAndDirectoryNameIsLikeOrderByDirectoryIdDesc(cursor, query, pageable);
-//
-//        List<DirectorySearchResponse> responses = directoryDocuments.getContent().stream()
-//                .map(this::makeDirectoryResponseByDirectoryDocument)
-//                .collect(Collectors.toList());
-//
-//        return new SliceImpl<>(responses, pageable, directoryDocuments.hasNext());
-        return null;
+        Slice<Long> directoryDocumentIds = directoryElasticService.findByKeyword(query, pageable, cursor);
+                //directoryElasticRepository.findAllByDirectoryIdLessThanAndDirectoryNameIsLikeOrderByDirectoryIdDesc(cursor, query, pageable);
+
+        List<DirectorySearchResponse> responses = directoryDocumentIds.getContent().stream()
+                .map(this::makeDirectoryResponseByDirectoryDocument)
+                .collect(Collectors.toList());
+
+        return new SliceImpl<>(responses, pageable, directoryDocumentIds.hasNext());
+//        return null;
     }
 
-    private DirectorySearchResponse makeDirectoryResponseByDirectoryDocument(DirectoryDocument document) {
-        Directory directory = directoryRepository.findDirectoryById(document.getDirectoryId());
+    private DirectorySearchResponse makeDirectoryResponseByDirectoryDocument(Long documentId) {
+        Directory directory = directoryRepository.findDirectoryById(documentId);
         DirectorySearchResponse.Directory directoryInfo = DirectorySearchResponse.Directory.builder()
-                .directoryId(document.getDirectoryId())
+                .directoryId(documentId)
                 .directoryName(findFullNameByDirectory(directory))
                 .postNumber(postRepository.countPostsByDirectory(directory))
                 .build();
 
-        Member member = memberRepository.findById(document.getMemberId())
-                .orElseThrow(()->new NotFoundException(MEMBER_NOT_FOUND));
+        Member member = directory.getMember();
 
         DirectorySearchResponse.Member memberInfo = DirectorySearchResponse.Member.builder()
                 .memberId(member.getId())

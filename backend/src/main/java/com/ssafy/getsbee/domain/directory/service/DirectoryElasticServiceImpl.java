@@ -51,6 +51,8 @@ public class DirectoryElasticServiceImpl implements DirectoryElasticService {
     public Slice<Long> findByKeyword(String keyword, Pageable pageable, Long directoryId) {
         Pageable pageable1 = PageRequest.ofSize(pageable.getPageSize() + 1);
 
+        if(directoryId == null) directoryId = Long.MAX_VALUE;
+
         Page<DirectoryDocument> page = directoryElasticRepository
                 .findAllByDirectoryIdLessThanAndDirectoryNameIsLikeOrderByDirectoryIdDesc(directoryId, keyword, pageable1);
 
