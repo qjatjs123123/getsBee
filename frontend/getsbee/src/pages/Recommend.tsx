@@ -19,7 +19,7 @@ const Recommend = () => {
     <div>
       <Header />
       <div className="flex justify-center">
-        <div className="w-[88%]">
+        <div className="w-[80%]">
           <Tab />
           {isRegisted ? (
             <div className="grid grid-cols-3 justify-items-center mt-4">

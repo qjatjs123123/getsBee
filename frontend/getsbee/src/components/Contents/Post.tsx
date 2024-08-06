@@ -34,7 +34,7 @@ function Post() {
         </div>
       </div>
       <div className="flex ml-3 justify-between mt-1 px-4">
-        <p className="text-[12px] font-semibold" style={{ color: '#8D8D8D' }}>
+        <p className="text-[12px] font-semibold mt-1" style={{ color: '#8D8D8D' }}>
           {post.createdAt}
         </p>
         <div className="flex ">
