@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import static jakarta.persistence.FetchType.LAZY;
@@ -16,7 +17,8 @@ import static jakarta.persistence.FetchType.LAZY;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "likes")
-@SQLRestriction("UPDATE likes SET is_deleted = true WHERE like_id = ?")
+@SQLDelete(sql = "UPDATE likes SET is_deleted = true WHERE like_id = ?")
+@SQLRestriction("is_deleted = false")
 public class Like extends BaseTimeEntity {
 
     @Id
