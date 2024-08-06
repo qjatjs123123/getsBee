@@ -1,7 +1,6 @@
 package com.ssafy.getsbee.domain.post.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
@@ -14,7 +13,6 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.ssafy.getsbee.domain.post.entity.QPost.post;
@@ -39,8 +37,9 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
     public Slice<Post> findAllByDirectoryId(Long directoryId, Long cursor, Pageable pageable) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         Directory directory = directoryRepository.findDirectoryById(directoryId);
-        BooleanExpression condition = createCondition(directory.getMember().getId(), currentMemberId)
-                .and(post.directory.id.eq(directoryId))
+
+        BooleanExpression condition = post.directory.id.eq(directoryId)
+                .and(createCondition(directory.getMember().getId(), currentMemberId))
                 .and(cursorCondition(cursor));
 
         return executeCursorQuery(condition, pageable);
@@ -68,19 +67,25 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         return condition;
     }
 
+    private BooleanExpression creatPublicCondition(Long directoryMemberId, Long currentMemberId){
+        if(!directoryMemberId.equals(currentMemberId)){
+            return post.isPublic.eq(true);
+        }
+        return null;
+    }
+
     private BooleanExpression cursorCondition(Long cursor) {
         return cursor != null ? post.id.lt(cursor) : null;
     }
 
     private Slice<Post> executeCursorQuery(BooleanExpression condition, Pageable pageable) {
-        JPAQuery<Post> query = queryFactory
+        List<Post> posts = queryFactory
                 .selectFrom(post)
                 .where(condition)
                 .orderBy(post.id.desc())
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize() + 1); // 다음 페이지가 있는지 확인하기 위해 페이지 크기보다 1개 더 가져옴
-
-        List<Post> posts = query.fetch();
+                .limit(pageable.getPageSize() + 1) // 다음 페이지가 있는지 확인하기 위해 페이지 크기보다 1개 더 가져옴
+                .fetch();
 
         boolean hasNext = posts.size() > pageable.getPageSize();
         if (hasNext) {

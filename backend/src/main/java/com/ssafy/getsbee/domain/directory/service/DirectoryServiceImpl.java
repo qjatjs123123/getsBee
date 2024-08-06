@@ -2,18 +2,27 @@ package com.ssafy.getsbee.domain.directory.service;
 
 import com.ssafy.getsbee.domain.directory.dto.request.DirectoryRequest;
 import com.ssafy.getsbee.domain.directory.dto.response.DirectoryResponse;
+import com.ssafy.getsbee.domain.directory.dto.response.DirectorySearchResponse;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
+import com.ssafy.getsbee.domain.directory.entity.DirectoryDocument;
+import com.ssafy.getsbee.domain.directory.repository.DirectoryElasticRepository;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
+import com.ssafy.getsbee.domain.follow.repository.FollowRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.repository.MemberRepository;
+import com.ssafy.getsbee.domain.post.repository.PostRepository;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.error.exception.NotFoundException;
 import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
 
@@ -25,8 +34,11 @@ public class DirectoryServiceImpl implements DirectoryService {
     private final DirectoryRepository directoryRepository;
     private final MemberRepository memberRepository;
     private final DirectoryElasticService directoryElasticService;
+    private final DirectoryElasticRepository directoryElasticRepository;
 
-    private int ROOT_DEPTH = 0;
+    private final int ROOT_DEPTH = 0;
+    private final PostRepository postRepository;
+    private final FollowRepository followRepository;
 
     @Override
     public List<DirectoryResponse> findAllByMember(Member member) {
@@ -117,6 +129,47 @@ public class DirectoryServiceImpl implements DirectoryService {
         return directory.getParentDirectory().getName() + " / " +directory.getName();
     }
 
+    @Override
+    public Slice<DirectorySearchResponse> showDirectoriesBySearch(String query, Pageable pageable, Long cursor) {
+        Slice<DirectoryDocument> directoryDocuments = directoryElasticRepository.findAllByDirectoryIdLessThanAndDirectoryNameIsLikeOrderByDirectoryIdDesc(cursor, query, pageable);
+
+        List<DirectorySearchResponse> responses = directoryDocuments.getContent().stream()
+                .map(this::makeDirectoryResponseByDirectoryDocument)
+                .collect(Collectors.toList());
+
+        return new SliceImpl<>(responses, pageable, directoryDocuments.hasNext());
+    }
+
+    private DirectorySearchResponse makeDirectoryResponseByDirectoryDocument(DirectoryDocument document) {
+        Directory directory = directoryRepository.findDirectoryById(document.getDirectoryId());
+        DirectorySearchResponse.Directory directoryInfo = DirectorySearchResponse.Directory.builder()
+                .directoryId(document.getDirectoryId())
+                .directoryName(findFullNameByDirectory(directory))
+                .postNumber(postRepository.countPostsByDirectory(directory))
+                .build();
+
+        Member member = memberRepository.findById(document.getMemberId())
+                .orElseThrow(()->new NotFoundException(MEMBER_NOT_FOUND));
+
+        DirectorySearchResponse.Member memberInfo = DirectorySearchResponse.Member.builder()
+                .memberId(member.getId())
+                .memberName(member.getName())
+                .memberPicture(member.getPicture())
+                .build();
+
+        DirectorySearchResponse.Follow followInfo = DirectorySearchResponse.Follow.builder()
+                .isFollowedByCurrentUser(followRepository.findByFollowingMemberAndFollowedDirectory(member, directory)
+                        .isPresent())
+                .followCount(followRepository.countDirectoryFollowers(directory))
+                .build();
+
+        return DirectorySearchResponse.builder()
+                .directory(directoryInfo)
+                .member(memberInfo)
+                .follow(followInfo)
+                .build();
+    }
+
     private void filterDirectoriesByAuth(List<Directory> directories) {
         directories.removeIf(directory -> directory.getDepth() == 1 && (directory.getName().equals("Temporary") ||
                 directory.getName().equals("Bookmark")));
@@ -150,7 +203,6 @@ public class DirectoryServiceImpl implements DirectoryService {
     }
 
     private void sortDirectories(List<DirectoryResponse> directories) {
-        System.out.println("sort Directories: " + directories);
         List<DirectoryResponse> sorted = new ArrayList<>();
         if(directories == null || directories.isEmpty()) return;
         DirectoryResponse first = directories.stream()

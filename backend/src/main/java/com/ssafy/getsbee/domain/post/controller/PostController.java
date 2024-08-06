@@ -56,7 +56,7 @@ public class PostController {
         return postService.unlikePost(postId, SecurityUtil.getCurrentMemberId());
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public Slice<PostListResponse> showPostList(PostListRequest postListRequest, Long cursor, Pageable pageable){
         return postService.showPostList(postListRequest, cursor, pageable);
     }
