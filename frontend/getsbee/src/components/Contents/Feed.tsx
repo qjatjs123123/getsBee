@@ -2,7 +2,7 @@ import React from 'react';
 import { Avatar } from 'primereact/avatar';
 import { Divider } from 'primereact/divider';
 import { Button } from 'primereact/button';
-import Highlight from './Highlight';
+import HighlightItem from './HighlightItem';
 import './Feed.css'; // 추가된 CSS 파일
 
 import honeyCombg from '../../assets/honeyCombg.png';
@@ -57,7 +57,7 @@ export default function Feed() {
       <div className="p-0 mt-4 ml-4 mr-2">
         {headerTemplate()}
         <div className="p-0">
-          <Highlight
+          <HighlightItem
             text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
             color="#3498db"
           />

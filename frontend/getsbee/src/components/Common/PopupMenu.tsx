@@ -86,7 +86,7 @@ const PopupMenu: React.FC = () => {
 
   return (
     <div className="card flex justify-content-center">
-      <TieredMenu model={items} popup ref={menu} breakpoint="767px" className="w-36 p-0" />
+      <TieredMenu model={items} popup ref={menu} breakpoint="767px" className="custom-tieredmenu w-36 p-0" />
       <Button
         onClick={handleToggle}
         rounded

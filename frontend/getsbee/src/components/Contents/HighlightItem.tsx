@@ -7,7 +7,7 @@ interface HighlightProps {
   className?: string;
 }
 
-const Highlight: React.FC<HighlightProps> = ({ text, color, className }) => {
+const HighlightItem: React.FC<HighlightProps> = ({ text, color, className }) => {
   return (
     <p
       className={`mt-1 m-0 pl-4 relative text-with-bar ${className}`}
@@ -18,8 +18,8 @@ const Highlight: React.FC<HighlightProps> = ({ text, color, className }) => {
   );
 };
 
-Highlight.defaultProps = {
+HighlightItem.defaultProps = {
   className: '',
 };
 
-export default Highlight;
+export default HighlightItem;
