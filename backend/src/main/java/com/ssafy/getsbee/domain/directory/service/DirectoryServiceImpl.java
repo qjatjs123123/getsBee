@@ -64,11 +64,8 @@ public class DirectoryServiceImpl implements DirectoryService {
         // ADD
         for(DirectoryRequest DR : directoryRequests){
             if(DR.directoryId().startsWith("T")){
-                System.out.println("id: " + DR.directoryId());
                 Directory newDirectory = directoryRepository.createNewDirectoryForMember(member, DR.name());
                 tempIdToId.put(DR.directoryId(), newDirectory.getId());
-                System.out.println("new Directory Id: " + newDirectory.getId()) ;
-                //TODO : 여기서 디렉토리 생성됨
                 directoryElasticService.saveDirectoryDocument(newDirectory);
             }
         }
@@ -79,21 +76,13 @@ public class DirectoryServiceImpl implements DirectoryService {
                 .map(dr -> Long.parseLong(dr.directoryId()))
                 .toList();
 
-        existingDirectories.forEach(directory -> System.out.println(directory.getId()));
-
-        System.out.println("requestDirectoryIds: " + requestDirectoryIds);
-
-
         for(Directory directory : existingDirectories){
             if(directory.getDepth()==ROOT_DEPTH) continue;
             if(!requestDirectoryIds.contains(directory.getId())){
                 if(directory.getName().equals("Bookmark") || directory.getName().equals("Temporary")||
                         directory.getName().equals("Root")) {
-                    //TODO : 검증 로직 수정
                     continue;
                 }
-                //TODO : 여기서 삭제됨
-                System.out.println("delete directory: " + directory.getId());
                 directoryElasticService.deleteDirectoryDocument(directory);
                 directoryRepository.delete(directory);
             }
@@ -101,13 +90,10 @@ public class DirectoryServiceImpl implements DirectoryService {
 
         // MODIFY
         for (DirectoryRequest DR : directoryRequests) {
-//            if(DR.directoryId().startsWith("T")) continue;
-            System.out.println("checking modify: " + DR.directoryId());
             Long newDirectoryId = getNewDirectoryId(DR.directoryId(), tempIdToId);
             Long newPrevDirectoryId = getNewDirectoryId(DR.prevDirectoryId(), tempIdToId);
             Long newNextDirectoryId = getNewDirectoryId(DR.nextDirectoryId(), tempIdToId);
             Long newParentDirectoryId = getNewDirectoryId(DR.parentDirectoryId(), tempIdToId);
-            System.out.println("checking modify: " + newDirectoryId);
 
             Directory existingDirectory = directoryRepository.findDirectoryById(newDirectoryId);
 
@@ -124,8 +110,6 @@ public class DirectoryServiceImpl implements DirectoryService {
             }
         }
 
-
-//        return null;
         return assembleDirectories(directoryRepository.findAllByMember(member));
     }
 
@@ -192,7 +176,6 @@ public class DirectoryServiceImpl implements DirectoryService {
     private List<DirectoryResponse> assembleDirectories(List<Directory> directories) {
         Map<Long, DirectoryResponse> directoryMap = new HashMap<>();
 
-        System.out.println("directories: " + directories.toString());
         for (Directory directory : directories) {
             if (directory.getDepth() == 0) continue;
             if (directory.getDepth() == 2) directory.changeName(directory.getName());
@@ -213,7 +196,6 @@ public class DirectoryServiceImpl implements DirectoryService {
             }
         }
 
-        // 정렬
         sortDirectories(responses);
         return responses;
     }
@@ -263,7 +245,6 @@ public class DirectoryServiceImpl implements DirectoryService {
     private boolean isDirectoryChanged(Directory existingDirectory, DirectoryRequest DR, Long newPrevDirectoryId,
                                        Long newNextDirectoryId, Long newParentDirectoryId) {
         if (existingDirectory != null && !existingDirectory.getName().equals(DR.name())) {
-            //TODO : 여기 이름 바뀜
             directoryElasticService.updateDirectoryDocument(existingDirectory);
             return true;
         }
