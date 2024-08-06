@@ -12,9 +12,9 @@ public interface FollowService {
 
     void deleteFollow(Long followId);
 
-    List<FollowDirectoryResponse> findFollowedDirectories();
+    List<FollowDirectoryResponse> findFollowedDirectories(Long memberId);
 
-    List<FollowDirectoryResponse> findFollowingDirectories();
+    List<FollowDirectoryResponse> findFollowingDirectories(Long memberId);
 
     HiveInfoResponse getHiveInfo();
 }

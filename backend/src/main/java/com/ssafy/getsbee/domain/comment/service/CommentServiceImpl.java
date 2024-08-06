@@ -7,6 +7,7 @@ import com.ssafy.getsbee.domain.member.repository.MemberRepository;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.domain.post.repository.PostRepository;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
+import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +55,11 @@ public class CommentServiceImpl implements CommentService {
     public void deleteComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BadRequestException(COMMENT_NOT_FOUND));
+
+        Long memberId = comment.getMember().getId();
+        if(!memberId.equals(SecurityUtil.getCurrentMemberId())){
+            throw new BadRequestException(INVALID_COMMENT_REQUEST);
+        }
 
         Post post = comment.getPost();
         post.getComments().remove(comment);

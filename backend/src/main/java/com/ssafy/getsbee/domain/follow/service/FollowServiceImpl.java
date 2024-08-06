@@ -58,9 +58,8 @@ public class FollowServiceImpl implements FollowService{
     }
 
     @Override
-    public List<FollowDirectoryResponse> findFollowingDirectories() { //내가 팔로잉 중인 디렉토리 정보
-        Long currentMember = SecurityUtil.getCurrentMemberId();
-        List<Follow> follows = followRepository.findFollowingByMemberId(currentMember);
+    public List<FollowDirectoryResponse> findFollowingDirectories(Long memberId) { //내가 팔로잉 중인 디렉토리 정보
+        List<Follow> follows = followRepository.findFollowingByMemberId(memberId);
 
         return follows.stream()
                 .map(f -> {
@@ -85,9 +84,8 @@ public class FollowServiceImpl implements FollowService{
     }
 
     @Override
-    public List<FollowDirectoryResponse> findFollowedDirectories() { //내가 팔로잉 중인 디렉토리 정보
-        Long currentMember = SecurityUtil.getCurrentMemberId();
-        List<Follow> follows = followRepository.findFollowedByMemberId(currentMember);
+    public List<FollowDirectoryResponse> findFollowedDirectories(Long memberId) { //나를 팔로잉 중인 디렉토리 정보
+        List<Follow> follows = followRepository.findFollowedByMemberId(memberId);
 
         return follows.stream()
                 .map(f -> {
