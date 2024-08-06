@@ -7,6 +7,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import java.util.Collections;
+import java.util.List;
 
 import static com.ssafy.getsbee.global.consts.StaticConst.*;
 
@@ -18,12 +19,12 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource configSource = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowCredentials(true);
-        config.addAllowedOriginPattern("*");
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        config.setMaxAge(3600L);
+        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setExposedHeaders(Collections.singletonList(AUTHORIZATION_HEADER));
+        config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
 
         configSource.registerCorsConfiguration("/**", config);
         return new CorsFilter(configSource);

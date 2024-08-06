@@ -28,10 +28,10 @@ public class AuthServiceImpl implements AuthService {
 
     private final DirectoryService directoryService;
     private final MemberService memberService;
+    private final IdTokenVerifyService idTokenVerifyService;
     private final MemberRepository memberRepository;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final JwtUtil jwtUtil;
-    private final GoogleOidcTokenVerifier googleOidcTokenVerifier;
 
     @Override
     @Transactional
@@ -59,7 +59,7 @@ public class AuthServiceImpl implements AuthService {
 
     private Payload validateIdToken(LoginRequest request) {
         if (request.provider() == GOOGLE) {
-            return googleOidcTokenVerifier.verify(request.idToken());
+            return idTokenVerifyService.verifyGoogleIdToken(request.idToken());
         }
         throw new BadRequestException(INVALID_INPUT_VALUE);
     }

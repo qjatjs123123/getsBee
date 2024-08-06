@@ -1,6 +1,6 @@
-package com.ssafy.getsbee.block.dto.request;
+package com.ssafy.getsbee.domain.block.dto.request;
 
-import com.ssafy.getsbee.block.entity.Block;
+import com.ssafy.getsbee.domain.block.entity.Block;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import jakarta.validation.constraints.NotNull;
 

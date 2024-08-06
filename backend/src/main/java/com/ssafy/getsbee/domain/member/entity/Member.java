@@ -81,4 +81,8 @@ public class Member extends BaseTimeEntity {
         picture = payload.get(CLAIM_PICTURE).toString();
         name = payload.get(CLAIM_NAME).toString();
     }
+
+    public void updateInfo(Integer birthYear) {
+        this.birthYear = birthYear;
+    }
 }
