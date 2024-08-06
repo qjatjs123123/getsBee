@@ -29,9 +29,26 @@ body {
   font-family: 'Roboto', sans-serif;
 }
 
+.p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-link {
+  font-weight: bold;
+}
+
 .p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight .p-menuitem-link {
-  background-color: #f3f4f6;
-  color: #374151;
+  background-color: #d9d9d9;
+  color: #5c5c5c;
+  border-bottom-color: #d9d9d9;
+}
+
+/* hover 상태일 때의 스타일 */
+.p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-link:hover {
+  background-color: rgba(0, 0, 0, 0.02); /* 반투명한 검은색으로 음영 효과 */
+  border-bottom-color: #d9d9d9;
+  /* color: #333; */
+}
+
+/* 활성 탭에 대한 hover 효과 (필요한 경우) */
+.p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight .p-menuitem-link:hover {
+  background-color: #c9c9c9; /* 활성 탭의 hover 배경색을 약간 더 어둡게 */
 }
 
 .scrollbar-hide {
