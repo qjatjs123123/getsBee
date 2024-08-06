@@ -32,6 +32,7 @@ public class DirectoryElasticServiceImpl implements DirectoryElasticService {
 
     @Override
     public void deleteDirectoryDocument(Directory directory) {
+        System.out.println("directory ID: " + directory.getId());
         DirectoryDocument directoryDocument = directoryElasticRepository.findByDirectoryId(directory.getId())
                 .orElseThrow(()-> new BadRequestException(DIRECTORYDOCUMENT_NOT_FOUND));
 
