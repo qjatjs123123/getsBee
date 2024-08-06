@@ -18,11 +18,11 @@ public record CreateHighlightRequest (
         @NotNull
         String color,
         @NotNull
-        Integer startIndex,
+        String startIndex,
         @NotNull
         Integer startOffset,
         @NotNull
-        Integer lastIndex,
+        String lastIndex,
         @NotNull
         Integer lastOffset,
         @NotNull
@@ -47,7 +47,6 @@ public record CreateHighlightRequest (
                 .lastIndex(lastIndex)
                 .lastOffset(lastOffset)
                 .type(type)
-                .isDeleted(false)
                 .post(post)
                 .build();
     }

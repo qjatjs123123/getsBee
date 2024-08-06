@@ -12,11 +12,11 @@ public record HighlightResponse(
         @JsonInclude(JsonInclude.Include.NON_NULL)
         String color,
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        Integer startIndex,
+        String startIndex,
         @JsonInclude(JsonInclude.Include.NON_NULL)
         Integer startOffset,
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        Integer lastIndex,
+        String lastIndex,
         @JsonInclude(JsonInclude.Include.NON_NULL)
         Integer lastOffset,
         @JsonInclude(JsonInclude.Include.NON_NULL)

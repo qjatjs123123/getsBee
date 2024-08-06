@@ -31,10 +31,10 @@ public class Highlight extends BaseTimeEntity {
     private String color;
 
     @Column(name = "start_index")
-    private Integer startIndex;
+    private String startIndex;
 
     @Column(name = "last_index")
-    private Integer lastIndex;
+    private String lastIndex;
 
     @Column(name = "start_offset")
     private Integer startOffset;
@@ -54,22 +54,7 @@ public class Highlight extends BaseTimeEntity {
     private Post post;
 
     @Builder
-    public Highlight(Long id, String content, String color, Integer startIndex, Integer lastIndex, Integer startOffset,
-                     Integer lastOffset, Type type, Boolean isDeleted, Post post) {
-        this.id = id;
-        this.content = content;
-        this.color = color;
-        this.startIndex = startIndex;
-        this.lastIndex = lastIndex;
-        this.startOffset = startOffset;
-        this.lastOffset = lastOffset;
-        this.type = type;
-        this.isDeleted = isDeleted;
-        this.post = post;
-    }
-
-    @Builder
-    public Highlight(String content, String color, Integer startIndex, Integer lastIndex, Integer startOffset,
+    public Highlight(String content, String color, String startIndex, String lastIndex, Integer startOffset,
                      Integer lastOffset, Type type, Post post) {
         this.content = content;
         this.color = color;
