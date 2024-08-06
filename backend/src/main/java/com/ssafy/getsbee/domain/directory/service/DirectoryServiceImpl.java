@@ -43,9 +43,10 @@ public class DirectoryServiceImpl implements DirectoryService {
     @Override
     public List<DirectoryResponse> findAllByMember(Member member) {
         List<Directory> directories = directoryRepository.findAllByMember(member);
-        if(!SecurityUtil.getCurrentMemberId().equals(member.getId())){
-            filterDirectoriesByAuth(directories);
-        }
+//        if(!SecurityUtil.getCurrentMemberId().equals(member.getId())){
+//            filterDirectoriesByAuth(directories);
+//        }
+        filterDirectoriesByAuth(member.getId(), assembleDirectories(directories));
         return assembleDirectories(directories);
     }
 
@@ -65,8 +66,6 @@ public class DirectoryServiceImpl implements DirectoryService {
             if(DR.directoryId().startsWith("T")){
                 Directory newDirectory = directoryRepository.createNewDirectoryForMember(member, DR.name());
                 tempIdToId.put(DR.directoryId(), newDirectory.getId());
-
-                //TODO : 여기서 디렉토리 생성됨
                 directoryElasticService.saveDirectoryDocument(newDirectory);
             }
         }
@@ -77,16 +76,13 @@ public class DirectoryServiceImpl implements DirectoryService {
                 .map(dr -> Long.parseLong(dr.directoryId()))
                 .toList();
 
-
         for(Directory directory : existingDirectories){
             if(directory.getDepth()==ROOT_DEPTH) continue;
             if(!requestDirectoryIds.contains(directory.getId())){
                 if(directory.getName().equals("Bookmark") || directory.getName().equals("Temporary")||
                         directory.getName().equals("Root")) {
-                    System.out.println("deleting: " + directory.getName());
-                    throw new BadRequestException(CANT_DELETE_DEFAULT_DIRECTORY);
+                    continue;
                 }
-                //TODO : 여기서 삭제됨
                 directoryElasticService.deleteDirectoryDocument(directory);
                 directoryRepository.delete(directory);
             }
@@ -172,17 +168,18 @@ public class DirectoryServiceImpl implements DirectoryService {
                 .build();
     }
 
-    private void filterDirectoriesByAuth(List<Directory> directories) {
-        directories.removeIf(directory -> directory.getDepth() == 1 && (directory.getName().equals("Temporary") ||
-                directory.getName().equals("Bookmark")));
+    private void filterDirectoriesByAuth(Long memberId, List<DirectoryResponse> directoryResponses) {
+        if(SecurityUtil.getCurrentMemberId().equals(memberId)) return;
+        directoryResponses.removeIf(directory -> directory.depth() == 1 && (directory.name().equals("Temporary") ||
+                directory.name().equals("Bookmark")));
     }
 
     private List<DirectoryResponse> assembleDirectories(List<Directory> directories) {
         Map<Long, DirectoryResponse> directoryMap = new HashMap<>();
 
         for (Directory directory : directories) {
-            if(directory.getDepth()==0) continue;
-            if(directory.getDepth() == 2) directory.changeName(findFullNameByDirectory(directory));
+            if (directory.getDepth() == 0) continue;
+            if (directory.getDepth() == 2) directory.changeName(directory.getName());
             DirectoryResponse response = DirectoryResponse.fromEntity(directory);
             directoryMap.put(directory.getId(), response);
         }
@@ -199,14 +196,15 @@ public class DirectoryServiceImpl implements DirectoryService {
                 }
             }
         }
-        //정렬
+
         sortDirectories(responses);
         return responses;
     }
 
     private void sortDirectories(List<DirectoryResponse> directories) {
+        if (directories == null || directories.isEmpty()) return;
+
         List<DirectoryResponse> sorted = new ArrayList<>();
-        if(directories == null || directories.isEmpty()) return;
         DirectoryResponse first = directories.stream()
                 .filter(d -> d.prevDirectoryId() == null)
                 .findFirst()
@@ -216,7 +214,7 @@ public class DirectoryServiceImpl implements DirectoryService {
 
         DirectoryResponse current = first;
 
-        //depth 1 정렬
+        // depth 1 정렬
         while (current.nextDirectoryId() != null) {
             final Long nextId = current.nextDirectoryId();
             current = directories.stream()
@@ -226,7 +224,7 @@ public class DirectoryServiceImpl implements DirectoryService {
             sorted.add(current);
         }
 
-        //depth 2 정렬
+        // depth 2 정렬
         for (DirectoryResponse directory : sorted) {
             sortDirectories(directory.children());
         }
@@ -247,8 +245,7 @@ public class DirectoryServiceImpl implements DirectoryService {
 
     private boolean isDirectoryChanged(Directory existingDirectory, DirectoryRequest DR, Long newPrevDirectoryId,
                                        Long newNextDirectoryId, Long newParentDirectoryId) {
-        if (!existingDirectory.getName().equals(DR.name())) {
-            //TODO : 여기 이름 바뀜
+        if (existingDirectory != null && !existingDirectory.getName().equals(DR.name())) {
             directoryElasticService.updateDirectoryDocument(existingDirectory);
             return true;
         }
