@@ -13,6 +13,7 @@ export async function postRefreshToken() {
     accessToken,
     refreshToken,
   });
+  console.log(response);
   return response;
 }
 
@@ -26,6 +27,7 @@ axios.interceptors.request.use(
 
     // 그 외의 요청에는 Bearer 토큰 추가
     const token = localStorage.getItem('accessToken');
+    console.log('Current token:', token);
     if (token) {
       config.headers.set('Authorization', `Bearer ${token}`);
     }
@@ -49,11 +51,14 @@ axios.interceptors.response.use(
       try {
         const response = await postRefreshToken();
         if (response.status === 200) {
-          const newAccessToken = response.data.accessToken;
-          const newRefreshToken = response.data.refreshToken;
-          if (typeof newAccessToken === 'string' && typeof newRefreshToken === 'string') {
-            localStorage.setItem('accessToken', newAccessToken);
-            localStorage.setItem('refreshToken', newRefreshToken);
+          console.log(response.data);
+
+          const { accessToken, refreshToken } = response.data.data;
+
+          if (typeof accessToken === 'string' && typeof refreshToken === 'string') {
+            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem('refreshToken', refreshToken);
+            console.log('New access token set:', accessToken);
 
             // 원래 요청 재시도 (인터셉터가 알아서 헤더를 추가할 것임)
             return axios(originalRequest);
@@ -61,9 +66,9 @@ axios.interceptors.response.use(
         }
         throw new Error('Invalid token data received');
       } catch (refreshError) {
-        console.error('토큰 갱신 실패:', refreshError);
+        console.error('Token refresh failed:', refreshError);
         // 로그아웃 처리나 로그인 페이지로 리디렉션 등을 여기서 수행
-        // 예: window.location.href = '/login';
+        // Example: window.location.href = '/login';
         return Promise.reject(refreshError);
       }
     }

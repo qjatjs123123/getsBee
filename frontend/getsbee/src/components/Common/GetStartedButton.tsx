@@ -16,6 +16,12 @@ const GetStartedButton = () => {
     }
   }, [user]);
 
+  const handleClick = () => {
+    if (!user) {
+      setVisible(true);
+    }
+  };
+
   const renderDialogContent = () => (
     <div className="flex md:flex-row items-stretch h-80">
       <div className="flex flex-col items-center justify-center py-8 px-4 md:px-8 bg-[#FFF6E3] w-full md:w-2/5 rounded-l-lg">
@@ -33,9 +39,12 @@ const GetStartedButton = () => {
   return (
     <div className="card flex justify-content-center">
       <Button
-        onClick={() => setVisible(true)}
+        onClick={handleClick}
+        disabled={!!user}
         label="Get Started"
-        className="bg-[#FFBF09] border-2 border-[#FFBF09] shadow-none hover:bg-[#E5AB08]"
+        className={`bg-[#FFBF09] border-2 border-[#FFBF09] shadow-none ${
+          user ? 'opacity-60 cursor-not-allowed' : 'hover:bg-[#E5AB08]'
+        }`}
       />
       <Dialog
         visible={visible}
