@@ -44,6 +44,8 @@ public class CommentServiceImpl implements CommentService {
                 .isDeleted(false)
                 .build();
 
+        post.getComments().add(comment);
+
         return commentRepository.save(comment);
     }
 
@@ -52,6 +54,9 @@ public class CommentServiceImpl implements CommentService {
     public void deleteComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BadRequestException(COMMENT_NOT_FOUND));
+
+        Post post = comment.getPost();
+        post.getComments().remove(comment);
 
         commentRepository.delete(comment);
     }
