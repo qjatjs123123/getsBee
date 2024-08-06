@@ -34,7 +34,11 @@ const GoogleOAuth: FC = () => {
         });
 
         // 서버로 ID 토큰 전송
-        await sendTokenToServer(credential);
+        await sendTokenToServer(credential, {
+          email: decodedToken.email,
+          name: decodedToken.name,
+          picture: decodedToken.picture,
+        });
       } catch (error) {
         console.error('Error decoding token:', error);
       }
@@ -48,7 +52,7 @@ const GoogleOAuth: FC = () => {
     setUser(null);
   };
 
-  const sendTokenToServer = async (idToken: string) => {
+  const sendTokenToServer = async (idToken: string, props: unknown) => {
     try {
       const response = await axios.post(serverAuthEndpoint, { idToken, provider: 'GOOGLE' });
 
@@ -56,6 +60,16 @@ const GoogleOAuth: FC = () => {
         // 로컬 스토리지에 액세스 토큰을 저장
         localStorage.setItem('accessToken', response.data.data.accessToken);
         localStorage.setItem('refreshToken', response.data.data.refreshToken);
+
+        window.postMessage(
+          {
+            type: 'TOKEN_UPDATE',
+            accessToken: response.data.data.accessToken,
+            refreshToken: response.data.data.refreshToken,
+            userState: props,
+          },
+          '*',
+        );
 
         console.log(response);
         console.log('Access Token:', response.data.data.accessToken);

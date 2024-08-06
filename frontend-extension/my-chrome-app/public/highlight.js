@@ -41,7 +41,7 @@ function deleteHighlight() {
 function updateColorById(color, colorh) {
   // 선택된 ID를 가진 모든 요소를 선택합니다
   const elements = document.querySelectorAll(`[data-id="${SELECTED_ID}"]`);
-
+  console.log(elements);
   elements.forEach((element) => {
     if (element) {
       element.style.backgroundColor = color;
@@ -56,6 +56,7 @@ function updateHighlight(color, colorh) {
   const rangeData = findRangeDataById();
 
   rangeData.color = color;
+  console.log(color, colorh);
   updateHighLightAPI(rangeData, color, colorh);
 }
 
@@ -98,14 +99,13 @@ function findTextNodesInRange(range) {
   return textNodes.filter((node) => range.intersectsNode(node));
 }
 
-function highlightTextNodes(textNodes, range, color, colorh) {
+function highlightTextNodes(textNodes, range, color, colorh, data) {
   textNodes.forEach((node) => {
     const nodeRange = createNodeRange(node, range);
-    const highlightBeeTag = createHighlightBeeTag(id, color);
+    const highlightBeeTag = createHighlightBeeTag(data.id, color);
     nodeRange.surroundContents(highlightBeeTag);
   });
-  highLightHover(id, color, colorh, range);
-  id++;
+  highLightHover(data.id, color, colorh, range);
 }
 
 function createNodeRange(node, range) {

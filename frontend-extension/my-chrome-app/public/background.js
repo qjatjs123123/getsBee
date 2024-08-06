@@ -5,13 +5,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "SEND_BROWSER_INFO") {
     // 저장: chrome.storage.local 또는 chrome.storage.sync에 데이터 저장
     // eslint-disable-next-line no-undef
+    accessToken = message.accessToken;
+    refreshToken = message.refreshToken;
+    userState = message.userState;
+
     chrome.runtime.sendMessage({
       type: "SEND_DATA",
       data: {
-        pageContentArr: message.pageContentArr,
         hostName: message.hostName,
         resultArr: message.resultArr,
         HTMLContent: message.HTMLContent,
+        accessToken: message.accessToken,
+        refreshToken: message.refreshToken,
+        userState: message.userState,
       },
     });
   }

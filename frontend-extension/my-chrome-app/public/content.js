@@ -1,12 +1,11 @@
-let textContents = [];
 let resultArr = [];
-let articleNode = null;
-// 원본 HTML 상태를 저장할 변수
 let originalHTML = "";
-let MAX_INTERVAL = 10;
-let intervalCount = 0; //
-/* eslint-disable no-undef */
+let accessToken = "";
+let refreshToken = "";
+let userState = null;
 let tooltip = "";
+
+/* eslint-disable no-undef */
 window.addEventListener("load", () => {
   sendPageContent();
   init();
@@ -67,12 +66,20 @@ window.addEventListener("load", () => {
   }
 
   function sendPageContent() {
-    console.log("123");
-    chrome.runtime.sendMessage({
-      type: "SEND_BROWSER_INFO",
-      hostName: getDomain(),
-      resultArr: resultArr,
-      HTMLContent: document.documentElement.outerHTML,
+    chrome.storage.sync.get(["GETSBEE_LOGIN"], function (result) {
+      accessToken = result.GETSBEE_LOGIN.accessToken;
+      refreshToken = result.GETSBEE_LOGIN.refreshToken;
+      userState = result.GETSBEE_LOGIN.userState;
+
+      chrome.runtime.sendMessage({
+        type: "SEND_BROWSER_INFO",
+        hostName: getDomain(),
+        resultArr: resultArr,
+        HTMLContent: document.documentElement.outerHTML,
+        accessToken: result.GETSBEE_LOGIN.accessToken,
+        refreshToken: result.GETSBEE_LOGIN.refreshToken,
+        userState: result.GETSBEE_LOGIN.userState,
+      });
     });
   }
 
@@ -81,7 +88,7 @@ window.addEventListener("load", () => {
     document.body.appendChild(tooltip);
     loadFontAwesome();
     const binButton = createIconButton("fa fa-trash-o", "25px", () => {
-      deleteHighlight();
+      deleteHighLightAPI();
       hideTooltip();
     });
     COLORS.forEach(({ color, colorh }) => {
@@ -216,9 +223,17 @@ window.addEventListener("load", () => {
     deleteRange();
     hideTooltip();
   });
+  window.addEventListener("message", (event) => {
+    if (event.data.type === "TOKEN_UPDATE") {
+      chrome.storage.sync.set({ GETSBEE_LOGIN: event.data }, function () {
+        sendPageContent();
+      });
+    }
+  });
 });
 
 function displayTooltip(left, top) {
+  console.log(tooltip);
   tooltip.style.left = `${left}px`;
   tooltip.style.top = `${top}px`;
   tooltip.style.visibility = "visible";
