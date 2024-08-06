@@ -58,19 +58,19 @@ const PopupMenu: React.FC = () => {
   const items = [
     {
       label: 'MyHive',
-      icon: <img src={myHiveIcon} alt="MyHive" className="w-7 h-7 mr-3" />,
+      icon: <img src={myHiveIcon} alt="MyHive" className="w-7 mr-3" />,
       className: 'text-base font-bold',
       command: () => navigate('/myHive'),
     },
     {
       label: 'About',
-      icon: <img src={aboutIcon} alt="About" className="w-7 h-7 mr-3" />,
+      icon: <img src={aboutIcon} alt="About" className="w-7 mr-3" />,
       className: 'text-base font-bold',
       command: () => navigate('/about'),
     },
     {
       label: 'Logout',
-      icon: <img src={logoutIcon} alt="Logout" className="w-7 h-7 mr-3" />,
+      icon: <img src={logoutIcon} alt="Logout" className="w-7 mr-3" />,
       className: 'text-base font-bold',
       command: handleLogout,
     },
