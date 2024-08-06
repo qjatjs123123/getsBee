@@ -1,5 +1,6 @@
 package com.ssafy.getsbee.domain.post.dto.response;
 
+import com.ssafy.getsbee.domain.comment.dto.response.CommentResponse;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import lombok.Builder;
@@ -20,8 +21,7 @@ public record PostResponse(
         Long directoryId,
         String directoryName,
 
-        // 댓글 comment
-
+        List<CommentResponse> comments,
         List<HighlightResponse> highlights,
 
         Boolean isLike,
@@ -32,7 +32,7 @@ public record PostResponse(
     public PostResponse{}
 
     public static PostResponse from(Post post, List<HighlightResponse> highlights,
-                                    Boolean isMyPost, Boolean isLike, Boolean isBookmark) {
+                                    List<CommentResponse> comments, Boolean isMyPost, Boolean isLike, Boolean isBookmark) {
         return PostResponse.builder()
                 .postId(post.getId())
                 .title(post.getTitle())
@@ -45,6 +45,7 @@ public record PostResponse(
                 .bookmarkCount(post.getBookmarkCount())
                 .directoryId(post.getDirectory().getId())
                 .directoryName(post.getDirectory().getName())
+                .comments(comments)
                 .highlights(highlights)
                 .isLike(isLike)
                 .isBookmark(isBookmark)
