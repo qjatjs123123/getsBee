@@ -1,8 +1,8 @@
 import { atom } from 'recoil';
-// import { recoilPersist } from 'recoil-persist';
+import { recoilPersist } from 'recoil-persist';
 
 // Recoil Persist 설정
-// const { persistAtom } = recoilPersist();
+const { persistAtom } = recoilPersist();
 
 // 사용자 정보를 위한 인터페이스 정의
 export interface UserInfo {
@@ -16,7 +16,7 @@ export interface UserInfo {
 export const userState = atom<UserInfo | null>({
   key: 'userState', // 고유한 ID (Recoil 내부에서 사용)
   default: null, // 초기 상태
-  //   effects_UNSTABLE: [persistAtom], // Recoil Persist 효과 추가
+  effects_UNSTABLE: [persistAtom], // Recoil Persist 효과 추가
 });
 
 // 인증 상태를 관리하는 atom
@@ -24,5 +24,5 @@ export const userState = atom<UserInfo | null>({
 export const isAuthenticatedState = atom<boolean>({
   key: 'isAuthenticatedState',
   default: false,
-  //   effects_UNSTABLE: [persistAtom], // Recoil Persist 효과 추가
+  effects_UNSTABLE: [persistAtom], // Recoil Persist 효과 추가
 });
