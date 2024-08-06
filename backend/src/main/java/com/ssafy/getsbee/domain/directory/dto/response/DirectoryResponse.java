@@ -15,6 +15,7 @@ public record DirectoryResponse (
         Long nextDirectoryId,
         Long parentDirectoryId,
         Long memberId,
+        String memberName,
         List<DirectoryResponse> children
 ) {
 
@@ -31,6 +32,7 @@ public record DirectoryResponse (
                 directory.getNextDirectory() != null ? directory.getNextDirectory().getId() : null,
                 directory.getParentDirectory() != null ? directory.getParentDirectory().getId() : null,
                 directory.getMember().getId(),
+                directory.getMember().getName(),
                 new ArrayList<>()
         );
     }

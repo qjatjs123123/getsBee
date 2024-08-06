@@ -22,7 +22,6 @@ public class DirectoryController {
 
     @GetMapping("")
     public List<DirectoryResponse> getDirectories(@RequestParam Long memberId) {
-        System.out.println("directories");
         Member member = memberService.findById(memberId);
         return directoryService.findAllByMember(member);
     }

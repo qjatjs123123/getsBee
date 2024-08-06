@@ -150,7 +150,6 @@ public class DirectoryServiceImpl implements DirectoryService {
     }
 
     private void sortDirectories(List<DirectoryResponse> directories) {
-        System.out.println("sort Directories: " + directories);
         List<DirectoryResponse> sorted = new ArrayList<>();
         if(directories == null || directories.isEmpty()) return;
         DirectoryResponse first = directories.stream()
