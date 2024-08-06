@@ -39,10 +39,19 @@ public class Interest extends BaseTimeEntity {
     Member member;
 
     @Builder
-    public Interest(Long id, String url, Boolean isDeleted, Member member) {
+    public Interest(Long id, String url, Category category, Boolean isDeleted, Member member) {
         this.id = id;
         this.url = url;
+        this.category = category;
         this.isDeleted = isDeleted;
         this.member = member;
+    }
+
+    public static Interest of(Member member, Category category) {
+        return Interest.builder()
+                .category(category)
+                .member(member)
+                .isDeleted(false)
+                .build();
     }
 }
