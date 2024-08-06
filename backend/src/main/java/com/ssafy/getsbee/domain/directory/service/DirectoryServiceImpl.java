@@ -2,12 +2,14 @@ package com.ssafy.getsbee.domain.directory.service;
 
 import com.ssafy.getsbee.domain.directory.dto.request.DirectoryRequest;
 import com.ssafy.getsbee.domain.directory.dto.response.DirectoryResponse;
+import com.ssafy.getsbee.domain.directory.dto.response.DirectorySearchResponse;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.entity.DirectoryDocument;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryElasticRepository;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.repository.MemberRepository;
+import com.ssafy.getsbee.domain.post.repository.PostRepository;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.error.exception.NotFoundException;
 import com.ssafy.getsbee.global.util.SecurityUtil;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
 
@@ -32,6 +35,7 @@ public class DirectoryServiceImpl implements DirectoryService {
     private final DirectoryElasticRepository directoryElasticRepository;
 
     private final int ROOT_DEPTH = 0;
+    private final PostRepository postRepository;
 
     @Override
     public List<DirectoryResponse> findAllByMember(Member member) {
@@ -123,9 +127,24 @@ public class DirectoryServiceImpl implements DirectoryService {
     }
 
     @Override
-    public Slice<DirectoryResponse> showDirectoriesBySearch(String query, Pageable pageable, Long cursor) {
+    public Slice<DirectorySearchResponse> showDirectoriesBySearch(String query, Pageable pageable, Long cursor) {
         Slice<DirectoryDocument> directoryDocuments = directoryElasticRepository.findAllByDirectoryIdLessThanAndDirectoryNameIsLikeOrderByDirectoryIdDesc(cursor, query, pageable);
-        directoryDocuments.getContent().stream().
+        directoryDocuments.getContent().stream()
+                .map(document->makeDirectoryResponseByDirectoryDocument(document))
+                .collect(Collectors.toList());
+    }
+
+    private DirectorySearchResponse makeDirectoryResponseByDirectoryDocument(DirectoryDocument document) {
+        Directory directory = directoryRepository.findDirectoryById(document.getDirectoryId());
+        DirectorySearchResponse.Directory directoryInfo = DirectorySearchResponse.Directory.builder()
+                .directoryId(document.getDirectoryId())
+                .directoryName(findFullNameByDirectory(directory))
+                .postNumber(postRepository.countPostsByDirectory(directory))
+                .build();
+
+        DirectorySearchResponse.Member memberInfo = DirectorySearchResponse.Member.builder()
+
+                .build();
     }
 
     private void filterDirectoriesByAuth(List<Directory> directories) {

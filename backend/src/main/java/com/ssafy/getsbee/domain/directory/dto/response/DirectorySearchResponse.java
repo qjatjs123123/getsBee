@@ -13,8 +13,8 @@ public record DirectorySearchResponse(
     }
 
     public record Directory(
-            Long DirectoryId,
-            String DirectoryName,
+            Long directoryId,
+            String directoryName,
             Long postNumber
     ){
         @Builder
