@@ -1,5 +1,6 @@
 package com.ssafy.getsbee.domain.post.service;
 
+import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.highlight.entity.Highlight;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.domain.post.entity.PostDocument;
@@ -72,10 +73,25 @@ public class PostElasticServiceImpl implements PostElasticService {
 
     @Override
     public Slice<Long> findByKeyword(String keyword, Pageable pageable, Long postId) {
+        if(postId == null) postId = Long.MAX_VALUE;
         Pageable pageable1 = PageRequest.ofSize(pageable.getPageSize() + 1);
 
         Page<PostDocument> page = postElasticRepository.findAllByPostIdLessThanAndAllContentIsLikeOrderByPostIdDesc(postId, keyword, pageable1);
+        return changePageToSlice(page, pageable);
+    }
 
+    @Override
+    public Slice<Long> findMyHiveByKeyword(String keyword, Pageable pageable, Long postId, Directory directory) {
+        if(postId == null) postId = Long.MAX_VALUE;
+        Pageable pageable1 = PageRequest.ofSize(pageable.getPageSize() + 1);
+
+        // 여기부터 짜야됨
+        Page<PostDocument> page = postElasticRepository.findAllByPostIdLessThanAndDirectoryIdAndAllContentIsLikeOrderByPostIdDesc(postId,
+                directory.getId() , keyword, pageable1);
+        return changePageToSlice(page, pageable);
+    }
+
+    public Slice<Long> changePageToSlice(Page<PostDocument> page, Pageable pageable){
         boolean hasNext;
         List<Long> postIds = new ArrayList<>();
         page.getContent().stream().map(PostDocument::getPostId).forEach(postIds::add);

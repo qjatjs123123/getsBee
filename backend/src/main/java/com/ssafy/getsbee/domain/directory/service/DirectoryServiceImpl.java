@@ -95,16 +95,20 @@ public class DirectoryServiceImpl implements DirectoryService {
             Long newNextDirectoryId = getNewDirectoryId(DR.nextDirectoryId(), tempIdToId);
             Long newParentDirectoryId = getNewDirectoryId(DR.parentDirectoryId(), tempIdToId);
 
-            Directory existingDirectory = directoryRepository.findDirectoryById(newDirectoryId);
+            Directory existingDirectory = directoryRepository.findDirectoryById(newDirectoryId)
+                    .orElseThrow(() -> new BadRequestException(DIRECTORY_NOT_FOUND));
 
             // 변경사항 확인 및 수정
             if (isDirectoryChanged(existingDirectory, DR, newPrevDirectoryId, newNextDirectoryId, newParentDirectoryId)) {
                 existingDirectory.changeDirectoryInfo(
                         DR.name(),
                         DR.depth(),
-                        newPrevDirectoryId != null ? directoryRepository.findDirectoryById(newPrevDirectoryId) : null,
-                        newNextDirectoryId != null ? directoryRepository.findDirectoryById(newNextDirectoryId) : null,
-                        newParentDirectoryId != null ? directoryRepository.findDirectoryById(newParentDirectoryId) : null
+                        newPrevDirectoryId != null ? directoryRepository.findDirectoryById(newPrevDirectoryId)
+                                .orElseThrow(()->new BadRequestException(DIRECTORY_NOT_FOUND)) : null,
+                        newNextDirectoryId != null ? directoryRepository.findDirectoryById(newNextDirectoryId)
+                                .orElseThrow(()->new BadRequestException(DIRECTORY_NOT_FOUND)): null,
+                        newParentDirectoryId != null ? directoryRepository.findDirectoryById(newParentDirectoryId)
+                                .orElseThrow(()->new BadRequestException(DIRECTORY_NOT_FOUND)): null
                 );
                 directoryRepository.save(existingDirectory);
             }
@@ -129,18 +133,17 @@ public class DirectoryServiceImpl implements DirectoryService {
     @Transactional
     public Slice<DirectorySearchResponse> showDirectoriesBySearch(String query, Pageable pageable, Long cursor) {
         Slice<Long> directoryDocumentIds = directoryElasticService.findByKeyword(query, pageable, cursor);
-                //directoryElasticRepository.findAllByDirectoryIdLessThanAndDirectoryNameIsLikeOrderByDirectoryIdDesc(cursor, query, pageable);
 
         List<DirectorySearchResponse> responses = directoryDocumentIds.getContent().stream()
                 .map(this::makeDirectoryResponseByDirectoryDocument)
                 .collect(Collectors.toList());
 
         return new SliceImpl<>(responses, pageable, directoryDocumentIds.hasNext());
-//        return null;
     }
 
     private DirectorySearchResponse makeDirectoryResponseByDirectoryDocument(Long documentId) {
-        Directory directory = directoryRepository.findDirectoryById(documentId);
+        Directory directory = directoryRepository.findDirectoryById(documentId)
+                .orElseThrow(()->new BadRequestException(DIRECTORY_NOT_FOUND));
         DirectorySearchResponse.Directory directoryInfo = DirectorySearchResponse.Directory.builder()
                 .directoryId(documentId)
                 .directoryName(findFullNameByDirectory(directory))

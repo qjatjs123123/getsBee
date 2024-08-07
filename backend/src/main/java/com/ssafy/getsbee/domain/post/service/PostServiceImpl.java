@@ -75,7 +75,7 @@ public class PostServiceImpl implements PostService {
             throw new BadRequestException(_FORBIDDEN);
         }
 
-        Directory directory = directoryRepository.findDirectoryById(request.directoryId());
+        Directory directory = directoryRepository.findDirectoryById(request.directoryId()).orElseThrow(()->new BadRequestException(DIRECTORY_NOT_FOUND));
 
         // 하이라이트 삭제
         List<Highlight> list = new ArrayList<>();
@@ -180,6 +180,10 @@ public class PostServiceImpl implements PostService {
 
         if(postListRequest.directoryId() !=null && postListRequest.query() != null){
             //다현이 검색 로직
+            Directory directory = directoryRepository.findDirectoryById(postListRequest.directoryId())
+                    .orElseThrow(() -> new BadRequestException(DIRECTORY_NOT_FOUND));
+            Slice<Long> postIds = postElasticService.findMyHiveByKeyword(postListRequest.query(), pageable,
+                    cursor, directory);
         }
         if(postListRequest.directoryId() != null){
             return showPostListByDirectoryId(postListRequest.directoryId(), cursor, pageable);
