@@ -114,8 +114,7 @@ public class PostServiceImpl implements PostService {
         //좋아요 여부 필요
         Boolean isBookmark = bookmarkRepository.findByPostAndMember(post, member).isPresent();
         Boolean isLike = likeRepository.existsByMemberAndPost(member, post);
-        post.changeDirectory(directoryRepository.findTemporaryDirectoryByMember(member));
-
+        // post.changeDirectory(directoryRepository.findByMember(member));
 
         post.increaseViewCount();
         return PostResponse.from(post, highlightResponses,commentResponseList,

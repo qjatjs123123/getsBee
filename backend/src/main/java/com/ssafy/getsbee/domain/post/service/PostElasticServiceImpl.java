@@ -49,10 +49,6 @@ public class PostElasticServiceImpl implements PostElasticService {
         PostDocument postDocument = postElasticRepository.findByPostId(post.getId()).
                 orElseThrow(()-> new BadRequestException(POSTDOCUMENT_NOT_FOUND));
 
-        for(Highlight highlight : post.getHighlights()) {
-
-            System.out.println(highlight.getContent() + " ");
-        }
         postDocument.updatePostDocument(post);
         postElasticRepository.save(postDocument);
     }
