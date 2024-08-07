@@ -32,6 +32,7 @@ public class DirectoryElasticServiceImpl implements DirectoryElasticService {
 
     @Override
     public void deleteDirectoryDocument(Directory directory) {
+        System.out.println("directory ID: " + directory.getId());
         DirectoryDocument directoryDocument = directoryElasticRepository.findByDirectoryId(directory.getId())
                 .orElseThrow(()-> new BadRequestException(DIRECTORYDOCUMENT_NOT_FOUND));
 
@@ -50,6 +51,8 @@ public class DirectoryElasticServiceImpl implements DirectoryElasticService {
     @Override
     public Slice<Long> findByKeyword(String keyword, Pageable pageable, Long directoryId) {
         Pageable pageable1 = PageRequest.ofSize(pageable.getPageSize() + 1);
+
+        if(directoryId == null) directoryId = Long.MAX_VALUE;
 
         Page<DirectoryDocument> page = directoryElasticRepository
                 .findAllByDirectoryIdLessThanAndDirectoryNameIsLikeOrderByDirectoryIdDesc(directoryId, keyword, pageable1);

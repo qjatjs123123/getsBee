@@ -38,6 +38,7 @@ public class ApiResponseControllerAdvice implements ResponseBodyAdvice {
             return body;
         }
         if (body instanceof ErrorCode errorCode) {
+            response.setStatusCode(errorCode.getHttpStatus());
             return ApiResponse.onFailure(errorCode);
         }
         if (httpStatus.is2xxSuccessful()) {

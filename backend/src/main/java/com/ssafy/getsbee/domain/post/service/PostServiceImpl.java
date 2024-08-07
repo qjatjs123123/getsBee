@@ -2,6 +2,8 @@ package com.ssafy.getsbee.domain.post.service;
 
 import com.ssafy.getsbee.domain.bookmark.entity.Bookmark;
 import com.ssafy.getsbee.domain.bookmark.repository.BookmarkRepository;
+import com.ssafy.getsbee.domain.comment.dto.response.CommentResponse;
+import com.ssafy.getsbee.domain.comment.entity.Comment;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.follow.repository.FollowRepository;
@@ -100,17 +102,24 @@ public class PostServiceImpl implements PostService {
             throw new BadRequestException(_UNAUTHORIZED);
         }
 
+        List<CommentResponse> commentResponseList = post.getComments().stream()
+                .map(comment -> CommentResponse.of(comment, member))
+                .collect(Collectors.toList());
+
+
         List<HighlightResponse> highlightResponses = post.getHighlights()
                 .stream()
                 .map(HighlightResponse::of).collect(Collectors.toList());
 
         //좋아요 여부 필요
         Boolean isBookmark = bookmarkRepository.findByPostAndMember(post, member).isPresent();
+        Boolean isLike = likeRepository.existsByMemberAndPost(member, post);
         post.changeDirectory(directoryRepository.findTemporaryDirectoryByMember(member));
 
+
         post.increaseViewCount();
-        return PostResponse.from(post, highlightResponses,
-                !isNotOwner(post.getMember(), member), false, isBookmark);
+        return PostResponse.from(post, highlightResponses,commentResponseList,
+                !isNotOwner(post.getMember(), member), isLike, isBookmark);
     }
 
     @Override

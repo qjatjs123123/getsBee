@@ -18,7 +18,6 @@ public class ElasticsearchConfig extends ElasticsearchConfiguration {
 
     @Override
     public ClientConfiguration clientConfiguration() {
-        System.out.println("url : " + url);
         return ClientConfiguration.builder()
                 .connectedTo(url)
                 .build();

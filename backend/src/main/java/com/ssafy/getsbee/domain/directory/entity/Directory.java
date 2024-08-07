@@ -29,7 +29,7 @@ public class Directory extends BaseTimeEntity {
     @Column(name = "directory_id")
     private Long id;
 
-    @Column(length = 20, nullable = false)
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)

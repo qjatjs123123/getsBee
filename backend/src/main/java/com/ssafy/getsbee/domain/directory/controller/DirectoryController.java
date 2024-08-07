@@ -1,5 +1,6 @@
 package com.ssafy.getsbee.domain.directory.controller;
 
+import com.ssafy.getsbee.domain.directory.dto.request.DirectoryRequest;
 import com.ssafy.getsbee.domain.directory.dto.response.DirectoryResponse;
 import com.ssafy.getsbee.domain.directory.dto.response.DirectorySearchResponse;
 import com.ssafy.getsbee.domain.directory.service.DirectoryElasticServiceImpl;
@@ -9,10 +10,7 @@ import com.ssafy.getsbee.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,9 +24,14 @@ public class DirectoryController {
     private final DirectoryElasticServiceImpl directoryElasticServiceImpl;
 
     @GetMapping("")
-    public List<DirectoryResponse> getDirectories(@RequestParam Long memberId) {
+    public List<DirectoryResponse> getDirectories(@RequestParam("memberId") Long memberId) {
         Member member = memberService.findById(memberId);
         return directoryService.findAllByMember(member);
+    }
+
+    @PostMapping("")
+    public List<DirectoryResponse> modifyDirectories(@RequestParam Long memberId, @RequestBody List<DirectoryRequest> directoryRequests) {
+        return directoryService.modifyDirectories(directoryRequests);
     }
 
     @GetMapping("/search")
