@@ -3,7 +3,6 @@ package com.ssafy.getsbee.domain.post.service;
 import com.ssafy.getsbee.domain.bookmark.entity.Bookmark;
 import com.ssafy.getsbee.domain.bookmark.repository.BookmarkRepository;
 import com.ssafy.getsbee.domain.comment.dto.response.CommentResponse;
-import com.ssafy.getsbee.domain.comment.entity.Comment;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.follow.repository.FollowRepository;
@@ -116,7 +115,6 @@ public class PostServiceImpl implements PostService {
         Boolean isLike = likeRepository.existsByMemberAndPost(member, post);
         post.changeDirectory(directoryRepository.findTemporaryDirectoryByMember(member));
 
-
         post.increaseViewCount();
         return PostResponse.from(post, highlightResponses,commentResponseList,
                 !isNotOwner(post.getMember(), member), isLike, isBookmark);
@@ -180,10 +178,7 @@ public class PostServiceImpl implements PostService {
 
         if(postListRequest.directoryId() !=null && postListRequest.query() != null){
             //다현이 검색 로직
-            Directory directory = directoryRepository.findDirectoryById(postListRequest.directoryId())
-                    .orElseThrow(() -> new BadRequestException(DIRECTORY_NOT_FOUND));
-            Slice<Long> postIds = postElasticService.findMyHiveByKeyword(postListRequest.query(), pageable,
-                    cursor, directory);
+            return showPostListByDirectoryIdAndKeyword(postListRequest.directoryId(), postListRequest.query(), cursor, pageable);
         }
         if(postListRequest.directoryId() != null){
             return showPostListByDirectoryId(postListRequest.directoryId(), cursor, pageable);
@@ -199,6 +194,20 @@ public class PostServiceImpl implements PostService {
         }
         throw new BadRequestException(INVALID_POST_REQUEST);
         
+    }
+
+    private Slice<PostListResponse> showPostListByDirectoryIdAndKeyword(Long directoryId, String keyword, Long cursor, Pageable pageable) {
+        Directory directory = directoryRepository.findDirectoryById(directoryId)
+                .orElseThrow(() -> new BadRequestException(DIRECTORY_NOT_FOUND));
+        Slice<Long> postIds = postElasticService.findMyHiveByKeyword(keyword, pageable, cursor, directory);
+
+        List<Post> posts = postIds.getContent().stream()
+                .map(postId -> postRepository.findById(postId)
+                        .orElseThrow(() -> new BadRequestException(POST_NOT_FOUND)))
+                .collect(Collectors.toList());
+
+        Slice<Post> postSlice = new SliceImpl<>(posts, pageable, postIds.hasNext());
+        return makePostListResponseWithPosts(postSlice);
     }
 
     private Slice<PostListResponse> showPostListByKeyword(String query, Pageable pageable, Long cursor) {
