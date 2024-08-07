@@ -29,7 +29,7 @@ async function postHighlightData(data) {
     body: JSON.stringify(data),
   });
   if (response.status === 401) {
-    window.location.href = "http://localhost:5173/about";
+    // window.location.href = "https://getsbee.kr/";
     // 필요에 따라 추가 처리 (예: 사용자에게 재로그인 요청)
     throw new Error("Network response was not ok");
   }
@@ -53,7 +53,7 @@ async function updateHighlightData(data) {
 
   if (response.status === 401) {
     console.log(response, data);
-    // window.location.href = "http://localhost:5173/about";
+    window.location.href = "https://getsbee.kr/";
     // 필요에 따라 추가 처리 (예: 사용자에게 재로그인 요청)
     throw new Error("Network response was not ok");
   }
@@ -88,7 +88,7 @@ async function deleteHighlightData() {
   );
 
   if (response.status === 401) {
-    window.location.href = "http://localhost:5173/about";
+    window.location.href = "https://getsbee.kr/";
     // 필요에 따라 추가 처리 (예: 사용자에게 재로그인 요청)
     throw new Error("Network response was not ok");
   }

@@ -225,6 +225,7 @@ window.addEventListener("load", () => {
   });
   window.addEventListener("message", (event) => {
     if (event.data.type === "TOKEN_UPDATE") {
+      console.log("qweqweaa");
       chrome.storage.sync.set({ GETSBEE_LOGIN: event.data }, function () {
         sendPageContent();
       });
