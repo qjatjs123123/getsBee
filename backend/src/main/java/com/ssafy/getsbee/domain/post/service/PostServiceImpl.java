@@ -175,9 +175,9 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional(readOnly = true)
     public Slice<PostListResponse> showPostList(PostListRequest postListRequest, Long cursor, Pageable pageable) {
+        if(cursor == null) cursor = Long.MAX_VALUE;
 
         if(postListRequest.directoryId() !=null && postListRequest.query() != null){
-            //다현이 검색 로직
             return showPostListByDirectoryIdAndKeyword(postListRequest.directoryId(), postListRequest.query(), cursor, pageable);
         }
         if(postListRequest.directoryId() != null){

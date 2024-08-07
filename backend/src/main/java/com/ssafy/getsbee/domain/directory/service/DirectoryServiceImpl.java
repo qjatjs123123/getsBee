@@ -4,7 +4,6 @@ import com.ssafy.getsbee.domain.directory.dto.request.DirectoryRequest;
 import com.ssafy.getsbee.domain.directory.dto.response.DirectoryResponse;
 import com.ssafy.getsbee.domain.directory.dto.response.DirectorySearchResponse;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
-import com.ssafy.getsbee.domain.directory.entity.DirectoryDocument;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryElasticRepository;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.follow.repository.FollowRepository;
@@ -34,7 +33,6 @@ public class DirectoryServiceImpl implements DirectoryService {
     private final DirectoryRepository directoryRepository;
     private final MemberRepository memberRepository;
     private final DirectoryElasticService directoryElasticService;
-    private final DirectoryElasticRepository directoryElasticRepository;
 
     private final int ROOT_DEPTH = 0;
     private final PostRepository postRepository;
