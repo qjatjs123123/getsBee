@@ -43,9 +43,6 @@ public class DirectoryServiceImpl implements DirectoryService {
     @Override
     public List<DirectoryResponse> findAllByMember(Member member) {
         List<Directory> directories = directoryRepository.findAllByMember(member);
-//        if(!SecurityUtil.getCurrentMemberId().equals(member.getId())){
-//            filterDirectoriesByAuth(directories);
-//        }
         filterDirectoriesByAuth(member.getId(), assembleDirectories(directories));
         return assembleDirectories(directories);
     }
@@ -95,20 +92,16 @@ public class DirectoryServiceImpl implements DirectoryService {
             Long newNextDirectoryId = getNewDirectoryId(DR.nextDirectoryId(), tempIdToId);
             Long newParentDirectoryId = getNewDirectoryId(DR.parentDirectoryId(), tempIdToId);
 
-            Directory existingDirectory = directoryRepository.findDirectoryById(newDirectoryId)
-                    .orElseThrow(() -> new BadRequestException(DIRECTORY_NOT_FOUND));
+            Directory existingDirectory = findById(newDirectoryId);
 
             // 변경사항 확인 및 수정
             if (isDirectoryChanged(existingDirectory, DR, newPrevDirectoryId, newNextDirectoryId, newParentDirectoryId)) {
                 existingDirectory.changeDirectoryInfo(
                         DR.name(),
                         DR.depth(),
-                        newPrevDirectoryId != null ? directoryRepository.findDirectoryById(newPrevDirectoryId)
-                                .orElseThrow(()->new BadRequestException(DIRECTORY_NOT_FOUND)) : null,
-                        newNextDirectoryId != null ? directoryRepository.findDirectoryById(newNextDirectoryId)
-                                .orElseThrow(()->new BadRequestException(DIRECTORY_NOT_FOUND)): null,
-                        newParentDirectoryId != null ? directoryRepository.findDirectoryById(newParentDirectoryId)
-                                .orElseThrow(()->new BadRequestException(DIRECTORY_NOT_FOUND)): null
+                        newPrevDirectoryId != null ? findById(newPrevDirectoryId) : null,
+                        newNextDirectoryId != null ? findById(newNextDirectoryId): null,
+                        newParentDirectoryId != null ? findById(newParentDirectoryId): null
                 );
                 directoryRepository.save(existingDirectory);
             }
@@ -140,10 +133,13 @@ public class DirectoryServiceImpl implements DirectoryService {
 
         return new SliceImpl<>(responses, pageable, directoryDocumentIds.hasNext());
     }
+    private Directory findById(Long directoryId) {
+        return directoryRepository.findDirectoryById(directoryId)
+                .orElseThrow(()->new BadRequestException(DIRECTORY_NOT_FOUND));
+    }
 
     private DirectorySearchResponse makeDirectoryResponseByDirectoryDocument(Long documentId) {
-        Directory directory = directoryRepository.findDirectoryById(documentId)
-                .orElseThrow(()->new BadRequestException(DIRECTORY_NOT_FOUND));
+        Directory directory = findById(documentId);
         DirectorySearchResponse.Directory directoryInfo = DirectorySearchResponse.Directory.builder()
                 .directoryId(documentId)
                 .directoryName(findFullNameByDirectory(directory))
