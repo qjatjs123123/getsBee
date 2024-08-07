@@ -30,7 +30,6 @@ public enum ErrorCode {
     GOOGLE_SERVER_ERROR(BAD_REQUEST, "AUTH007", "Google Server 에러입니다."),
     INVALID_ID_TOKEN(UNAUTHORIZED, "AUTH008", "ID 토큰 검증에 실패했습니다."),
 
-
     /** Member */
     DUPLICATE_MEMBER(BAD_REQUEST, "MEMBER000", "이미 존재하는 E-mail 입니다."),
     MEMBER_NOT_FOUND(BAD_REQUEST, "MEMBER001", "해당 회원이 존재하지 않습니다."),
@@ -75,7 +74,6 @@ public enum ErrorCode {
     FOLLOW_NOT_FOUND(BAD_REQUEST, "FOLLOW001", "해당 팔로우를 찾을 수 없습니다."),
     UNFOLLOW_FAILED(BAD_REQUEST, "FOLLOW002", "잘못된 팔로우 취소 요청입니다."),
 
-
     /** PostDocument */
     DUPLICATE_POSTDOCUMENT(BAD_REQUEST, "POSTDOCUMENT000", "이미 존재하는 포스트 도큐먼트 입니다."),
     POSTDOCUMENT_NOT_FOUND(BAD_REQUEST, "POSTDOCUMENT001", "해당 포스트 도큐먼트는 존재하지 않습니다."),
@@ -87,7 +85,6 @@ public enum ErrorCode {
     /** DirectoryDocument */
     DUPLICATE_DIRECTORYDOCUMENT(BAD_REQUEST, "DIRECTORYDOCUMENT000", "이미 존재하는 디렉토리 도규먼트 입니다."),
     DIRECTORYDOCUMENT_NOT_FOUND(BAD_REQUEST, "DIRECTORYDOCUMENT001", "해당 디렉토리 도큐먼트는 존재하지 않습니다.");
-
 
     private final HttpStatus httpStatus;
     private final String code;

@@ -2,6 +2,7 @@ package com.ssafy.getsbee.domain.auth.controller;
 
 import com.ssafy.getsbee.domain.auth.dto.request.LoginRequest;
 import com.ssafy.getsbee.domain.auth.dto.request.TokenRequest;
+import com.ssafy.getsbee.domain.auth.dto.response.LoginResponse;
 import com.ssafy.getsbee.domain.auth.dto.response.TokenResponse;
 import com.ssafy.getsbee.domain.auth.service.AuthService;
 import jakarta.validation.Valid;
@@ -16,7 +17,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public TokenResponse login(@Valid @RequestBody LoginRequest request) {
+    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
         return authService.login(request);
     }
 
