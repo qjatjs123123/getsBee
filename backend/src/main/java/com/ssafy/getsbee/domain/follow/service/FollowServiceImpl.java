@@ -34,7 +34,7 @@ public class FollowServiceImpl implements FollowService{
 
     @Override
     public void createFollow(Long directoryId) {
-        Directory directory = directoryRepository.findDirectoryById(directoryId);
+        Directory directory = directoryRepository.findDirectoryById(directoryId).orElseThrow(()->new BadRequestException(DIRECTORY_NOT_FOUND));
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         Member currentMember = memberRepository.findById(currentMemberId).orElseThrow(
                 ()->new NotFoundException(MEMBER_NOT_FOUND));

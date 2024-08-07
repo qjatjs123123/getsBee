@@ -75,7 +75,7 @@ public class PostServiceImpl implements PostService {
             throw new BadRequestException(_FORBIDDEN);
         }
 
-        Directory directory = directoryRepository.findDirectoryById(request.directoryId());
+        Directory directory = directoryRepository.findDirectoryById(request.directoryId()).orElseThrow(()->new BadRequestException(DIRECTORY_NOT_FOUND));
 
         // 하이라이트 삭제
         List<Highlight> list = new ArrayList<>();
@@ -174,23 +174,33 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Slice<PostListResponse> showPostList(PostListRequest postListRequest, Long cursor, Pageable pageable) {
 
+        if(postListRequest.directoryId() !=null && postListRequest.query() != null){
+            //다현이 검색 로직
+            Directory directory = directoryRepository.findDirectoryById(postListRequest.directoryId())
+                    .orElseThrow(() -> new BadRequestException(DIRECTORY_NOT_FOUND));
+            Slice<Long> postIds = postElasticService.findMyHiveByKeyword(postListRequest.query(), pageable,
+                    cursor, directory);
+        }
         if(postListRequest.directoryId() != null){
             return showPostListByDirectoryId(postListRequest.directoryId(), cursor, pageable);
-        }else if(postListRequest.memberId() != null){
-            return showPostListByMemberId(postListRequest.memberId(), cursor, pageable);
-        }else if(postListRequest.following()!=null){
-            return showFollowingPostListByMemberId(SecurityUtil.getCurrentMemberId(), cursor, pageable);
-        }else if(postListRequest.query()!=null){
-            return showPostListByKeyword(postListRequest.query(), pageable, cursor);
-        }else{
-            throw new BadRequestException(INVALID_POST_REQUEST);
         }
+        if(postListRequest.memberId() != null){
+            return showPostListByMemberId(postListRequest.memberId(), cursor, pageable);
+        }
+        if(postListRequest.following()!=null){
+            return showFollowingPostListByMemberId(SecurityUtil.getCurrentMemberId(), cursor, pageable);
+        }
+        if(postListRequest.query()!=null){
+            return showPostListByKeyword(postListRequest.query(), pageable, cursor);
+        }
+        throw new BadRequestException(INVALID_POST_REQUEST);
+        
     }
 
-    @Transactional(readOnly = true)
-    public Slice<PostListResponse> showPostListByKeyword(String query, Pageable pageable, Long cursor) {
+    private Slice<PostListResponse> showPostListByKeyword(String query, Pageable pageable, Long cursor) {
         Slice<Long> postIds = postElasticService.findByKeyword(query, pageable, cursor);
 
         List<Post> posts = postIds.getContent().stream()
