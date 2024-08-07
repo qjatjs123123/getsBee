@@ -54,6 +54,7 @@ public enum ErrorCode {
 
     /** Block */
     BLOCK_NOT_FOUND(BAD_REQUEST, "BLOCK000", "해당 차단 도메인이 존재하지 않습니다."),
+    DUPLICATE_BLOCK(BAD_REQUEST, "BLOCK001", "이미 차단한 도메인 입니다."),
 
     /** Like */
     LIKE_NOT_FOUND(BAD_REQUEST, "LIKE000", "해당 좋아요가 존재하지 않습니다."),

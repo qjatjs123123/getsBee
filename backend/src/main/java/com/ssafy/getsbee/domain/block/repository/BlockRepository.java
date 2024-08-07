@@ -9,4 +9,5 @@ import java.util.List;
 public interface BlockRepository extends JpaRepository<Block, Long> {
 
     List<Block> findAllByMember(Member member);
+    Boolean existsByMemberAndDomain(Member member, String domain);
 }
