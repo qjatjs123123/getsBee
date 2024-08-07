@@ -19,6 +19,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
 
 @Service
@@ -72,8 +75,8 @@ public class HighlightServiceImpl implements HighlightService {
     }
 
     @Override
-    public void updateHighlight(Long highlightId, UpdateHighlightRequest request) {
-        Member member = memberService.findById(highlightId);
+    public void updateHighlight(Long highlightId, UpdateHighlightRequest request, Long memberId) {
+        Member member = memberService.findById(memberId);
         Highlight highlight = highlightRepository.findById(highlightId)
                 .orElseThrow(() -> new BadRequestException(HIGHLIGHT_NOT_FOUND));
 
@@ -81,5 +84,21 @@ public class HighlightServiceImpl implements HighlightService {
             throw new ForbiddenException(_FORBIDDEN);
         }
         highlight.changeColor(request.color());
+        highlightRepository.save(highlight);
+    }
+
+    @Override
+    public List<HighlightResponse> getHighlights(String url, Long memberId) {
+        Member member = memberService.findById(memberId);
+        return postRepository.findAllByMemberAndUrl(member, url)
+                .map(highlightRepository::findAllByPost)
+                .map(highlights -> {
+                    List<HighlightResponse> hr = new ArrayList<>();
+                    for (Highlight highlight : highlights) {
+                        hr.add(HighlightResponse.of(highlight));
+                    }
+                    return hr;
+                })
+                .orElseGet(ArrayList::new);
     }
 }

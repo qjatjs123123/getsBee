@@ -1,6 +1,7 @@
 package com.ssafy.getsbee.domain.highlight.controller;
 
 import com.ssafy.getsbee.domain.highlight.dto.request.CreateHighlightRequest;
+import com.ssafy.getsbee.domain.highlight.dto.request.HighlightsRequest;
 import com.ssafy.getsbee.domain.highlight.dto.request.UpdateHighlightRequest;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
 import com.ssafy.getsbee.domain.highlight.service.HighlightService;
@@ -9,6 +10,8 @@ import com.ssafy.getsbee.global.util.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/highlights")
@@ -30,6 +33,12 @@ public class HighlightController {
     @PatchMapping("/{highlight-id}")
     public void updateHighlight(@PathVariable("highlight-id") Long highlightId,
                                                    @RequestBody @Valid UpdateHighlightRequest updateHighlightRequest){
-        highlightService.updateHighlight(highlightId, updateHighlightRequest);
+        highlightService.updateHighlight(highlightId, updateHighlightRequest, SecurityUtil.getCurrentMemberId());
+    }
+
+
+    @PostMapping("/list")
+    public List<HighlightResponse> getHighlights(@RequestBody @Valid HighlightsRequest highlightsRequest){
+        return highlightService.getHighlights(highlightsRequest.url(), SecurityUtil.getCurrentMemberId());
     }
 }
