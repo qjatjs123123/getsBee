@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from 'primereact/button';
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
 import { Card } from 'primereact/card';
 import ToggleButtonGroup from './ToggleButtonGroup';
+import { patchUserInfo } from '../../api/UserInfoAPI';
 
 interface UserInfoFormProps {
   onClose: () => void;
@@ -42,18 +44,32 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onClose, onSave }) => {
   const [birthYear, setBirthYear] = useState<number | null>(null);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     setIsFormValid(selectedInterests.length > 0 && birthYear !== null);
   }, [selectedInterests, birthYear]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (isFormValid) {
-      const serverCategories = selectedInterests.map(
-        (label) => interestLabels.find((item) => item.label === label)?.value || '',
-      );
-      onSave({ birthYear, category: serverCategories });
-      onClose();
+      setIsLoading(true);
+      try {
+        const serverCategories = selectedInterests.map(
+          (label) => interestLabels.find((item) => item.label === label)?.value || '',
+        );
+        const data = { birthYear, category: serverCategories };
+        await patchUserInfo(data);
+        onSave(data);
+        onClose();
+        navigate('/about');
+      } catch (error) {
+        console.error('Failed to save user info:', error);
+        // Handle error (e.g., show error message to user)
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -84,12 +100,12 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onClose, onSave }) => {
           />
         </div>
         <div className="flex justify-end space-x-4 mt-8">
-          <Button label="닫기" severity="secondary" outlined onClick={onClose} />
+          <Button label="닫기" severity="secondary" outlined onClick={onClose} disabled={isLoading} />
           <Button
-            label="저장 후 맞춤 추천받기"
+            label={isLoading ? '저장 중...' : '저장 후 맞춤 추천받기'}
             className="bg-[#FFBF09] border-2 border-[#FFBF09] shadow-none hover:bg-[#E5AB08]"
             onClick={handleSave}
-            disabled={!isFormValid}
+            disabled={!isFormValid || isLoading}
           />
         </div>
       </form>

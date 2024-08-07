@@ -6,8 +6,13 @@ export async function getUserInfo() {
   return response;
 }
 
-export async function patchUserInfo() {
-  const response = await axios.patch('/members');
-  console.log(response);
-  return response;
-}
+export const patchUserInfo = async (data: { birthYear: number | null; category: string[] }) => {
+  try {
+    const response = await axios.patch('/members', data);
+    console.log(response);
+    return response;
+  } catch (error) {
+    console.error('Error updating user info:', error);
+    throw error;
+  }
+};

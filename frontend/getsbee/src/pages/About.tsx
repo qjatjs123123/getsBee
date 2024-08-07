@@ -1,10 +1,10 @@
 import React from 'react';
-import Header from '../components/Common/Header';
+import AboutHeader from '../components/Common/AboutHeader';
 
 const About = () => {
   return (
     <div>
-      <Header />
+      <AboutHeader />
     </div>
   );
 };
