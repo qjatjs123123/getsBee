@@ -1,81 +1,39 @@
-import React, { useState, KeyboardEvent } from 'react';
+import React, { useEffect, useState, KeyboardEvent } from 'react';
 import { Divider } from 'primereact/divider';
+import { Avatar } from 'primereact/avatar';
 import { InputTextarea } from 'primereact/inputtextarea';
+import { useRecoilValueLoadable, useSetRecoilState } from 'recoil';
 import DirSelection from '../Directory/DirSelection';
-import Highlight from './Highlight';
+import HighlightItem from './HighlightItem';
 import PostUpdate from './PostUpdate';
 import publicIcon from '../../assets/publicIcon.png';
 import privateIcon from '../../assets/privateIcon.png';
+import {
+  getPostDetailState,
+  postDetailState,
+  Post,
+  Highlight as HighlightType,
+  Comment as CommentType,
+} from '../../recoil/PostDetailState';
 
-interface Highlight {
-  content: string;
-  color: string;
+interface PostDetailProps {
+  postId: number;
 }
 
-interface Comment {
-  id: string;
-  name: string;
-  comment: string;
-  date: string;
-  avatar: string;
-}
-
-interface Post {
-  title: string;
-  url: string;
-  viewCount: string;
-  likeCount: string;
-  directoryName: string;
-  isPublic: boolean;
-  isLike: boolean;
-  note: string;
-  avatar: string;
-  highlights: Highlight[];
-  comments: Comment[];
-}
-
-function PostDetail() {
+const PostDetail: React.FC<PostDetailProps> = ({ postId }) => {
+  const postDetailLoadable = useRecoilValueLoadable(getPostDetailState(postId));
+  const setPostDetail = useSetRecoilState(postDetailState);
   const [value, setValue] = useState<string>('');
   const [isEditing, setIsEditing] = useState(false);
-  const [isMyPost] = useState(false);
-  const [post, setPost] = useState<Post>({
-    title: 'There are many variations of passages of Lorem Ipsum ',
-    url: 'https://www.figma.com/design/6haHr5BJLpFYfi0soGyEYu/',
-    viewCount: '3.7k',
-    likeCount: '3.7k',
-    directoryName: 'Hong BoemSun / IT / Cloud',
-    isPublic: true,
-    isLike: false,
-    note: 'ers, as opposed to using Content here, content here, making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default',
-    avatar: 'https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png',
-    highlights: [
-      {
-        content:
-          'ers, as opposed to using Content here, content here, making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default',
-        color: '#F9F47F',
-      },
-      {
-        content: 'ers, as opposed to using Content here, content here, making it look like readable',
-        color: '#FFB6C6',
-      },
-    ],
-    comments: [
-      {
-        id: '1',
-        name: 'Hong Bumsun',
-        comment: '좋은 글 잘 보았습니다.',
-        date: '2024/07/31 10:27',
-        avatar: 'https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png',
-      },
-    ],
-  });
 
-  const publicClass = post.isPublic ? 'bg-[#DBEAFE] text-[#3B559C]' : 'bg-red-200 text-red-800';
-  const publicText = post.isPublic ? 'Public' : 'Private';
-  const iconSrc = post.isPublic ? publicIcon : privateIcon;
+  useEffect(() => {
+    if (postDetailLoadable.state === 'hasValue') {
+      setPostDetail(postDetailLoadable.contents);
+    }
+  }, [postDetailLoadable, setPostDetail]);
 
   const handleUpdateSave = (updatedPost: Post) => {
-    setPost(updatedPost);
+    setPostDetail(updatedPost);
     setIsEditing(false);
   };
 
@@ -85,14 +43,24 @@ function PostDetail() {
     }
   };
 
+  const postDetail = postDetailLoadable.state === 'hasValue' ? postDetailLoadable.contents.data : null;
+  console.log(postDetail);
+  if (!postDetail) {
+    return <div>No post details available</div>;
+  }
+
+  const publicClass = postDetail.isPublic ? 'bg-[#DBEAFE] text-[#3B559C]' : 'bg-red-200 text-red-800';
+  const publicText = postDetail.isPublic ? 'Public' : 'Private';
+  const iconSrc = postDetail.isPublic ? publicIcon : privateIcon;
+
   if (isEditing) {
-    return <PostUpdate post={post} onSave={handleUpdateSave} onCancel={() => setIsEditing(false)} />;
+    return <PostUpdate post={postDetail} onSave={handleUpdateSave} onCancel={() => setIsEditing(false)} />;
   }
 
   return (
     <div className="mb-4" style={{ width: '500px', height: 'auto' }}>
       <div className="flex justify-between mt-3">
-        {isMyPost && (
+        {postDetail.isMyPost && (
           <div className="flex items-center">
             <span className={`flex items-center text-[12px] font-semibold px-2 py-1 rounded-full ${publicClass}`}>
               <img className="flex w-[20px] h-[20px] mr-1" src={iconSrc} alt="statusIcon" />
@@ -100,26 +68,30 @@ function PostDetail() {
             </span>
           </div>
         )}
-        <div className="flex items-center">{isMyPost && <DirSelection />}</div>
+        <div className="flex items-center">{postDetail.isMyPost && <DirSelection />}</div>
       </div>
       <div className="flex mt-3">
-        <img src={post.avatar} alt={post.title} className="mt-3 ml-3 w-[80px] h-[80px]" />
+        <Avatar image={postDetail.memberImage} size="large" shape="circle" className="w-[60px] h-[60px] mt-1" />
         <div className="ml-4 flex-1">
           <p className="text-[14px] font-semibold" style={{ color: '#8D8D8D' }}>
-            {post.directoryName}
+            {postDetail.directoryName}
           </p>
-          <h2 className="text-[18px] font-bold mr-1">{post.title}</h2>
-          <a href={post.url} className="text-[12px] font-semibold hover:underline block" style={{ color: '#8D8D8D' }}>
-            {post.url}
+          <h2 className="text-[18px] font-bold mr-1">{postDetail.title}</h2>
+          <a
+            href={postDetail.url}
+            className="text-[12px] font-semibold hover:underline block"
+            style={{ color: '#8D8D8D' }}
+          >
+            {postDetail.url}
           </a>
           <div className="flex justify-end text-[12px] font-semibold mt-3" style={{ color: '#8D8D8D' }}>
             <div className="flex items-center mr-4">
-              <i className={`pi pi-heart mr-1`} />
-              <span>{post.likeCount}</span>
+              <i className="pi pi-heart mr-1" />
+              <span>{postDetail.likeCount}</span>
             </div>
             <div className="flex items-center">
-              <i className={`pi pi-eye mr-1`} />
-              <span className="mr-3">{post.viewCount}</span>
+              <i className="pi pi-eye mr-1" />
+              <span className="mr-3">{postDetail.viewCount}</span>
             </div>
           </div>
         </div>
@@ -130,16 +102,19 @@ function PostDetail() {
       <div className="flex justify-between items-center mt-3 ml-3">
         <h2 className="text-[18px] font-bold">Highlights</h2>
         <div className="flex">
-          {isMyPost && (
-            <i
-              className="pi pi-file-edit mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer"
-              title="Edit"
-              onClick={() => setIsEditing(true)}
-              onKeyPress={handleKeyPress}
-              tabIndex={0}
-              role="button"
-              aria-label="Edit"
-            />
+          {postDetail.isMyPost && (
+            <span className="flex">
+              <i className="pi pi-trash mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer" title="Like" />
+              <i
+                className="pi pi-file-edit mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer"
+                title="Edit"
+                onClick={() => setIsEditing(true)}
+                onKeyPress={handleKeyPress}
+                tabIndex={0}
+                role="button"
+                aria-label="Edit"
+              />
+            </span>
           )}
           <i className="pi pi-heart mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer" title="Like" />
           <i className="pi pi-share-alt mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer" title="Share" />
@@ -147,14 +122,17 @@ function PostDetail() {
         </div>
       </div>
       <div className="mt-4 ml-6">
-        {post.highlights.map((highlight) => (
-          <Highlight key={highlight.content} text={highlight.content} color={highlight.color} className="mb-4" />
-        ))}
+        {postDetail.highlights &&
+          postDetail.highlights.map((highlight: HighlightType) => (
+            <div key={highlight.highlightId} className="mb-4">
+              <HighlightItem text={highlight.content} color={highlight.color} />
+            </div>
+          ))}
       </div>
       <div className="flex mt-3 ml-3">
         <h2 className="text-[18px] font-bold">Notes</h2>
       </div>
-      <div className="mt-1 ml-6">{post.note}</div>
+      <div className="mt-1 ml-6">{postDetail.note}</div>
       <div className="flex mt-3 ml-3">
         <h2 className="text-[18px] font-bold">Comments</h2>
       </div>
@@ -186,23 +164,24 @@ function PostDetail() {
         </div>
       </div>
       <div className="ml-3">
-        {post.comments.map((comment) => (
-          <div key={comment.id} className="flex items-start mt-3">
-            <img src={comment.avatar} alt="avatar" className="w-[30px] h-[30px] rounded-full" />
-            <div className="ml-3 flex-1">
-              <div className="flex items-center">
-                <p className="font-semibold mr-2">{comment.name}</p>
-                <p className="text-[12px]" style={{ color: '#8D8D8D' }}>
-                  {comment.date}
-                </p>
+        {postDetail.comments &&
+          postDetail.comments.map((comment: CommentType) => (
+            <div key={comment.id} className="flex items-start mt-3">
+              <img src={comment.avatar} alt="avatar" className="w-[30px] h-[30px] rounded-full" />
+              <div className="ml-3 flex-1">
+                <div className="flex items-center">
+                  <p className="font-semibold mr-2">{comment.name}</p>
+                  <p className="text-[12px]" style={{ color: '#8D8D8D' }}>
+                    {comment.date}
+                  </p>
+                </div>
+                <p className="text-[14px]">{comment.comment}</p>
               </div>
-              <p className="text-[14px]">{comment.comment}</p>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );
-}
+};
 
 export default PostDetail;

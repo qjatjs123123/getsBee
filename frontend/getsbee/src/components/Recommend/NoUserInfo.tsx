@@ -39,7 +39,7 @@ const NoUserInfo = () => {
             icon="pi pi-plus"
             onClick={() => setVisible(true)}
             raised
-            className="border-0 bg-[#FFBF09] focus:shadow-none hover:bg-[#E5AB08] transition-colors duration-300"
+            className="font-bold border-0 bg-[#FFBF09] focus:shadow-none hover:bg-[#E5AB08] transition-colors duration-300"
           />
           <Dialog visible={visible} modal onHide={handleClose} content={renderDialogContent} dismissableMask />
         </div>

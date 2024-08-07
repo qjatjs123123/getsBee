@@ -3,7 +3,6 @@ import SideBar from '../components/Common/SideBar';
 import Menu from '../components/Common/Menu';
 import DirectoryNav from '../components/Directory/DirectoryNav';
 import EditableDir from '../components/Directory/EditableDir';
-import '../index.css'; // CSS 파일을 임포트합니다.
 
 const MyHive: React.FC = () => {
   const userName = 'HoSeok Lee'; // 예시 사용자 이름

@@ -4,7 +4,6 @@ import Tab from '../components/Common/Tab';
 import Feed from '../components/Contents/Feed';
 import FeedDetail from '../components/Contents/FeedDetail';
 import honeyComb from '../assets/honeyComb.png';
-import '../index.css';
 
 const Home: React.FC = () => {
   return (

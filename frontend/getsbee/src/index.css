@@ -1,7 +1,7 @@
 @layer tailwind-base, primereact, tailwind-utilities;
 
 /* IMPORTANT: In "styled" mode you must add the PrimeReact Theme here. Do NOT include in "unstyled" mode */
-@import 'primereact/resources/themes/lara-light-blue/theme.css' layer(primereact);
+@import 'primereact/resources/themes/saga-blue/theme.css';
 
 /* PrimeReact 핵심 CSS */
 @import 'primereact/resources/primereact.min.css';
@@ -49,6 +49,14 @@ body {
 /* 활성 탭에 대한 hover 효과 (필요한 경우) */
 .p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight .p-menuitem-link:hover {
   background-color: #c9c9c9; /* 활성 탭의 hover 배경색을 약간 더 어둡게 */
+}
+
+.custom-tieredmenu .p-menuitem-link {
+  background-color: white !important;
+}
+
+.custom-tieredmenu .p-menuitem-link:hover {
+  background-color: #e9ecef !important;
 }
 
 .scrollbar-hide {
