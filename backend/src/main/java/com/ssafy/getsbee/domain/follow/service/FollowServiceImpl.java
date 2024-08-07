@@ -58,9 +58,8 @@ public class FollowServiceImpl implements FollowService{
     }
 
     @Override
-    public List<FollowDirectoryResponse> findFollowingDirectories() { //내가 팔로잉 중인 디렉토리 정보
-        Long currentMember = SecurityUtil.getCurrentMemberId();
-        List<Follow> follows = followRepository.findFollowingByMemberId(currentMember);
+    public List<FollowDirectoryResponse> findFollowingDirectories(Long memberId) { //내가 팔로잉 중인 디렉토리 정보
+        List<Follow> follows = followRepository.findFollowingByMemberId(memberId);
 
         return follows.stream()
                 .map(f -> {
@@ -85,9 +84,8 @@ public class FollowServiceImpl implements FollowService{
     }
 
     @Override
-    public List<FollowDirectoryResponse> findFollowedDirectories() { //내가 팔로잉 중인 디렉토리 정보
-        Long currentMember = SecurityUtil.getCurrentMemberId();
-        List<Follow> follows = followRepository.findFollowedByMemberId(currentMember);
+    public List<FollowDirectoryResponse> findFollowedDirectories(Long memberId) { //나를 팔로잉 중인 디렉토리 정보
+        List<Follow> follows = followRepository.findFollowedByMemberId(memberId);
 
         return follows.stream()
                 .map(f -> {
@@ -112,31 +110,28 @@ public class FollowServiceImpl implements FollowService{
     }
 
     @Override
-    public HiveInfoResponse getHiveInfo() {
+    public HiveInfoResponse getHiveInfo(Long memberId) {
         return HiveInfoResponse.builder()
-                .follower(countFollowers())
-                .following(countFollowingDirectories())
-                .postNumber(countPosts())
+                .follower(countFollowers(memberId))
+                .following(countFollowingDirectories(memberId))
+                .postNumber(countPosts(memberId))
                 .build();
     }
 
-    private Long countFollowingDirectories() { //멤버가 팔로잉 중인 디렉토리 수
-        Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        Member currentMember = memberRepository.findById(currentMemberId)
+    private Long countFollowingDirectories(Long memberId) { //멤버가 팔로잉 중인 디렉토리 수
+        Member currentMember = memberRepository.findById(memberId)
                 .orElseThrow(()-> new NotFoundException(MEMBER_NOT_FOUND));
         return followRepository.countMemberFollowings(currentMember);
     }
 
-    private Long countFollowers() { // 멤버의 디렉토리를 팔로우중인 유저의 수
-        Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        Member currentMember = memberRepository.findById(currentMemberId)
+    private Long countFollowers(Long memberId) { // 멤버의 디렉토리를 팔로우중인 유저의 수
+        Member currentMember = memberRepository.findById(memberId)
                 .orElseThrow(()-> new NotFoundException(MEMBER_NOT_FOUND));
         return followRepository.countMemberFollowers(currentMember);
     }
 
-    private Long countPosts() { // 유저가 작성한 포스트 수
-        Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        Member currentMember = memberRepository.findById(currentMemberId)
+    private Long countPosts(Long memberId) { // 유저가 작성한 포스트 수
+        Member currentMember = memberRepository.findById(memberId)
                 .orElseThrow(()-> new NotFoundException(MEMBER_NOT_FOUND));
         return postRepository.countPostsByMember(currentMember);
     }
