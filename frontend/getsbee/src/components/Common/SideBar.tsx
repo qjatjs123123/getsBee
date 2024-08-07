@@ -4,7 +4,6 @@ import { Avatar } from 'primereact/avatar';
 import logoIcon from '../../assets/logoIcon.png';
 import settingIcon from '../../assets/settingIcon.png';
 import Directory from '../Directory/Directory';
-import '../../index.css';
 
 const SideBar: React.FC = () => {
   const directories = [

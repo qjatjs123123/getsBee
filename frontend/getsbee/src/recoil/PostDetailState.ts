@@ -1,5 +1,5 @@
 // src/recoil/PostDetailState.ts
-import { atom, selector } from 'recoil';
+import { atom, selectorFamily } from 'recoil';
 import { getPostDetail } from '../api/PostDetailApi';
 
 export interface Highlight {
@@ -38,7 +38,7 @@ export interface Post {
   isBookmark: boolean;
   isMyPost: boolean;
   comments: Comment[];
-  avatar: string;
+  memberImage: string;
 }
 
 export const postDetailState = atom<Post | null>({
@@ -46,10 +46,9 @@ export const postDetailState = atom<Post | null>({
   default: null,
 });
 
-export const getPostDetailState = selector({
+export const getPostDetailState = selectorFamily({
   key: 'getPostDetailState',
-  get: async () => {
-    const postId = 2; // 실제 포스트 ID를 설정
+  get: (postId: number) => async () => {
     const data = await getPostDetail(postId);
     return data;
   },

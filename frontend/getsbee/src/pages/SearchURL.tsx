@@ -4,7 +4,6 @@ import SearchTab from '../components/Common/SearchTab';
 import Feed from '../components/Contents/Feed';
 import FeedDetail from '../components/Contents/FeedDetail';
 import honeyComb from '../assets/honeyComb.png';
-import '../index.css';
 
 const SearchURL: React.FC = () => {
   return (

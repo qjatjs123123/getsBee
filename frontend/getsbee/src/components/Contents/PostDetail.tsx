@@ -1,5 +1,6 @@
 import React, { useEffect, useState, KeyboardEvent } from 'react';
 import { Divider } from 'primereact/divider';
+import { Avatar } from 'primereact/avatar';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { useRecoilValueLoadable, useSetRecoilState } from 'recoil';
 import DirSelection from '../Directory/DirSelection';
@@ -15,15 +16,19 @@ import {
   Comment as CommentType,
 } from '../../recoil/PostDetailState';
 
-function PostDetail() {
-  const postDetailLoadable = useRecoilValueLoadable(getPostDetailState);
+interface PostDetailProps {
+  postId: number;
+}
+
+const PostDetail: React.FC<PostDetailProps> = ({ postId }) => {
+  const postDetailLoadable = useRecoilValueLoadable(getPostDetailState(postId));
   const setPostDetail = useSetRecoilState(postDetailState);
   const [value, setValue] = useState<string>('');
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (postDetailLoadable.state === 'hasValue') {
-      setPostDetail(postDetailLoadable.contents.data);
+      setPostDetail(postDetailLoadable.contents);
     }
   }, [postDetailLoadable, setPostDetail]);
 
@@ -38,8 +43,8 @@ function PostDetail() {
     }
   };
 
-  const postDetail = postDetailLoadable.contents.data;
-
+  const postDetail = postDetailLoadable.state === 'hasValue' ? postDetailLoadable.contents.data : null;
+  console.log(postDetail);
   if (!postDetail) {
     return <div>No post details available</div>;
   }
@@ -66,7 +71,7 @@ function PostDetail() {
         <div className="flex items-center">{postDetail.isMyPost && <DirSelection />}</div>
       </div>
       <div className="flex mt-3">
-        <img src={postDetail.thumbnailUrl} alt={postDetail.title} className="mt-3 ml-3 w-[80px] h-[80px]" />
+        <Avatar image={postDetail.memberImage} size="large" shape="circle" className="w-[60px] h-[60px] mt-1" />
         <div className="ml-4 flex-1">
           <p className="text-[14px] font-semibold" style={{ color: '#8D8D8D' }}>
             {postDetail.directoryName}
@@ -81,11 +86,11 @@ function PostDetail() {
           </a>
           <div className="flex justify-end text-[12px] font-semibold mt-3" style={{ color: '#8D8D8D' }}>
             <div className="flex items-center mr-4">
-              <i className={`pi pi-heart mr-1`} />
+              <i className="pi pi-heart mr-1" />
               <span>{postDetail.likeCount}</span>
             </div>
             <div className="flex items-center">
-              <i className={`pi pi-eye mr-1`} />
+              <i className="pi pi-eye mr-1" />
               <span className="mr-3">{postDetail.viewCount}</span>
             </div>
           </div>
@@ -98,15 +103,18 @@ function PostDetail() {
         <h2 className="text-[18px] font-bold">Highlights</h2>
         <div className="flex">
           {postDetail.isMyPost && (
-            <i
-              className="pi pi-file-edit mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer"
-              title="Edit"
-              onClick={() => setIsEditing(true)}
-              onKeyPress={handleKeyPress}
-              tabIndex={0}
-              role="button"
-              aria-label="Edit"
-            />
+            <span className="flex">
+              <i className="pi pi-trash mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer" title="Like" />
+              <i
+                className="pi pi-file-edit mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer"
+                title="Edit"
+                onClick={() => setIsEditing(true)}
+                onKeyPress={handleKeyPress}
+                tabIndex={0}
+                role="button"
+                aria-label="Edit"
+              />
+            </span>
           )}
           <i className="pi pi-heart mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer" title="Like" />
           <i className="pi pi-share-alt mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer" title="Share" />
@@ -116,12 +124,9 @@ function PostDetail() {
       <div className="mt-4 ml-6">
         {postDetail.highlights &&
           postDetail.highlights.map((highlight: HighlightType) => (
-            <HighlightItem
-              key={highlight.highlightId}
-              text={highlight.content}
-              color={highlight.color}
-              className="mb-4"
-            />
+            <div key={highlight.highlightId} className="mb-4">
+              <HighlightItem text={highlight.content} color={highlight.color} />
+            </div>
           ))}
       </div>
       <div className="flex mt-3 ml-3">
@@ -177,6 +182,6 @@ function PostDetail() {
       </div>
     </div>
   );
-}
+};
 
 export default PostDetail;

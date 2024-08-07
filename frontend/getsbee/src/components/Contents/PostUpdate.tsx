@@ -1,6 +1,7 @@
 import React, { useState, KeyboardEvent } from 'react';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Button } from 'primereact/button';
+import { Avatar } from 'primereact/avatar';
 import { Divider } from 'primereact/divider';
 import HighlightItem from './HighlightItem';
 import DirSelection from '../Directory/DirSelection';
@@ -69,9 +70,9 @@ const PostUpdate: React.FC<PostUpdateProps> = ({ post, onSave, onCancel }) => {
         </div>
       </div>
       <div className="flex mt-3">
-        <img src={post.avatar} alt={post.title} className="mt-3 ml-3 w-[80px] h-[80px]" />
+        <Avatar image={post.memberImage} size="large" shape="circle" className="w-[60px] h-[60px] mt-1" />
         <div className="ml-4 flex-1">
-          <p className="text-[14px] font-semibold mb-1" style={{ color: '#8D8D8D' }}>
+          <p className="text-[14px] font-semibold" style={{ color: '#8D8D8D' }}>
             {post.directoryName}
           </p>
           <p className="text-[18px] font-bold mr-1"> {post.title}</p>
@@ -101,7 +102,7 @@ const PostUpdate: React.FC<PostUpdateProps> = ({ post, onSave, onCancel }) => {
       <div className="mt-4 ml-6">
         {highlights.map((highlight) => (
           <div key={highlight.content} className="flex items-center mb-2">
-            <HighlightItem text={highlight.content} color={highlight.color} className="flex-1" />
+            <HighlightItem text={highlight.content} color={highlight.color} />
             <Button
               icon="pi pi-times"
               className="p-button-text p-button-danger ml-2"
