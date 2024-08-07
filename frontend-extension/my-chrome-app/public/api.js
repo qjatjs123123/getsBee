@@ -39,15 +39,19 @@ async function postHighlightData(data) {
 
 // // 하이라이트 update
 async function updateHighlightData(data) {
+  const patchData = {
+    color: data.color,
+  };
+
   const response = await fetch(
     `https://getsbee.kr/api/v1/highlights/${SELECTED_ID}`,
     {
-      method: "POST",
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify(data.color),
+      body: JSON.stringify(patchData),
     }
   );
 
@@ -57,6 +61,7 @@ async function updateHighlightData(data) {
     // 필요에 따라 추가 처리 (예: 사용자에게 재로그인 요청)
     throw new Error("Network response was not ok");
   }
+  if (response.status !== 200) throw new Error("Network response was not ok");
 
   return await response.json();
 }
