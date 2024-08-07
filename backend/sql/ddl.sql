@@ -137,11 +137,13 @@ CREATE TABLE follow
 -- interest Table Create SQL
 CREATE TABLE interest
 (
-    `interest_id`  BIGINT       NOT NULL    AUTO_INCREMENT,
-    `member_id`    BIGINT       NULL,
-    `url`          VARCHAR(13)  NULL,
-    `created_at`   TIMESTAMP    NOT NULL,
-    `updated_at`   TIMESTAMP    NOT NULL,
+    `interest_id`  BIGINT           NOT NULL    AUTO_INCREMENT,
+    `member_id`    BIGINT           NULL,
+    `url`          VARCHAR(2083)    NULL,
+    `category`     VARCHAR(13)      NULL,
+    `is_deleted`   TINYINT(1)       NOT NULL    DEFAULT 0,
+    `created_at`   TIMESTAMP        NOT NULL,
+    `updated_at`   TIMESTAMP        NOT NULL,
     PRIMARY KEY (interest_id),
     FOREIGN KEY (member_id) REFERENCES member(member_id)
 );
