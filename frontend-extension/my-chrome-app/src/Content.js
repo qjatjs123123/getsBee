@@ -101,21 +101,23 @@ function Content() {
       type: "GET_DATA",
     });
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      const tmp = message.data.resultArr;
+      if (message.type === "SEND_DATA") {
+        const tmp = message.data.resultArr;
 
-      if (tmp.length !== 0) {
-        setResult(tmp);
-        return;
+        if (tmp.length !== 0) {
+          setResult(tmp);
+          return;
+        }
+
+        // 사용 예시
+        extractMainContent(message.data.HTMLContent)
+          .then((result) => {
+            extractTextNodes(result.node);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
       }
-
-      // 사용 예시
-      extractMainContent(message.data.HTMLContent)
-        .then((result) => {
-          extractTextNodes(result.node);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
     });
   }, []);
 
