@@ -89,7 +89,7 @@ CREATE TABLE highlight
 (
     `highlight_id`  BIGINT        NOT NULL    AUTO_INCREMENT,
     `content`       LONGTEXT      NOT NULL,
-    `color`         VARCHAR(6)    NOT NULL,
+    `color`         VARCHAR(30)   NOT NULL,
     `start_index`   VARCHAR(200)  NULL,
     `last_index`    VARCHAR(200)  NULL,
     `start_offset`  INT           NULL,

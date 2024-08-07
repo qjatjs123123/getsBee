@@ -2,9 +2,11 @@ package com.ssafy.getsbee.domain.auth.service;
 
 import com.ssafy.getsbee.domain.auth.dto.request.LoginRequest;
 import com.ssafy.getsbee.domain.auth.dto.request.TokenRequest;
+import com.ssafy.getsbee.domain.auth.dto.response.LoginResponse;
 import com.ssafy.getsbee.domain.auth.dto.response.TokenResponse;
 import com.ssafy.getsbee.domain.auth.entity.RefreshToken;
 import com.ssafy.getsbee.domain.auth.repository.RefreshTokenRedisRepository;
+import com.ssafy.getsbee.domain.block.service.BlockService;
 import com.ssafy.getsbee.domain.directory.service.DirectoryService;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.entity.Provider;
@@ -28,6 +30,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final DirectoryService directoryService;
     private final MemberService memberService;
+    private final BlockService blockService;
     private final IdTokenVerifyService idTokenVerifyService;
     private final MemberRepository memberRepository;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
@@ -35,12 +38,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public TokenResponse login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request) {
         Payload payload = validateIdToken(request);
         Member member = memberRepository.findByProviderAndEmail(request.provider(), payload.get(CLAIM_EMAIL).toString())
                 .orElseGet(() -> signup(request.provider(), payload));
         member.updateInfo(payload);
-        return createTokens(member);
+        return LoginResponse.of(createTokens(member), blockService.showBlockList(member.getId()));
     }
 
     @Override
