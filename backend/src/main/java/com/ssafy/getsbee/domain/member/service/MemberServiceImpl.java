@@ -46,7 +46,7 @@ public class MemberServiceImpl implements MemberService {
             throw new BadRequestException(DUPLICATE_INTEREST);
         }
         member.updateInfo(request.birthYear());
-        interestRepository.saveAll(transferToInterests(request.Category(), member));
+        interestRepository.saveAll(transferToInterests(request.category(), member));
     }
 
     private List<Interest> transferToInterests(List<Category> categories, Member member) {
