@@ -175,23 +175,29 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Slice<PostListResponse> showPostList(PostListRequest postListRequest, Long cursor, Pageable pageable) {
 
+        if(postListRequest.directoryId() !=null && postListRequest.query() != null){
+            //다현이 검색 로직
+        }
         if(postListRequest.directoryId() != null){
             return showPostListByDirectoryId(postListRequest.directoryId(), cursor, pageable);
-        }else if(postListRequest.memberId() != null){
-            return showPostListByMemberId(postListRequest.memberId(), cursor, pageable);
-        }else if(postListRequest.following()!=null){
-            return showFollowingPostListByMemberId(SecurityUtil.getCurrentMemberId(), cursor, pageable);
-        }else if(postListRequest.query()!=null){
-            return showPostListByKeyword(postListRequest.query(), pageable, cursor);
-        }else{
-            throw new BadRequestException(INVALID_POST_REQUEST);
         }
+        if(postListRequest.memberId() != null){
+            return showPostListByMemberId(postListRequest.memberId(), cursor, pageable);
+        }
+        if(postListRequest.following()!=null){
+            return showFollowingPostListByMemberId(SecurityUtil.getCurrentMemberId(), cursor, pageable);
+        }
+        if(postListRequest.query()!=null){
+            return showPostListByKeyword(postListRequest.query(), pageable, cursor);
+        }
+        throw new BadRequestException(INVALID_POST_REQUEST);
+        
     }
 
-    @Transactional(readOnly = true)
-    public Slice<PostListResponse> showPostListByKeyword(String query, Pageable pageable, Long cursor) {
+    private Slice<PostListResponse> showPostListByKeyword(String query, Pageable pageable, Long cursor) {
         Slice<Long> postIds = postElasticService.findByKeyword(query, pageable, cursor);
 
         List<Post> posts = postIds.getContent().stream()
