@@ -18,4 +18,6 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostRepositor
     Long countPostsByMember(Member member);
 
     Long countPostsByDirectory(Directory directory);
+
+    Optional<Post> findAllByMemberAndUrl(Member member, String url);
 }
