@@ -22,26 +22,29 @@ public class FollowController {
         followService.deleteFollow(followId);
     }
 
-    @GetMapping("/follower/me")
+    @GetMapping("/follower/members/me")
     public List<FollowDirectoryResponse> getMyFollowers() {
         return followService.findFollowedDirectories(SecurityUtil.getCurrentMemberId());
     }
 
     @GetMapping("/follower/members/{memberId}")
-    public List<FollowDirectoryResponse> getMemberFollowers(@PathVariable("memberId")Long memberId) {
+    public List<FollowDirectoryResponse> getMemberFollowers(@PathVariable("memberId") Long memberId) {
         return followService.findFollowedDirectories(memberId);
     }
 
-    @GetMapping("/following/me")
-    public List<FollowDirectoryResponse> getFollowing() {
+    @GetMapping("/following/members/me")
+    public List<FollowDirectoryResponse> getMyFollowing() {
         return followService.findFollowingDirectories(SecurityUtil.getCurrentMemberId());
     }
 
-    @GetMapping("/follower/members/{memberId}")
-    public List<FollowDirectoryResponse> getMemberFollowing(@PathVariable("memberId")Long memberId) {
+    @GetMapping("/following/members/{memberId}")
+    public List<FollowDirectoryResponse> getMemberFollowing(@PathVariable("memberId") Long memberId) {
         return followService.findFollowingDirectories(memberId);
     }
 
-    @GetMapping("/info")
-    public HiveInfoResponse getHiveInfo(){ return followService.getHiveInfo(); }
+    @GetMapping("/hiveInfo/members/{memberId}")
+    public HiveInfoResponse getMemberHiveInfo(@PathVariable("memberId")Long memberId){ return followService.getHiveInfo(memberId); }
+
+    @GetMapping("/hiveInfo/members/me")
+    public HiveInfoResponse getMyHiveInfo(){ return followService.getHiveInfo(SecurityUtil.getCurrentMemberId()); }
 }

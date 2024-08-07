@@ -16,5 +16,5 @@ public interface FollowService {
 
     List<FollowDirectoryResponse> findFollowingDirectories(Long memberId);
 
-    HiveInfoResponse getHiveInfo();
+    HiveInfoResponse getHiveInfo(Long memberId);
 }
