@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Avatar } from 'primereact/avatar';
 import { Divider } from 'primereact/divider';
 import { Button } from 'primereact/button';
@@ -9,12 +9,12 @@ interface FeedDetailProps {
   detail: FeedDetailItem;
 }
 
-export default function FeedDetail({ detail }: FeedDetailProps) {
+const FeedDetail: React.FC<FeedDetailProps> = React.memo(({ detail }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
+  const toggleExpand = useCallback(() => {
+    setIsExpanded((prev) => !prev);
+  }, []);
 
   return (
     <div
@@ -72,4 +72,6 @@ export default function FeedDetail({ detail }: FeedDetailProps) {
       </div>
     </div>
   );
-}
+});
+
+export default FeedDetail;

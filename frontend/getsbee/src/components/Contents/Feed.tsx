@@ -11,12 +11,13 @@ import defaultThumbnail from '../../assets/defaultThumbnail.png';
 
 interface FeedProps extends FeedItem {
   className: string;
-  onClick: () => void;
-  isSelected: boolean; // 추가: 선택 여부를 나타내는 prop
+  onClick: (url: string) => void; // url 매개변수 추가
+  isSelected: boolean;
+  url: string; // url prop 추가
 }
 
 const Feed = forwardRef<HTMLDivElement, FeedProps>(
-  ({ post, member, directory, highlight, info, className, onClick, isSelected }, ref) => {
+  ({ post, member, directory, highlight, info, className, onClick, isSelected, url }, ref) => {
     const [thumbnailError, setThumbnailError] = useState(false);
 
     const handleThumbnailError = () => {
@@ -74,11 +75,14 @@ const Feed = forwardRef<HTMLDivElement, FeedProps>(
           borderColor: isSelected ? '#FFC60A' : '#d1d5db',
           borderWidth: isSelected ? '3px' : '1px',
           boxShadow: isSelected
-            ? '0 0 10px rgba(255, 198, 10, 0.5)' // 선택된 경우 노란색 blur 효과
-            : 'none', // 선택되지 않은 경우 그림자 없음
-          transition: 'border-color 0.3s, border-width 0.3s, box-shadow 0.3s', // 부드러운 전환 효과
+            ? '0 0 10px rgba(255, 198, 10, 0.5)'
+            : 'none',
+          transition: 'border-color 0.3s, border-width 0.3s, box-shadow 0.3s',
         }}
-        onClick={onClick}
+        onClick={() => {
+          console.log('Clicked URL in Feed:', url);
+          onClick(url);
+        }}// url을 onClick 핸들러에 전달
       >
         <div className="p-0 mt-4 ml-4 mr-2">
           {headerTemplate()}

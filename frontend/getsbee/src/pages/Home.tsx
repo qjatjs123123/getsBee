@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useState, useEffect } from 'react';
+import React, { useRef, useCallback, useState, useEffect, useMemo } from 'react';
 import Header from '../components/Common/Header';
 import Tab from '../components/Common/Tab';
 import Feed from '../components/Contents/Feed';
@@ -46,22 +46,24 @@ const Home: React.FC = () => {
     [detailLoading, hasMoreDetails, loadMoreDetailItems],
   );
 
-  const handleFeedClick = useCallback(
-    (url: string) => {
-      console.log('Feed clicked:', url);
-      setSelectedUrl(url);
-      resetAndLoadDetails(); // 새로운 feed 클릭 시 detail을 리셋하고 다시 로드
-    },
-    [resetAndLoadDetails],
-  );
+  const handleFeedClick = useCallback((url: string) => {
+    console.log('Feed clicked:', url);
+    setSelectedUrl((prevUrl) => {
+      if (prevUrl !== url) {
+        return url;
+      }
+      return prevUrl;
+    });
+  }, []);
 
   useEffect(() => {
     if (feedPosts.length > 0 && !selectedUrl) {
       console.log('Initial URL set:', feedPosts[0].post.url);
       setSelectedUrl(feedPosts[0].post.url);
-      resetAndLoadDetails(); // 초기 URL 설정 시에도 detail 로드
     }
-  }, [feedPosts, selectedUrl, resetAndLoadDetails]);
+  }, [feedPosts, selectedUrl]);
+
+  const memoizedDetailItems = useMemo(() => detailItems, [detailItems]);
 
   return (
     <div className="flex flex-col h-screen">
@@ -78,6 +80,7 @@ const Home: React.FC = () => {
                 <Feed
                   key={item.post.postId}
                   {...item}
+                  url={item.post.url}
                   ref={index === feedPosts.length - 1 ? lastPostElementRef : undefined}
                   className={index > 0 ? 'mt-4' : ''}
                   onClick={() => handleFeedClick(item.post.url)}
@@ -93,13 +96,13 @@ const Home: React.FC = () => {
             >
               <div className="flex items-center">
                 <img src={honeyComb} alt="honeyComb" className="w-9" />
-                <p className="ml-1 text-[#CC9C00] font-semibold text-[22px]">Others&apos; Highlights</p>
+                <p className="ml-1 text-[#CC9C00] font-semibold text-[22px]">Others' Highlights</p>
               </div>
               {detailInitialLoading && <div className="text-center py-4">초기 데이터를 불러오는 중...</div>}
-              {detailItems.map((detail, index) => (
+              {memoizedDetailItems.map((detail, index) => (
                 <div
-                  key={detail.postId}
-                  ref={index === detailItems.length - 1 ? lastDetailElementRef : undefined}
+                  key={`${detail.postId}-${index}`}
+                  ref={index === memoizedDetailItems.length - 1 ? lastDetailElementRef : undefined}
                   className="border-b transform scale-[95%]"
                 >
                   <FeedDetail detail={detail} />
