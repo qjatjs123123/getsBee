@@ -27,4 +27,6 @@ public interface PostService {
     LikePostResponse unlikePost(Long postId, Long memberId);
 
     Slice<PostListResponse> showPostList(PostListRequest postListRequest, Long cursor, Pageable pageable);
+
+    Slice<PostResponse> showPostListByUrl(String url, Long cursor, Pageable pageable);
 }
