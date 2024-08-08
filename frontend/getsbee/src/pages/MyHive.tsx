@@ -1,6 +1,8 @@
 import React, { useState, useEffect, KeyboardEvent, useCallback } from 'react';
 // eslint-disable-next-line camelcase
-import { useRecoilValueLoadable, useRecoilRefresher_UNSTABLE } from 'recoil';
+import { useParams } from 'react-router-dom';
+import { useRecoilValueLoadable, useRecoilValue, useRecoilRefresher_UNSTABLE } from 'recoil';
+import { userState } from '../recoil/userState';
 import SideBar from '../components/Common/SideBar';
 import Menu from '../components/Common/Menu';
 import Post from '../components/Contents/Post';
@@ -10,6 +12,11 @@ import DirectoryNav from '../components/Directory/DirectoryNav';
 import { getPostsByDirectoryState } from '../recoil/PostState';
 
 const MyHive: React.FC = () => {
+  const { username } = useParams();
+  const currentUser = useRecoilValue(userState);
+
+  const isOwnHive = currentUser?.email.split('@')[0] === username;
+
   const userName = 'HoSeok Lee'; // 예시 사용자 이름
   const directories = [
     { id: '1', name: 'IT' },
@@ -64,6 +71,11 @@ const MyHive: React.FC = () => {
         </div>
         <div className="flex flex-grow overflow-hidden">
           <div className="flex flex-col items-center w-[465px] p-4 border-r overflow-y-auto scrollbar-hide">
+            <div>
+              <h1>{isOwnHive ? 'My Hive' : `${username}'s Hive`}</h1>
+              {isOwnHive ? <p>Welcome to your hive!</p> : <p>You're viewing {username}'s hive.</p>}
+              {/* 여기에 Hive의 내용을 표시하는 컴포넌트들을 추가하세요 */}
+            </div>
             <SubSearchBar />
             {posts.map((postData) => (
               <div
