@@ -40,5 +40,10 @@ export const useInfiniteScroll = (initialSize: number = 20) => {
     loadMorePosts();
   }, []);
 
-  return { posts, loading, hasMore, loadMorePosts };
+  return {
+    feedPosts: posts,
+    feedLoading: loading,
+    hasMoreFeed: hasMore,
+    loadMoreFeedPosts: loadMorePosts,
+  };
 };
