@@ -1,4 +1,4 @@
-package com.ssafy.getsbee.domain.post.service;
+package com.ssafy.getsbee.domain.highlight.service;
 
 import com.ssafy.getsbee.domain.interest.entity.Category;
 import com.ssafy.getsbee.domain.post.entity.Post;
