@@ -65,6 +65,8 @@ dependencies {
 	implementation 'com.google.auth:google-auth-library-oauth2-http:1.23.0'
 	// spring ai
 	implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
+	// csv
+	implementation 'org.apache.commons:commons-csv:1.10.0'
 }
 
 // open ai
