@@ -30,7 +30,7 @@ public class Post extends BaseTimeEntity {
     @Column(name = "post_id")
     private Long id;
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 50)
     private String title;
 
     @Column(length = 2083, nullable = false)
