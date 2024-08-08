@@ -4,6 +4,7 @@ import com.ssafy.getsbee.domain.interest.entity.Category;
 import com.ssafy.getsbee.domain.interest.entity.Interest;
 import com.ssafy.getsbee.domain.interest.repository.InterestRepository;
 import com.ssafy.getsbee.domain.member.dto.request.MemberRequest;
+import com.ssafy.getsbee.domain.member.dto.request.SearchMemberCondition;
 import com.ssafy.getsbee.domain.member.dto.response.MemberResponse;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.repository.MemberRepository;
@@ -53,6 +54,15 @@ public class MemberServiceImpl implements MemberService {
     @Transactional(readOnly = true)
     public MemberResponse showMemberInfo(Long memberId) {
         return MemberResponse.of(findById(memberId));
+    }
+
+    @Override
+    public MemberResponse searchMember(SearchMemberCondition condition) {
+        List<Member> members = memberRepository.search(condition);
+        if (members.isEmpty()) {
+            throw new BadRequestException(MEMBER_NOT_FOUND);
+        }
+        return MemberResponse.of(members.get(0));
     }
 
     private List<Interest> transferToInterests(List<Category> categories, Member member) {
