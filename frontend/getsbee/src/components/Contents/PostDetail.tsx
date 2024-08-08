@@ -21,9 +21,11 @@ import {
 interface PostDetailProps {
   postId: number;
   onDelete: () => void; // 삭제 후 콜백을 받기 위한 prop
+  onStartEditing: () => void; // 수정 시작 시 호출될 콜백
+  onStopEditing: () => void; // 수정 종료 시 호출될 콜백
 }
 
-const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete }) => {
+const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditing, onStopEditing }) => {
   const postDetailLoadable = useRecoilValueLoadable(getPostDetailState(postId));
   const setPostDetail = useSetRecoilState(postDetailState);
   const [value, setValue] = useState<string>('');
@@ -58,11 +60,18 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete }) => {
   const handleUpdateSave = (updatedPost: Post) => {
     setPostDetail(updatedPost);
     setIsEditing(false);
+    onStopEditing(); // 수정 종료 시 호출
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    onStopEditing(); // 수정 종료 시 호출
   };
 
   const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Enter' || event.key === ' ') {
       setIsEditing(true);
+      onStartEditing(); // 수정 시작 시 호출
     }
   };
 
@@ -83,7 +92,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete }) => {
   const iconSrc = postDetail.isPublic ? publicIcon : privateIcon;
 
   if (isEditing) {
-    return <PostUpdate post={postDetail} onSave={handleUpdateSave} onCancel={() => setIsEditing(false)} />;
+    return <PostUpdate post={postDetail} onSave={handleUpdateSave} onCancel={handleCancel} />;
   }
 
   return (
@@ -98,7 +107,15 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete }) => {
             </span>
           </div>
         )}
-        <div className="flex items-center">{postDetail.isMyPost && <DirSelection />}</div>
+        <div className="flex items-center">
+          {postDetail.isMyPost && (
+            <DirSelection
+              selectedDirectoryId={postDetail.directoryId?.toString() || ''}
+              readOnly={!isEditing}
+              onChange={(value) => setPostDetail({ ...postDetail, directoryId: parseInt(value, 10) })}
+            />
+          )}
+        </div>
       </div>
       <div className="flex mt-3">
         <Avatar image={postDetail.memberImage} size="large" shape="circle" className="w-[60px] h-[60px] mt-1" />
@@ -146,7 +163,10 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete }) => {
               <i
                 className="pi pi-file-edit mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer"
                 title="Edit"
-                onClick={() => setIsEditing(true)}
+                onClick={() => {
+                  setIsEditing(true);
+                  onStartEditing(); // 수정 시작 시 호출
+                }}
                 onKeyPress={handleKeyPress}
                 tabIndex={0}
                 role="button"

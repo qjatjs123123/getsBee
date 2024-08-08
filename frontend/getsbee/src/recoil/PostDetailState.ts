@@ -1,6 +1,6 @@
 // src/recoil/PostDetailState.ts
 import { atom, selectorFamily, useRecoilCallback } from 'recoil';
-import { getPostDetail, deletePost } from '../api/PostDetailApi';
+import { getPostDetail, deletePost, updatePost } from '../api/PostDetailApi';
 
 export interface Highlight {
   highlightId: number;
@@ -59,4 +59,22 @@ export const useDeletePost = () => {
     await deletePost(postId);
     reset(postDetailState);
   });
+};
+
+export const useUpdatePost = () => {
+  return useRecoilCallback(
+    ({ set }) =>
+      async (
+        postId: number,
+        data: {
+          note: string;
+          directoryId: number;
+          isPublic: boolean;
+          deleteHighlightIds: number[];
+        },
+      ) => {
+        const updatedPost = await updatePost(postId, data);
+        set(postDetailState, updatedPost);
+      },
+  );
 };

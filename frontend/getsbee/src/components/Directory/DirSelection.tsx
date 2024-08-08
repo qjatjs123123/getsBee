@@ -1,95 +1,98 @@
-import React, { useState } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { TreeSelect } from 'antd';
-import type { TreeSelectProps } from 'antd';
+import { useRecoilValueLoadable } from 'recoil';
+import { getDirectoryState, Directory } from '../../recoil/DirectoryState';
 
-const treeData = [
-  {
-    value: 'Temporary',
-    title: 'Temporary',
-    children: [],
-  },
-  { value: 'Bookmark', title: 'Bookmark', children: [] },
-  {
-    value: 'IT',
-    title: 'IT',
-    children: [
-      {
-        value: 'SpringBoot',
-        title: 'SpringBoot',
-      },
-      {
-        value: 'MongoDB',
-        title: 'MongoDB',
-      },
-      {
-        value: 'Cloud',
-        title: 'Cloud',
-      },
-      {
-        value: 'BlockChain',
-        title: 'BlockChain',
-      },
-    ],
-  },
-  {
-    value: 'Financial Sector',
-    title: 'Financial Sector',
-    children: [
-      {
-        value: 'Bank',
-        title: 'Bank',
-      },
-      {
-        value: 'Insurance',
-        title: 'Insurance',
-      },
-      {
-        value: 'New Service',
-        title: 'New Service',
-      },
-    ],
-  },
-  {
-    value: `What's new`,
-    title: `What's new`,
-    children: [
-      {
-        value: 'IT1',
-        title: 'IT',
-      },
-      {
-        value: 'Service',
-        title: 'Service',
-      },
-    ],
-  },
-];
+interface TreeNode {
+  title: string;
+  value: string;
+  children: TreeNode[];
+}
 
-const DirSelection = () => {
-  const [value, setValue] = useState<string>();
+interface DirSelectionProps {
+  selectedDirectoryId?: string;
+  readOnly?: boolean;
+  onChange?: (value: string) => void;
+}
 
-  const onChange = (newValue: string) => {
-    setValue(newValue);
-  };
+const convertToTreeData = (directories: Directory[]): TreeNode[] => {
+  const map = new Map<number, TreeNode>();
 
-  const onPopupScroll: TreeSelectProps['onPopupScroll'] = (e) => {
-    console.log('onPopupScroll', e);
+  directories.forEach((dir) => {
+    if (dir.name !== 'Bookmark') {
+      map.set(dir.directoryId, { title: dir.name, value: dir.directoryId.toString(), children: [] });
+    }
+  });
+
+  directories.forEach((dir) => {
+    if (dir.name !== 'Bookmark' && dir.parentDirectoryId !== null) {
+      const parent = map.get(dir.parentDirectoryId);
+      if (parent) {
+        parent.children.push(map.get(dir.directoryId)!);
+      }
+    }
+  });
+
+  const treeData: TreeNode[] = [];
+  map.forEach((dir, key) => {
+    if (directories.find((d) => d.directoryId === key)?.depth === 1) {
+      treeData.push(dir);
+    }
+  });
+
+  return treeData;
+};
+
+const DirSelection: React.FC<DirSelectionProps> = ({
+  selectedDirectoryId = '',
+  readOnly = false,
+  onChange = () => {},
+}) => {
+  const directoriesLoadable = useRecoilValueLoadable(getDirectoryState);
+
+  if (directoriesLoadable.state === 'loading') {
+    return <p>Loading directories...</p>;
+  }
+
+  if (directoriesLoadable.state === 'hasError') {
+    return <p>Error loading directories</p>;
+  }
+
+  const directories = directoriesLoadable.contents;
+  const treeData = convertToTreeData(directories.data);
+  console.log(treeData);
+
+  const handleChange = (newValue: string) => {
+    onChange(newValue);
   };
 
   return (
     <TreeSelect
       showSearch
       style={{ width: '150px' }}
-      value={value}
+      value={selectedDirectoryId}
       dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
       placeholder="Please select"
-      allowClear
+      allowClear={!readOnly}
       treeDefaultExpandAll
-      onChange={onChange}
+      onChange={handleChange}
       treeData={treeData}
-      onPopupScroll={onPopupScroll}
+      disabled={readOnly}
     />
   );
+};
+
+DirSelection.propTypes = {
+  selectedDirectoryId: PropTypes.string,
+  readOnly: PropTypes.bool,
+  onChange: PropTypes.func,
+};
+
+DirSelection.defaultProps = {
+  selectedDirectoryId: '',
+  readOnly: false,
+  onChange: () => {},
 };
 
 export default DirSelection;

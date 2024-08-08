@@ -20,6 +20,7 @@ const MyHive: React.FC = () => {
   const postLoadable = useRecoilValueLoadable(getPostsByDirectoryState({ directoryId: 5, size: 10 }));
   const refreshPosts = useRecoilRefresher_UNSTABLE(getPostsByDirectoryState({ directoryId: 5, size: 10 }));
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (postLoadable.state === 'hasValue' && postLoadable.contents.content.length > 0) {
@@ -28,7 +29,7 @@ const MyHive: React.FC = () => {
   }, [postLoadable.state]);
 
   const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>, postId: number) => {
-    if (event.key === 'Enter' || event.key === ' ') {
+    if (!isEditing && (event.key === 'Enter' || event.key === ' ')) {
       setSelectedPostId(postId);
     }
   };
@@ -37,6 +38,14 @@ const MyHive: React.FC = () => {
     refreshPosts();
     setSelectedPostId(null); // Optionally reset the selected post ID
   }, [refreshPosts]);
+
+  const handleStartEditing = () => {
+    setIsEditing(true);
+  };
+
+  const handleStopEditing = () => {
+    setIsEditing(false);
+  };
 
   if (postLoadable.state === 'loading') {
     return <div>Loading...</div>;
@@ -68,8 +77,8 @@ const MyHive: React.FC = () => {
             {posts.map((postData) => (
               <div
                 key={postData.post.postId}
-                className="mt-4 cursor-pointer"
-                onClick={() => setSelectedPostId(postData.post.postId)}
+                className={`mt-4 cursor-pointer ${isEditing ? 'pointer-events-none opacity-50' : ''}`}
+                onClick={() => !isEditing && setSelectedPostId(postData.post.postId)}
                 onKeyPress={(event) => handleKeyPress(event, postData.post.postId)}
                 tabIndex={0} // This makes the div focusable
                 aria-label="button"
@@ -89,7 +98,14 @@ const MyHive: React.FC = () => {
             ))}
           </div>
           <div className="flex flex-grow justify-center items-start overflow-y-auto scrollbar-hide transform scale-[110%] mt-8 mb-8">
-            {selectedPostId && <PostDetail postId={selectedPostId} onDelete={handlePostDeleted} />}
+            {selectedPostId && (
+              <PostDetail
+                postId={selectedPostId}
+                onDelete={handlePostDeleted}
+                onStartEditing={handleStartEditing}
+                onStopEditing={handleStopEditing}
+              />
+            )}
           </div>
         </div>
       </div>
