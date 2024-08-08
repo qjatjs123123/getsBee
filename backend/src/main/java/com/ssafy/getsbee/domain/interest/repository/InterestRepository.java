@@ -9,4 +9,5 @@ import java.util.List;
 public interface InterestRepository extends JpaRepository<Interest, Long> {
 
     List<Interest> findAllByMember(Member member);
+    Boolean existsByUrl(String url);
 }
