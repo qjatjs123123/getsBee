@@ -31,6 +31,7 @@ public record DirectorySearchResponse(
         }
     }
     public record Follow(
+            Long followId,
             Long followCount,
             Boolean isFollowedByCurrentUser
     ){

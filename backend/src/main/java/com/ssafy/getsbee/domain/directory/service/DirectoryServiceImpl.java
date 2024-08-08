@@ -4,8 +4,8 @@ import com.ssafy.getsbee.domain.directory.dto.request.DirectoryRequest;
 import com.ssafy.getsbee.domain.directory.dto.response.DirectoryResponse;
 import com.ssafy.getsbee.domain.directory.dto.response.DirectorySearchResponse;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
-import com.ssafy.getsbee.domain.directory.repository.DirectoryElasticRepository;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
+import com.ssafy.getsbee.domain.follow.entity.Follow;
 import com.ssafy.getsbee.domain.follow.repository.FollowRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.repository.MemberRepository;
@@ -152,9 +152,12 @@ public class DirectoryServiceImpl implements DirectoryService {
                 .memberPicture(member.getPicture())
                 .build();
 
+        Follow follow = followRepository.findByFollowingMemberAndFollowedDirectory(member, directory)
+                .orElse(null);
+
         DirectorySearchResponse.Follow followInfo = DirectorySearchResponse.Follow.builder()
-                .isFollowedByCurrentUser(followRepository.findByFollowingMemberAndFollowedDirectory(member, directory)
-                        .isPresent())
+                .followId(follow != null ? follow.getId() : null)
+                .isFollowedByCurrentUser(follow != null)
                 .followCount(followRepository.countDirectoryFollowers(directory))
                 .build();
 

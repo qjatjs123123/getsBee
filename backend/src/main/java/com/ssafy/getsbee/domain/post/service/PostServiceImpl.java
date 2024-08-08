@@ -3,6 +3,7 @@ package com.ssafy.getsbee.domain.post.service;
 import com.ssafy.getsbee.domain.bookmark.entity.Bookmark;
 import com.ssafy.getsbee.domain.bookmark.repository.BookmarkRepository;
 import com.ssafy.getsbee.domain.comment.dto.response.CommentResponse;
+import com.ssafy.getsbee.domain.comment.repository.CommentRepository;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.follow.repository.FollowRepository;
@@ -49,6 +50,7 @@ public class PostServiceImpl implements PostService {
     private final FollowRepository followRepository;
     private final LikeRepository likeRepository;
     private final MemberRepository memberRepository;
+    private final CommentRepository commentRepository;
 
     @Override
     @Transactional
@@ -196,7 +198,34 @@ public class PostServiceImpl implements PostService {
         
     }
 
-    private Slice<PostListResponse> showPostListByDirectoryIdAndKeyword(Long directoryId, String keyword, Long cursor, Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Slice<PostResponse> showPostListByUrl(String url, Long cursor, Pageable pageable) {
+        if(cursor == null) cursor = Long.MAX_VALUE;
+
+        Slice<Post> posts = postRepository.findAllByUrlAndIdLessThan(url, cursor, pageable);
+        List<PostResponse> postResponses = posts.stream()
+                .map(post -> {
+                    List<HighlightResponse> highlights = post.getHighlights()
+                            .stream()
+                            .map(HighlightResponse::of).collect(Collectors.toList());
+
+                    List<CommentResponse> comments = new ArrayList<>();
+                    Long currentMemberId = SecurityUtil.getCurrentMemberId();
+                    Member currentMember = memberService.findById(currentMemberId);
+
+                    Boolean isBookmark = bookmarkRepository.findByPostAndMember(post, currentMember).isPresent();
+                    Boolean isLike = likeRepository.existsByMemberAndPost(currentMember, post);
+
+                    return PostResponse.from(post, highlights, comments, !isNotOwner(post.getMember(), currentMember)
+                            , isLike, isBookmark);
+                })
+                .collect(Collectors.toList());
+//        return null;
+        return new SliceImpl<>(postResponses, pageable, posts.hasNext());
+    }
+
+    private Slice<PostListResponse> showPostListByDirectoryIdAndKeyword(Long directoryId, String keyword,
+                                                                        Long cursor, Pageable pageable) {
         Directory directory = directoryRepository.findDirectoryById(directoryId)
                 .orElseThrow(() -> new BadRequestException(DIRECTORY_NOT_FOUND));
         Slice<Long> postIds = postElasticService.findMyHiveByKeyword(keyword, pageable, cursor, directory);
