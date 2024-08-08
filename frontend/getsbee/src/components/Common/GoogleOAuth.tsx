@@ -39,6 +39,8 @@ const GoogleOAuth: FC = () => {
           name: decodedToken.name,
           picture: decodedToken.picture,
         });
+
+        window.location.href = '/';
       } catch (error) {
         console.error('Error decoding token:', error);
       }

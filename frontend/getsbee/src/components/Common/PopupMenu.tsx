@@ -30,7 +30,7 @@ const PopupMenu: React.FC = () => {
   const performLogout = () => {
     clearAuthData();
     setUser(null);
-    navigate('/');
+    navigate('/about');
   };
 
   const items = [

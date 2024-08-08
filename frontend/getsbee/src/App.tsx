@@ -23,7 +23,7 @@ function App() {
   useEffect(() => {
     const handleLogout = () => {
       setUser(null);
-      navigate('/');
+      navigate('/about');
     };
 
     window.addEventListener('logout', handleLogout);
