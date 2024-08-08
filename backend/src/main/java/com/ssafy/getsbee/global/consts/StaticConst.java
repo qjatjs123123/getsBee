@@ -40,5 +40,5 @@ public class StaticConst {
     public static final String ITEM_ID = "ITEM_ID";
     public static final String EVENT_TYPE = "EVENT_TYPE";
     public static final String TIMESTAMP = "TIMESTAMP";
-
+    public static final String DEFAULT = "";
 }
