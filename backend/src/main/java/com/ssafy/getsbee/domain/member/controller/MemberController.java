@@ -16,11 +16,17 @@ public class MemberController {
 
     @GetMapping
     public MemberResponse showMemberInfo() {
-        return memberService.showMemberInfo(SecurityUtil.getCurrentMemberId());
+        return memberService.showMemberRecommendInfo(SecurityUtil.getCurrentMemberId());
     }
 
     @PatchMapping
     public void updateMemberInfo(@RequestBody MemberRequest request) {
         memberService.addMemberInterest(request, SecurityUtil.getCurrentMemberId());
     }
+
+    @GetMapping("/{member-id}")
+    public MemberResponse showMemberInfo(@PathVariable("member-id") Long memberId) {
+        return memberService.showMemberInfo(memberId);
+    }
+
 }

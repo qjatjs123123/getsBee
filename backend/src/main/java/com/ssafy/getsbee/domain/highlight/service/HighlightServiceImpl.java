@@ -2,12 +2,13 @@ package com.ssafy.getsbee.domain.highlight.service;
 
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
-import com.ssafy.getsbee.domain.directory.service.DirectoryService;
 import com.ssafy.getsbee.domain.highlight.dto.request.CreateHighlightRequest;
 import com.ssafy.getsbee.domain.highlight.dto.request.UpdateHighlightRequest;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
 import com.ssafy.getsbee.domain.highlight.entity.Highlight;
 import com.ssafy.getsbee.domain.highlight.repository.HighlightRepository;
+import com.ssafy.getsbee.domain.interest.entity.Interest;
+import com.ssafy.getsbee.domain.interest.repository.InterestRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.service.MemberService;
 import com.ssafy.getsbee.domain.post.entity.Post;
@@ -33,6 +34,8 @@ public class HighlightServiceImpl implements HighlightService {
     private final PostRepository postRepository;
     private final DirectoryRepository directoryRepository;
     private final PostElasticService postElasticService;
+    private final ExtractCategoryService extractCategoryService;
+    private final InterestRepository interestRepository;
 
     @Override
     @Transactional
@@ -44,6 +47,12 @@ public class HighlightServiceImpl implements HighlightService {
                             Directory directory = directoryRepository.findTemporaryDirectoryByMember(member);
                             return postRepository.save(request.toPostEntity(member, directory));
                         });
+
+        if (!interestRepository.existsByUrl(post.getUrl())) {
+            extractCategoryService.extractCategoryFromPost(post)
+                    .ifPresent(category ->
+                            interestRepository.save(Interest.of(post.getUrl(), category)));
+        }
 
         //[추가기능] Type image면 s3 로직 추가 필요
 

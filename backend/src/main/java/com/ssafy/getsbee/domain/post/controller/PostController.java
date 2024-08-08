@@ -1,6 +1,7 @@
 package com.ssafy.getsbee.domain.post.controller;
 
 import com.ssafy.getsbee.domain.post.dto.request.PostListRequest;
+import com.ssafy.getsbee.domain.post.dto.request.URLPostListRequest;
 import com.ssafy.getsbee.domain.post.dto.request.UpdatePostRequest;
 import com.ssafy.getsbee.domain.post.dto.response.LikePostResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
@@ -10,6 +11,7 @@ import com.ssafy.getsbee.domain.post.service.PostService;
 import com.ssafy.getsbee.global.util.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
@@ -59,5 +61,11 @@ public class PostController {
     @GetMapping("")
     public Slice<PostListResponse> showPostList(PostListRequest postListRequest, Long cursor, Pageable pageable){
         return postService.showPostList(postListRequest, cursor, pageable);
+    }
+
+    @PostMapping("")
+    public Slice<PostResponse> showURLPostList(@RequestBody URLPostListRequest request){
+        Pageable pageable = PageRequest.of(request.page(), request.size());
+        return postService.showPostListByUrl(request.url(), request.cursor(), pageable);
     }
 }

@@ -1,4 +1,4 @@
-package com.ssafy.getsbee.global.config;
+package com.ssafy.getsbee.infra.elasticsearch;
 
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;

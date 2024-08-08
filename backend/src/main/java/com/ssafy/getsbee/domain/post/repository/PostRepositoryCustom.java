@@ -15,4 +15,6 @@ public interface PostRepositoryCustom {
     Slice<Post> findAllByDirectories(List<Directory> directories, Long cursor, Pageable pageable);
 
     Slice<Post> findAllByDirectoryId(Long directoryId, Long cursor, Pageable pageable);
+
+    Slice<Post> findAllByUrlAndIdLessThan(String url, Long cursor, Pageable pageable);
 }

@@ -5,7 +5,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.post.entity.Post;
-import com.ssafy.getsbee.global.error.ErrorCode;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -98,4 +97,28 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 
         return new SliceImpl<>(posts, pageable, hasNext);
     }
+
+    @Override
+    public Slice<Post> findAllByUrlAndIdLessThan(String url, Long cursor, Pageable pageable) {
+        int offset = pageable.getPageNumber() * pageable.getPageSize();
+
+        List<Post> posts = queryFactory.selectFrom(post)
+                .where(
+                        post.url.eq(url)
+                                .and(cursor != null ? post.id.lt(cursor) : null)
+                )
+                .orderBy(post.id.desc())
+                .offset(offset)
+                .limit(pageable.getPageSize() + 1)  // 페이징 크기 +1로 다음 페이지 존재 여부 확인
+                .fetch();
+
+        boolean hasNext = posts.size() > pageable.getPageSize();
+
+        if (hasNext) {
+            posts.remove(pageable.getPageSize());
+        }
+
+        return new SliceImpl<>(posts, pageable, hasNext);
+    }
+
 }

@@ -7,6 +7,7 @@ import com.ssafy.getsbee.domain.member.entity.Member;
 public interface MemberService {
 
     Member findById(Long memberId);
-    MemberResponse showMemberInfo(Long memberId);
+    MemberResponse showMemberRecommendInfo(Long memberId);
     void addMemberInterest(MemberRequest request, Long memberId);
+    MemberResponse showMemberInfo(Long memberId);
 }
