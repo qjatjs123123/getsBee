@@ -1,7 +1,7 @@
 import React from 'react';
 import { Avatar } from 'primereact/avatar';
 import { Divider } from 'primereact/divider';
-import Highlight from './Highlight';
+import HighlightItem from './HighlightItem';
 
 export default function FeedDetail() {
   const user = {
@@ -63,7 +63,7 @@ export default function FeedDetail() {
           <p className="mt-2 ml-4" style={{ color: '#72736A' }}>
             4 Highlights & Notes
           </p>
-          <Highlight
+          <HighlightItem
             text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
             color="#3498db"
           />

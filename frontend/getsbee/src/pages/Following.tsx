@@ -4,7 +4,6 @@ import Menu from '../components/Common/Menu';
 import FollowingItem from '../components/Common/FollowingItem';
 import userIcon2 from '../assets/userIcon2.png';
 import FollowSearchBar from '../components/Common/FollowSearchBar';
-import '../index.css';
 
 const Following: React.FC = () => {
   const followItems = Array.from({ length: 7 }, (_, index) => <FollowingItem key={index} />);

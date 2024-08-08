@@ -31,15 +31,17 @@ const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({ buttons, maxSelec
   };
 
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="flex justify-center flex-wrap gap-4">
       {buttons.map((label) => (
-        <ToggleButton
-          key={label}
-          label={label}
-          isToggled={selectedButtons.includes(label)}
-          onClick={() => handleToggle(label)}
-          disabled={selectedButtons.length >= maxSelection && !selectedButtons.includes(label)}
-        />
+        <div className="m-1">
+          <ToggleButton
+            key={label}
+            label={label}
+            isToggled={selectedButtons.includes(label)}
+            onClick={() => handleToggle(label)}
+            disabled={selectedButtons.length >= maxSelection && !selectedButtons.includes(label)}
+          />
+        </div>
       ))}
     </div>
   );

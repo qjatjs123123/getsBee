@@ -5,7 +5,7 @@ import { Button } from 'primereact/button';
 import { Avatar } from 'primereact/avatar';
 import { TieredMenu } from 'primereact/tieredmenu';
 import { userState } from '../../recoil/userState';
-import axios from '../../api/axiosConfig';
+import { logoutAPI, clearAuthData } from '../../api/AuthAPI';
 import myHiveIcon from '../../assets/myHiveIcon.png';
 import aboutIcon from '../../assets/aboutIcon.png';
 import logoutIcon from '../../assets/logoutIcon.png';
@@ -18,24 +18,8 @@ const PopupMenu: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      const accessToken = localStorage.getItem('accessToken');
-      const refreshToken = localStorage.getItem('refreshToken');
-
-      if (!accessToken || !refreshToken) {
-        console.error('Tokens not found in local storage');
-        // 토큰이 없어도 로그아웃 처리를 진행합니다.
-        performLogout();
-        return;
-      }
-
-      // 서버에 로그아웃 요청 보내기
-      await axios.post('/auth/logout', {
-        accessToken,
-        refreshToken,
-      });
-
+      await logoutAPI();
       performLogout();
-      console.log('Logged out successfully');
     } catch (error) {
       console.error('Logout failed:', error);
       // 에러가 발생해도 로컬의 데이터는 삭제하고 홈으로 리다이렉트
@@ -44,15 +28,9 @@ const PopupMenu: React.FC = () => {
   };
 
   const performLogout = () => {
-    // 로컬 스토리지에서 토큰 제거
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-
-    // 사용자 상태 초기화
+    clearAuthData();
     setUser(null);
-
-    // 홈 페이지로 리다이렉트
-    navigate('/');
+    navigate('/about');
   };
 
   const items = [
@@ -86,7 +64,7 @@ const PopupMenu: React.FC = () => {
 
   return (
     <div className="card flex justify-content-center">
-      <TieredMenu model={items} popup ref={menu} breakpoint="767px" className="w-36 p-0" />
+      <TieredMenu model={items} popup ref={menu} breakpoint="767px" className="custom-tieredmenu w-36 p-0" />
       <Button
         onClick={handleToggle}
         rounded

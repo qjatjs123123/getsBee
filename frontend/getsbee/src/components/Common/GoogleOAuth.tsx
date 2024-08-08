@@ -39,6 +39,8 @@ const GoogleOAuth: FC = () => {
           name: decodedToken.name,
           picture: decodedToken.picture,
         });
+
+        window.location.href = '/';
       } catch (error) {
         console.error('Error decoding token:', error);
       }
@@ -58,22 +60,25 @@ const GoogleOAuth: FC = () => {
 
       if (response.data.isSuccess) {
         // 로컬 스토리지에 액세스 토큰을 저장
-        localStorage.setItem('accessToken', response.data.data.accessToken);
-        localStorage.setItem('refreshToken', response.data.data.refreshToken);
+        localStorage.setItem('accessToken', response.data.data.token.accessToken);
+        localStorage.setItem('refreshToken', response.data.data.token.refreshToken);
+        localStorage.setItem('block', response.data.data.block);
 
         window.postMessage(
           {
             type: 'TOKEN_UPDATE',
-            accessToken: response.data.data.accessToken,
-            refreshToken: response.data.data.refreshToken,
+            accessToken: response.data.data.token.accessToken,
+            refreshToken: response.data.data.token.refreshToken,
+            block: response.data.data.block,
             userState: props,
           },
           '*',
         );
 
         console.log(response);
-        console.log('Access Token:', response.data.data.accessToken);
-        console.log('Refresh Token:', response.data.data.refreshToken);
+        console.log('Access Token:', response.data.data.token.accessToken);
+        console.log('Refresh Token:', response.data.data.token.refreshToken);
+        console.log('Block:', response.data.data.block);
       } else {
         console.error('Authentication failed:', response.data.message);
       }

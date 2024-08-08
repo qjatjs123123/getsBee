@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card } from 'primereact/card';
 import defaultThumbnail from '../../assets/defaultThumbnail.png';
+import { formatDate } from '../util/util';
 
 const RecommendItem = () => {
   const data = {
@@ -37,8 +38,8 @@ const RecommendItem = () => {
       relatedFeedNumber: 100,
     },
   };
+  const formattedCreatedAt = formatDate(data.post.createdAt);
 
-  const formattedCreatedAt = new Date(data.post.createdAt).toISOString().split('T')[0];
   const header = (
     <div className="w-full h-48 overflow-hidden rounded-t-lg">
       <img alt="Card" src={data.post.thumbnail} className="w-full h-full object-cover" />

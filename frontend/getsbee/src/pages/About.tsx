@@ -1,10 +1,10 @@
 import React from 'react';
-import GetStartedButton from '../components/Common/GetStartedButton';
+import AboutHeader from '../components/Common/AboutHeader';
 
 const About = () => {
   return (
     <div>
-      <GetStartedButton />
+      <AboutHeader />
     </div>
   );
 };

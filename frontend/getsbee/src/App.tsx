@@ -1,4 +1,10 @@
-import { Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import { useSetRecoilState, useRecoilValue } from 'recoil';
+import { userState } from './recoil/userState';
+import { userRouteSelector } from './recoil/userState';
+
+// import PrivateRoute from './pages/PrivateRoute';
 import Home from './pages/Home';
 import Recommend from './pages/Recommend';
 import MyHive from './pages/MyHive';
@@ -12,12 +18,31 @@ import SearchDirectory from './pages/SearchDirectory';
 import SearchURL from './pages/SearchURL';
 
 function App() {
+  const setUser = useSetRecoilState(userState);
+  const navigate = useNavigate();
+  const userRoute = useRecoilValue(userRouteSelector);
+
+  useEffect(() => {
+    const handleLogout = () => {
+      setUser(null);
+      navigate('/about');
+    };
+
+    window.addEventListener('logout', handleLogout);
+
+    return () => {
+      window.removeEventListener('logout', handleLogout);
+    };
+  }, [setUser]);
+
   return (
     <Routes>
+      <Route path="/about" element={<About />} />
+      {/* <Route element={<PrivateRoute />}> */}
       <Route path="/" element={<Home />} />
       <Route path="/recommend" element={<Recommend />} />
-      <Route path="/myHive" element={<MyHive />} />
-      <Route path="/about" element={<About />} />
+      <Route path="/myhive" element={<Navigate to={userRoute || '/about'} replace />} />
+      <Route path="/myhive/:username" element={<MyHive />} />
       <Route path="/following" element={<Following />} />
       <Route path="/follower" element={<Follower />} />
       <Route path="/update" element={<DirectoryUpdate />} />
@@ -25,6 +50,7 @@ function App() {
       <Route path="/search/post" element={<SearchPost />} />
       <Route path="/search/directory" element={<SearchDirectory />} />
       <Route path="/search/url" element={<SearchURL />} />
+      {/* </Route> */}
     </Routes>
   );
 }

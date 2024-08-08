@@ -1,38 +1,13 @@
 import React, { useState, KeyboardEvent } from 'react';
-import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Button } from 'primereact/button';
+import { Avatar } from 'primereact/avatar';
 import { Divider } from 'primereact/divider';
-import Highlight from './Highlight';
+import HighlightItem from './HighlightItem';
+import DirSelection from '../Directory/DirSelection';
 import publicIcon from '../../assets/publicIcon.png';
 import privateIcon from '../../assets/privateIcon.png';
-
-interface Highlight {
-  content: string;
-  color: string;
-}
-
-interface Comment {
-  id: string;
-  name: string;
-  comment: string;
-  date: string;
-  avatar: string;
-}
-
-interface Post {
-  title: string;
-  url: string;
-  viewCount: string;
-  likeCount: string;
-  directoryName: string;
-  isPublic: boolean;
-  isLike: boolean;
-  note: string;
-  avatar: string;
-  highlights: Highlight[];
-  comments: Comment[];
-}
+import { Post, Highlight as HighlightType } from '../../recoil/PostDetailState';
 
 interface PostUpdateProps {
   post: Post;
@@ -41,15 +16,13 @@ interface PostUpdateProps {
 }
 
 const PostUpdate: React.FC<PostUpdateProps> = ({ post, onSave, onCancel }) => {
-  const [title, setTitle] = useState(post.title);
   const [isPublic, setIsPublic] = useState(post.isPublic);
-  const [note, setNote] = useState(post.note);
-  const [highlights, setHighlights] = useState<Highlight[]>(post.highlights);
+  const [note, setNote] = useState(post.note ?? '');
+  const [highlights, setHighlights] = useState<HighlightType[]>(post.highlights);
 
   const handleSave = () => {
     const updatedPost = {
       ...post,
-      title,
       isPublic,
       note,
       highlights,
@@ -77,7 +50,7 @@ const PostUpdate: React.FC<PostUpdateProps> = ({ post, onSave, onCancel }) => {
   };
 
   return (
-    <div style={{ width: '500px', height: 'auto' }}>
+    <div className="mb-4" style={{ width: '500px', height: 'auto' }}>
       <div className="flex justify-between mt-3">
         <div className="flex items-center">
           <span
@@ -92,18 +65,17 @@ const PostUpdate: React.FC<PostUpdateProps> = ({ post, onSave, onCancel }) => {
             {publicText}
           </span>
         </div>
+        <div className="flex items-center">
+          <DirSelection />
+        </div>
       </div>
       <div className="flex mt-3">
-        <img src={post.avatar} alt={post.title} className="mt-3 ml-3 w-[100px] h-[100px]" />
+        <Avatar image={post.memberImage} size="large" shape="circle" className="w-[60px] h-[60px] mt-1" />
         <div className="ml-4 flex-1">
-          <InputText
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="text-[16px] font-bold w-full mb-2 p-inputtext-sm"
-          />
-          <p className="text-[14px] font-semibold mb-1" style={{ color: '#8D8D8D' }}>
+          <p className="text-[14px] font-semibold" style={{ color: '#8D8D8D' }}>
             {post.directoryName}
           </p>
+          <p className="text-[18px] font-bold mr-1"> {post.title}</p>
           <p className="text-[12px] font-semibold block" style={{ color: '#8D8D8D' }}>
             <a href={post.url} className="hover:underline">
               {post.url}
@@ -130,7 +102,7 @@ const PostUpdate: React.FC<PostUpdateProps> = ({ post, onSave, onCancel }) => {
       <div className="mt-4 ml-6">
         {highlights.map((highlight) => (
           <div key={highlight.content} className="flex items-center mb-2">
-            <Highlight text={highlight.content} color={highlight.color} className="flex-1" />
+            <HighlightItem text={highlight.content} color={highlight.color} />
             <Button
               icon="pi pi-times"
               className="p-button-text p-button-danger ml-2"

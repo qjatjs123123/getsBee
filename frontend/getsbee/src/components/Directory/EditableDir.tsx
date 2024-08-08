@@ -5,9 +5,6 @@ import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
-import 'primereact/resources/themes/saga-blue/theme.css';
-import 'primereact/resources/primereact.min.css';
-import 'primeicons/primeicons.css';
 
 interface NodeData {
   directoryId: string;

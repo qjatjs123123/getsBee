@@ -1,4 +1,6 @@
 import axios, { InternalAxiosRequestConfig, AxiosResponse } from 'axios';
+import { logoutAPI, clearAuthData } from './AuthAPI';
+import { postRefreshToken } from './AuthAPI';
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = import.meta.env.VITE_SERVER_ENDPOINT;
@@ -6,16 +8,23 @@ axios.defaults.baseURL = import.meta.env.VITE_SERVER_ENDPOINT;
 // 인증이 필요하지 않은 엔드포인트
 const noAuthRequired = ['/auth/login', '/auth/reissue', '/auth/logout'];
 
-export async function postRefreshToken() {
-  const accessToken = localStorage.getItem('accessToken') || '';
-  const refreshToken = localStorage.getItem('refreshToken') || '';
-  const response = await axios.post('/auth/reissue', {
-    accessToken,
-    refreshToken,
-  });
-  console.log(response);
-  return response;
-}
+// 로그아웃 이벤트를 발생시키는 함수
+const emitLogoutEvent = () => {
+  const event = new CustomEvent('logout');
+  window.dispatchEvent(event);
+};
+
+// 로그아웃 처리 함수
+const handleLogout = async () => {
+  try {
+    await logoutAPI();
+  } catch (error) {
+    console.error('Logout failed:', error);
+  } finally {
+    clearAuthData();
+    emitLogoutEvent();
+  }
+};
 
 // 요청 인터셉터
 axios.interceptors.request.use(
@@ -68,7 +77,7 @@ axios.interceptors.response.use(
       } catch (refreshError) {
         console.error('Token refresh failed:', refreshError);
         // 로그아웃 처리나 로그인 페이지로 리디렉션 등을 여기서 수행
-        // Example: window.location.href = '/login';
+        await handleLogout();
         return Promise.reject(refreshError);
       }
     }
