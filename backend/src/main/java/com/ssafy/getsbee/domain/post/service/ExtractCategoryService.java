@@ -1,6 +1,11 @@
 package com.ssafy.getsbee.domain.post.service;
 
+import com.ssafy.getsbee.domain.interest.entity.Category;
+import com.ssafy.getsbee.domain.post.entity.Post;
+
+import java.util.Optional;
+
 public interface ExtractCategoryService {
 
-    String extractCategoryFromPost(String request);
+    Optional<Category> extractCategoryFromPost(Post post);
 }

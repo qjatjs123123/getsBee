@@ -17,15 +17,16 @@ public class StaticConst {
 
     public static final int MAX_MEMORY_SIZE = 5 * 1024 * 1024;
 
-//    public static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;
-    public static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 30;
+    public static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;
     public static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 14;
     public static final long ONE_MINUTE = 60 * 1000L;
     public static final long SEVEN_DAYS = 7L;
 
     /** Directory */
 
-
     /** Post */
-
+    public static final String EXTRACT_CATEGORY_PROMPT= "\nHere are the links and the Titles for the links. " +
+            "Just answer which category this link belongs to below" +
+            "\n[POLITICS, SOCIAL, CULTURE, ECONOMY, IT, WORLD, SPORTS, ENTERTAIN, HEALTH, TRAVEL, EDUCATION, LIVING, BEAUTY, FASHION, SCIENCE]";
+    public static final String COMMA = ", ";
 }
