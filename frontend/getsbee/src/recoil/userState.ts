@@ -1,4 +1,4 @@
-import { atom } from 'recoil';
+import { atom, selector } from 'recoil';
 import { recoilPersist } from 'recoil-persist';
 
 // Recoil Persist 설정
@@ -25,4 +25,16 @@ export const isAuthenticatedState = atom<boolean>({
   key: 'isAuthenticatedState',
   default: false,
   effects_UNSTABLE: [persistAtom], // Recoil Persist 효과 추가
+});
+
+export const userRouteSelector = selector({
+  key: 'userRouteSelector',
+  get: ({ get }) => {
+    const user = get(userState);
+    if (user && user.email) {
+      const username = user.email.split('@')[0];
+      return `/myhive/${username}`;
+    }
+    return null;
+  },
 });
