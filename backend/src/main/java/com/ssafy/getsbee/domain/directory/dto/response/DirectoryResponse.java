@@ -1,7 +1,6 @@
 package com.ssafy.getsbee.domain.directory.dto.response;
 
 import com.ssafy.getsbee.domain.directory.entity.Directory;
-import com.ssafy.getsbee.domain.member.entity.Member;
 import lombok.Builder;
 
 import java.util.ArrayList;
