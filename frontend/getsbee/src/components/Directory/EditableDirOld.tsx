@@ -1,20 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { TreeTable } from 'primereact/treetable';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
-import { useRecoilValueLoadable } from 'recoil';
-import { getDirectoryState, Directory } from '../../recoil/DirectoryState';
 
 interface NodeData {
-  directoryId: number | string;
+  directoryId: string;
   name: string;
   depth: number;
-  prevDirectoryId: number | string | null;
-  nextDirectoryId: number | string | null;
-  parentDirectoryId: number | string | null;
+  prevDirectoryId: string | null;
+  nextDirectoryId: string | null;
+  parentDirectoryId: string | null;
   memberId: number;
 }
 
@@ -24,35 +22,76 @@ interface TreeNode {
   children: TreeNode[];
 }
 
-interface EditableDirProps {
-  memberId: number | null;
-}
-
-const EditableDir: React.FC<EditableDirProps> = ({ memberId }) => {
-  const [nodes, setNodes] = useState<TreeNode[]>([]);
-  const directoriesLoadable = useRecoilValueLoadable(getDirectoryState(memberId || 0));
-
-  useEffect(() => {
-    if (directoriesLoadable.state === 'hasValue' && directoriesLoadable.contents) {
-      const transformToTreeNodes = (directories: Directory[]): TreeNode[] => {
-        return directories.map((dir) => ({
-          key: dir.directoryId.toString(),
+const EditableDir: React.FC = () => {
+  const [nodes, setNodes] = useState<TreeNode[]>([
+    {
+      key: '2',
+      data: {
+        directoryId: '2',
+        name: 'Temporary Directory',
+        depth: 1,
+        prevDirectoryId: null,
+        nextDirectoryId: '3',
+        parentDirectoryId: '1',
+        memberId: 123,
+      },
+      children: [],
+    },
+    {
+      key: '3',
+      data: {
+        directoryId: '3',
+        name: 'Bookmark Directory',
+        depth: 1,
+        prevDirectoryId: '2',
+        nextDirectoryId: 'T1',
+        parentDirectoryId: '1',
+        memberId: 123,
+      },
+      children: [
+        {
+          key: '4',
           data: {
-            directoryId: dir.directoryId,
-            name: dir.name,
-            depth: dir.depth,
-            prevDirectoryId: dir.prevDirectoryId,
-            nextDirectoryId: dir.nextDirectoryId,
-            parentDirectoryId: dir.parentDirectoryId,
-            memberId: dir.memberId,
+            directoryId: '4',
+            name: 'Sub Directory',
+            depth: 2,
+            prevDirectoryId: null,
+            nextDirectoryId: null,
+            parentDirectoryId: '3',
+            memberId: 123,
           },
-          children: transformToTreeNodes(dir.children),
-        }));
-      };
-
-      setNodes(transformToTreeNodes(directoriesLoadable.contents));
-    }
-  }, [directoriesLoadable.state, directoriesLoadable.contents]);
+          children: [],
+        },
+      ],
+    },
+    {
+      key: 'T1',
+      data: {
+        directoryId: 'T1',
+        name: 'New Directory',
+        depth: 1,
+        prevDirectoryId: '3',
+        nextDirectoryId: null,
+        parentDirectoryId: '1',
+        memberId: 123,
+      },
+      children: [
+        {
+          key: 'T2',
+          data: {
+            directoryId: 'T2',
+            name: 'New Sub Directory',
+            depth: 2,
+            prevDirectoryId: null,
+            nextDirectoryId: null,
+            parentDirectoryId: 'T1',
+            memberId: 123,
+          },
+          children: [],
+        },
+      ],
+    },
+  ]);
 
   const addNode = (parentKey: string | null, isSubDirectory: boolean = false) => {
     const newKey = `T${uuidv4()}`;
@@ -65,7 +104,7 @@ const EditableDir: React.FC<EditableDirProps> = ({ memberId }) => {
         prevDirectoryId: null,
         nextDirectoryId: null,
         parentDirectoryId: isSubDirectory ? parentKey : '1',
-        memberId: memberId || 0,
+        memberId: 123,
       },
       children: [],
     };
@@ -173,14 +212,6 @@ const EditableDir: React.FC<EditableDirProps> = ({ memberId }) => {
       />
     );
   };
-
-  if (directoriesLoadable.state === 'loading') {
-    return <div>Loading directories...</div>;
-  }
-
-  if (directoriesLoadable.state === 'hasError') {
-    return <div>Error loading directories. Please try again.</div>;
-  }
 
   return (
     <div className="p-4">

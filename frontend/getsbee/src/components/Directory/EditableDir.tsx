@@ -1,19 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { TreeTable } from 'primereact/treetable';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { getDirectories, updateDirectories } from '../../api/DirectoryApi';
+
+interface EditableTreeProps {
+  memberId: number | null;
+}
 
 interface NodeData {
-  directoryId: string;
+  directoryId: string | number;
   name: string;
   depth: number;
-  prevDirectoryId: string | null;
-  nextDirectoryId: string | null;
-  parentDirectoryId: string | null;
+  prevDirectoryId: string | number | null;
+  nextDirectoryId: string | number | null;
+  parentDirectoryId: string | number | null;
   memberId: number;
+  children: NodeData[];
 }
 
 interface TreeNode {
@@ -22,110 +29,63 @@ interface TreeNode {
   children: TreeNode[];
 }
 
-const EditableDir: React.FC = () => {
-  const [nodes, setNodes] = useState<TreeNode[]>([
-    {
-      key: '2',
-      data: {
-        directoryId: '2',
-        name: 'Temporary Directory',
-        depth: 1,
-        prevDirectoryId: null,
-        nextDirectoryId: '3',
-        parentDirectoryId: '1',
-        memberId: 123,
-      },
-      children: [],
-    },
-    {
-      key: '3',
-      data: {
-        directoryId: '3',
-        name: 'Bookmark Directory',
-        depth: 1,
-        prevDirectoryId: '2',
-        nextDirectoryId: 'T1',
-        parentDirectoryId: '1',
-        memberId: 123,
-      },
-      children: [
-        {
-          key: '4',
-          data: {
-            directoryId: '4',
-            name: 'Sub Directory',
-            depth: 2,
-            prevDirectoryId: null,
-            nextDirectoryId: null,
-            parentDirectoryId: '3',
-            memberId: 123,
-          },
-          children: [],
-        },
-      ],
-    },
-    {
-      key: 'T1',
-      data: {
-        directoryId: 'T1',
-        name: 'New Directory',
-        depth: 1,
-        prevDirectoryId: '3',
-        nextDirectoryId: null,
-        parentDirectoryId: '1',
-        memberId: 123,
-      },
-      children: [
-        {
-          key: 'T2',
-          data: {
-            directoryId: 'T2',
-            name: 'New Sub Directory',
-            depth: 2,
-            prevDirectoryId: null,
-            nextDirectoryId: null,
-            parentDirectoryId: 'T1',
-            memberId: 123,
-          },
-          children: [],
-        },
-      ],
-    },
-  ]);
+const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
+  const { username } = useParams<{ username: string }>();
 
-  const addNode = (parentKey: string | null, isSubDirectory: boolean = false) => {
-    const newKey = `T${uuidv4()}`;
-    const newNode: TreeNode = {
-      key: newKey,
-      data: {
-        directoryId: newKey,
-        name: 'New Directory',
-        depth: isSubDirectory ? 2 : 1,
-        prevDirectoryId: null,
-        nextDirectoryId: null,
-        parentDirectoryId: isSubDirectory ? parentKey : '1',
-        memberId: 123,
-      },
+  const [nodes, setNodes] = useState<NodeData[]>([]);
+  const [loading, setLoading] = useState(true);
+  // const [memberId, setMemberId] = useState(123);
+  const [rootDirectoryId, setRootDirectoryId] = useState<string | number | null>(null);
+
+  useEffect(() => {
+    const fetchDirectories = async () => {
+      try {
+        setLoading(true);
+        const data = await getDirectories(memberId);
+        console.log(data);
+        setNodes(data.data);
+        if (data.data.length > 0) {
+          setRootDirectoryId(data.data[0].parentDirectoryId);
+        }
+      } catch (error) {
+        console.error('Failed to fetch directories:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDirectories();
+  }, [memberId]);
+
+  const addNode = (parentId: string | number | null, isSubDirectory: boolean = false) => {
+    const newNode: NodeData = {
+      directoryId: `T${uuidv4()}`,
+      name: 'New Directory',
+      depth: isSubDirectory ? 2 : 1,
+      prevDirectoryId: null,
+      nextDirectoryId: null,
+      parentDirectoryId: isSubDirectory ? parentId : rootDirectoryId,
+      memberId: memberId,
       children: [],
     };
 
     setNodes((prevNodes) => {
       const updatedNodes = [...prevNodes];
-      if (isSubDirectory && parentKey) {
-        const parentNode = updatedNodes.find((node) => node.key === parentKey);
-        if (parentNode && parentNode.data.depth === 1) {
+      if (isSubDirectory && parentId) {
+        const parentNode = updatedNodes.find((node) => node.directoryId === parentId);
+        if (parentNode && parentNode.depth === 1) {
           if (parentNode.children.length > 0) {
             const lastChild = parentNode.children[parentNode.children.length - 1];
-            newNode.data.prevDirectoryId = lastChild.key;
-            lastChild.data.nextDirectoryId = newNode.key;
+            newNode.prevDirectoryId = lastChild.directoryId;
+            lastChild.nextDirectoryId = newNode.directoryId;
           }
           parentNode.children.push(newNode);
         }
       } else {
         if (updatedNodes.length > 0) {
           const lastNode = updatedNodes[updatedNodes.length - 1];
-          newNode.data.prevDirectoryId = lastNode.key;
-          lastNode.data.nextDirectoryId = newNode.key;
+          newNode.prevDirectoryId = lastNode.directoryId;
+          lastNode.nextDirectoryId = newNode.directoryId;
         }
         updatedNodes.push(newNode);
       }
@@ -133,27 +93,31 @@ const EditableDir: React.FC = () => {
     });
   };
 
-  const deleteNode = (key: string) => {
+  const deleteNode = (id: string | number) => {
     confirmDialog({
       message: 'Are you sure you want to delete this directory?',
       header: 'Confirmation',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         setNodes((prevNodes) => {
-          const updatedNodes = prevNodes.map((node) => ({
-            ...node,
-            children: node.children.filter((child) => child.key !== key),
-          }));
+          const deleteNodeRecursive = (nodes: NodeData[]): NodeData[] => {
+            return nodes.filter((node) => {
+              if (node.directoryId === id) {
+                return false;
+              }
+              if (node.children.length > 0) {
+                node.children = deleteNodeRecursive(node.children);
+              }
+              return true;
+            });
+          };
 
-          const nodeIndex = updatedNodes.findIndex((node) => node.key === key);
-          if (nodeIndex !== -1) {
-            const prevNode = updatedNodes[nodeIndex - 1];
-            const nextNode = updatedNodes[nodeIndex + 1];
+          const updatedNodes = deleteNodeRecursive(prevNodes);
 
-            if (prevNode) prevNode.data.nextDirectoryId = nextNode ? nextNode.key : null;
-            if (nextNode) nextNode.data.prevDirectoryId = prevNode ? prevNode.key : null;
-
-            updatedNodes.splice(nodeIndex, 1);
+          // Update prevDirectoryId and nextDirectoryId
+          for (let i = 0; i < updatedNodes.length; i++) {
+            updatedNodes[i].prevDirectoryId = i > 0 ? updatedNodes[i - 1].directoryId : null;
+            updatedNodes[i].nextDirectoryId = i < updatedNodes.length - 1 ? updatedNodes[i + 1].directoryId : null;
           }
 
           return updatedNodes;
@@ -162,12 +126,12 @@ const EditableDir: React.FC = () => {
     });
   };
 
-  const updateNode = (key: string, newName: string) => {
+  const updateNode = (id: string | number, newName: string) => {
     setNodes((prevNodes) => {
-      const updateNodeRecursive = (nodes: TreeNode[]): TreeNode[] => {
+      const updateNodeRecursive = (nodes: NodeData[]): NodeData[] => {
         return nodes.map((node) => {
-          if (node.key === key) {
-            return { ...node, data: { ...node.data, name: newName } };
+          if (node.directoryId === id) {
+            return { ...node, name: newName };
           }
           if (node.children.length > 0) {
             return { ...node, children: updateNodeRecursive(node.children) };
@@ -179,57 +143,81 @@ const EditableDir: React.FC = () => {
     });
   };
 
-  const handleSubmit = () => {
-    console.log('Submitting data:', nodes);
-    // 서버로 데이터를 보내는 로직
+  const handleSubmit = async () => {
+    try {
+      console.log(JSON.stringify(nodes, null, 2));
+      await updateDirectories(memberId, nodes);
+      console.log('Directories updated successfully');
+    } catch (error) {
+      console.error('Failed to update directories:', error);
+    }
   };
 
-  const actionTemplate = (node: TreeNode) => {
+  const actionTemplate = (node: NodeData) => {
     return (
       <div className="flex justify-end space-x-2">
-        {node.data.depth === 1 && (
+        {node.depth === 1 && (
           <Button
             icon="pi pi-plus"
-            className="p-button-rounded p-button-success p-button-text"
-            onClick={() => addNode(node.key, true)}
+            className="p-button-rounded text-black p-button-text"
+            onClick={() => addNode(node.directoryId, true)}
           />
         )}
         <Button
           icon="pi pi-trash"
-          className="p-button-rounded p-button-danger p-button-text"
-          onClick={() => deleteNode(node.key)}
+          className="p-button-rounded text-black p-button-text"
+          onClick={() => deleteNode(node.directoryId)}
         />
       </div>
     );
   };
 
-  const nameTemplate = (node: TreeNode) => {
+  const nameTemplate = (node: NodeData) => {
     return (
       <InputText
-        value={node.data.name}
-        onChange={(e) => updateNode(node.key, e.target.value)}
+        value={node.name}
+        onChange={(e) => updateNode(node.directoryId, e.target.value)}
         className="w-3/4 p-inputtext-sm"
       />
     );
   };
 
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
+
   return (
-    <div className="p-4">
-      <ConfirmDialog />
-      <div className="mb-4">
-        <Button
-          label="Add Root Directory"
-          icon="pi pi-plus"
-          className="p-button-primary"
-          onClick={() => addNode(null)}
-        />
-      </div>
-      <TreeTable value={nodes} className="p-treetable-sm w-1/3">
-        <Column field="name" header="범선이의 다이어리" body={nameTemplate} expander />
-        <Column body={actionTemplate} style={{ width: '150px' }} />
-      </TreeTable>
-      <div className="mt-4">
-        <Button label="Submit Changes" icon="pi pi-check" className="p-button-success" onClick={handleSubmit} />
+    <div className="flex justify-center">
+      <div className="p-4 w-2/3 max-w-3xl">
+        <ConfirmDialog />
+        <div className="mb-4 flex justify-end items-center space-x-4">
+          {/* <InputText
+            value={memberId}
+            onChange={(e) => setMemberId(Number(e.target.value))}
+            className="p-inputtext-sm"
+            placeholder="Member ID"
+            type="number"
+          /> */}
+          <Button
+            label="Add Root Directory"
+            icon="pi pi-plus"
+            className="font-bold text-black"
+            text
+            onClick={() => addNode(null)}
+          />
+        </div>
+        <TreeTable value={nodes} className="p-treetable-sm">
+          <Column field="name" header={`${username}'s directory`} body={nameTemplate} expander />
+          <Column body={actionTemplate} style={{ width: '150px' }} />
+        </TreeTable>
+        <div className="mt-4 flex justify-end">
+          <Button
+            label="저장하기"
+            icon="pi pi-check"
+            className="bg-[#FFBF09] border-2 border-[#FFBF09] shadow-none hover:bg-[#E5AB08] font-bold"
+            onClick={handleSubmit}
+          />
+        </div>
       </div>
     </div>
   );

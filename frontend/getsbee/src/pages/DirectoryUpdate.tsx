@@ -7,7 +7,6 @@ import SideBar from '../components/Common/SideBar';
 import Menu from '../components/Common/Menu';
 import DirectoryNav from '../components/Directory/DirectoryNav';
 import EditableDir from '../components/Directory/EditableDir';
-import EditableDir2 from '../components/Directory/test2';
 
 const DirectoryUpdate: React.FC = () => {
   const { username } = useParams<{ username: string }>();
@@ -36,14 +35,14 @@ const DirectoryUpdate: React.FC = () => {
       <div className="flex flex-col w-5/6 ml-2">
         <div className="flex justify-between items-center border-b ml-6">
           <div className="mt-[75px] mb-[5px]">
-            <DirectoryNav userName={userName} directories={directories} postCount={postCount} />
+            {/* <DirectoryNav userName={userName} directories={directories} postCount={postCount} /> */}
+            <p className="text-2xl font-bold">디렉토리 수정하기</p>
           </div>
           <div className="mb-[33px] mr-[12px]">
             <Menu />
           </div>
         </div>
         <EditableDir memberId={memberId} />
-        <EditableDir2 />
       </div>
     </div>
   );
