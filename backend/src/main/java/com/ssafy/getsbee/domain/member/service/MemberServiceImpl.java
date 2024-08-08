@@ -32,7 +32,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional(readOnly = true)
-    public MemberResponse showMemberInfo(Long memberId) {
+    public MemberResponse showMemberRecommendInfo(Long memberId) {
         Member member = findById(memberId);
         return MemberResponse.of(member, transferToCategory(interestRepository.findAllByMember(member)));
     }
@@ -47,6 +47,12 @@ public class MemberServiceImpl implements MemberService {
         }
         member.updateInfo(request.birthYear());
         interestRepository.saveAll(transferToInterests(request.category(), member));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MemberResponse showMemberInfo(Long memberId) {
+        return MemberResponse.of(findById(memberId));
     }
 
     private List<Interest> transferToInterests(List<Category> categories, Member member) {
