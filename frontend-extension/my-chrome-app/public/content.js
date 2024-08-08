@@ -1,5 +1,6 @@
 let resultArr = [];
 let originalHTML = "";
+let html = "";
 let accessToken = "";
 let refreshToken = "";
 let userState = null;
@@ -7,9 +8,11 @@ let tooltip = "";
 
 /* eslint-disable no-undef */
 window.addEventListener("load", () => {
-  sendPageContent();
-  init();
   originalHTML = document.body.innerHTML;
+  sendPageContent();
+
+  init();
+
   setTimeout(() => {
     if (getDomain() === "n.news.naver.com") {
       document.body.innerHTML = originalHTML;
@@ -70,7 +73,6 @@ window.addEventListener("load", () => {
       accessToken = result.GETSBEE_LOGIN.accessToken;
       refreshToken = result.GETSBEE_LOGIN.refreshToken;
       userState = result.GETSBEE_LOGIN.userState;
-
       chrome.runtime.sendMessage({
         type: "SEND_BROWSER_INFO",
         hostName: getDomain(),
@@ -80,6 +82,9 @@ window.addEventListener("load", () => {
         refreshToken: result.GETSBEE_LOGIN.refreshToken,
         userState: result.GETSBEE_LOGIN.userState,
       });
+      setTimeout(() => {
+        selectHighLightAPI();
+      }, 500);
     });
   }
 
@@ -225,7 +230,7 @@ window.addEventListener("load", () => {
   });
   window.addEventListener("message", (event) => {
     if (event.data.type === "TOKEN_UPDATE") {
-      console.log("qweqweaa");
+      console.log("!23");
       chrome.storage.sync.set({ GETSBEE_LOGIN: event.data }, function () {
         sendPageContent();
       });
@@ -234,7 +239,6 @@ window.addEventListener("load", () => {
 });
 
 function displayTooltip(left, top) {
-  console.log(tooltip);
   tooltip.style.left = `${left}px`;
   tooltip.style.top = `${top}px`;
   tooltip.style.visibility = "visible";

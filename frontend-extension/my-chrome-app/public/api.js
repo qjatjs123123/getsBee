@@ -5,7 +5,47 @@ function processHighlight(data, colorh) {
   insertHighLight(data);
   const highlightRange = createRangeObject(data);
   const textNodes = findTextNodesInRange(highlightRange);
+
   highlightTextNodes(textNodes, highlightRange, data.color, colorh, data);
+}
+
+function processSelect(params) {
+  params.forEach((param) => {
+    param.id = param.highlightId;
+    processHighlight(param, getHoverColor(param.color));
+  });
+}
+
+async function selectHighLightAPI() {
+  try {
+    const responseData = await selectHighLight();
+    processSelect(responseData.data);
+  } catch (error) {
+    console.error("Error:", error);
+    return "ERROR";
+  }
+}
+
+async function selectHighLight() {
+  const postData = {
+    url: getURL(),
+  };
+
+  const response = await fetch("https://getsbee.kr/api/v1/highlights/list", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(postData),
+  });
+  if (response.status === 401) {
+    // window.location.href = "https://getsbee.kr/";
+    // 필요에 따라 추가 처리 (예: 사용자에게 재로그인 요청)
+    throw new Error("Network response was not ok");
+  }
+
+  return await response.json();
 }
 
 async function insertHighLightAPI(data) {
@@ -33,7 +73,7 @@ async function postHighlightData(data) {
     // 필요에 따라 추가 처리 (예: 사용자에게 재로그인 요청)
     throw new Error("Network response was not ok");
   }
-
+  if (response.status !== 200) throw new Error("Network response was not ok");
   return await response.json();
 }
 

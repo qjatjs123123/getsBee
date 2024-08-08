@@ -168,7 +168,8 @@ function Content() {
 
       // 정렬된 키를 사용하여 textContents 배열에서 문장을 추출
       const sortedTextContents = sortedKeys.map((key) => textContents[key]);
-
+      console.log(result1);
+      console.log(sortedTextContents);
       setResult(sortedTextContents);
       // console.log(textContents, sortedValues);
       chrome.runtime.sendMessage({
