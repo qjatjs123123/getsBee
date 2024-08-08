@@ -3,6 +3,7 @@ import { Divider } from 'primereact/divider';
 import { Avatar } from 'primereact/avatar';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { useRecoilValueLoadable, useSetRecoilState } from 'recoil';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import DirSelection from '../Directory/DirSelection';
 import HighlightItem from './HighlightItem';
 import PostUpdate from './PostUpdate';
@@ -11,6 +12,7 @@ import privateIcon from '../../assets/privateIcon.png';
 import {
   getPostDetailState,
   postDetailState,
+  useDeletePost,
   Post,
   Highlight as HighlightType,
   Comment as CommentType,
@@ -18,19 +20,40 @@ import {
 
 interface PostDetailProps {
   postId: number;
+  onDelete: () => void; // 삭제 후 콜백을 받기 위한 prop
 }
 
-const PostDetail: React.FC<PostDetailProps> = ({ postId }) => {
+const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete }) => {
   const postDetailLoadable = useRecoilValueLoadable(getPostDetailState(postId));
   const setPostDetail = useSetRecoilState(postDetailState);
   const [value, setValue] = useState<string>('');
   const [isEditing, setIsEditing] = useState(false);
+  const deletePost = useDeletePost();
 
   useEffect(() => {
     if (postDetailLoadable.state === 'hasValue') {
       setPostDetail(postDetailLoadable.contents);
     }
   }, [postDetailLoadable, setPostDetail]);
+
+  const handleDelete = async () => {
+    try {
+      await deletePost(postId);
+      setPostDetail(null); // 포스트 삭제 후 상태를 초기화하여 UI 업데이트
+      onDelete(); // 삭제 후 콜백 호출
+    } catch (error) {
+      console.error('Failed to delete post:', error);
+    }
+  };
+
+  const confirmDelete = () => {
+    confirmDialog({
+      message: 'Are you sure you want to delete this post?',
+      header: 'Delete Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      accept: handleDelete,
+    });
+  };
 
   const handleUpdateSave = (updatedPost: Post) => {
     setPostDetail(updatedPost);
@@ -43,8 +66,14 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId }) => {
     }
   };
 
+  const handleDeleteKeyPress = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      confirmDelete();
+    }
+  };
+
   const postDetail = postDetailLoadable.state === 'hasValue' ? postDetailLoadable.contents.data : null;
-  console.log(postDetail);
+
   if (!postDetail) {
     return <div>No post details available</div>;
   }
@@ -59,6 +88,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId }) => {
 
   return (
     <div className="mb-4" style={{ width: '500px', height: 'auto' }}>
+      <ConfirmDialog />
       <div className="flex justify-between mt-3">
         {postDetail.isMyPost && (
           <div className="flex items-center">
@@ -104,7 +134,15 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId }) => {
         <div className="flex">
           {postDetail.isMyPost && (
             <span className="flex">
-              <i className="pi pi-trash mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer" title="Like" />
+              <i
+                className="pi pi-trash mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer"
+                title="Delete"
+                onClick={confirmDelete}
+                onKeyPress={handleDeleteKeyPress}
+                role="button"
+                tabIndex={0}
+                aria-label="Delete"
+              />
               <i
                 className="pi pi-file-edit mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer"
                 title="Edit"

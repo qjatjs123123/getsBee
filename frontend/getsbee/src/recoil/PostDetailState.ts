@@ -1,6 +1,6 @@
 // src/recoil/PostDetailState.ts
-import { atom, selectorFamily } from 'recoil';
-import { getPostDetail } from '../api/PostDetailApi';
+import { atom, selectorFamily, useRecoilCallback } from 'recoil';
+import { getPostDetail, deletePost } from '../api/PostDetailApi';
 
 export interface Highlight {
   highlightId: number;
@@ -53,3 +53,10 @@ export const getPostDetailState = selectorFamily({
     return data;
   },
 });
+
+export const useDeletePost = () => {
+  return useRecoilCallback(({ reset }) => async (postId: number) => {
+    await deletePost(postId);
+    reset(postDetailState);
+  });
+};

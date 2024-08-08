@@ -1,5 +1,6 @@
-import React, { useState, useEffect, KeyboardEvent } from 'react';
-import { useRecoilValueLoadable } from 'recoil';
+import React, { useState, useEffect, KeyboardEvent, useCallback } from 'react';
+// eslint-disable-next-line camelcase
+import { useRecoilValueLoadable, useRecoilRefresher_UNSTABLE } from 'recoil';
 import SideBar from '../components/Common/SideBar';
 import Menu from '../components/Common/Menu';
 import Post from '../components/Contents/Post';
@@ -17,6 +18,7 @@ const MyHive: React.FC = () => {
   const postCount = 30;
 
   const postLoadable = useRecoilValueLoadable(getPostsByDirectoryState({ directoryId: 5, size: 10 }));
+  const refreshPosts = useRecoilRefresher_UNSTABLE(getPostsByDirectoryState({ directoryId: 5, size: 10 }));
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -30,6 +32,11 @@ const MyHive: React.FC = () => {
       setSelectedPostId(postId);
     }
   };
+
+  const handlePostDeleted = useCallback(() => {
+    refreshPosts();
+    setSelectedPostId(null); // Optionally reset the selected post ID
+  }, [refreshPosts]);
 
   if (postLoadable.state === 'loading') {
     return <div>Loading...</div>;
@@ -82,7 +89,7 @@ const MyHive: React.FC = () => {
             ))}
           </div>
           <div className="flex flex-grow justify-center items-start overflow-y-auto scrollbar-hide transform scale-[110%] mt-8 mb-8">
-            {selectedPostId && <PostDetail postId={selectedPostId} />}
+            {selectedPostId && <PostDetail postId={selectedPostId} onDelete={handlePostDeleted} />}
           </div>
         </div>
       </div>
