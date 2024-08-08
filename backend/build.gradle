@@ -21,6 +21,14 @@ configurations {
 
 repositories {
 	mavenCentral()
+	// open ai
+	maven { url 'https://repo.spring.io/milestone' }
+	maven { url 'https://repo.spring.io/snapshot' }
+}
+
+// open ai
+ext {
+	set('springAiVersion', "1.0.0-M1")
 }
 
 dependencies {
@@ -55,6 +63,15 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	// google oauth
 	implementation 'com.google.auth:google-auth-library-oauth2-http:1.23.0'
+	// spring ai
+	implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
+}
+
+// open ai
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+	}
 }
 
 tasks.named('test') {

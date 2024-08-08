@@ -24,7 +24,9 @@ public class StaticConst {
 
     /** Directory */
 
-
     /** Post */
-
+    public static final String EXTRACT_CATEGORY_PROMPT= "\nHere are the links and the Titles for the links. " +
+            "Just answer which category this link belongs to below" +
+            "\n[POLITICS, SOCIAL, CULTURE, ECONOMY, IT, WORLD, SPORTS, ENTERTAIN, HEALTH, TRAVEL, EDUCATION, LIVING, BEAUTY, FASHION, SCIENCE]";
+    public static final String COMMA = ", ";
 }
