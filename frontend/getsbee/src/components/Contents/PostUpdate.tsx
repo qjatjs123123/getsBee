@@ -8,6 +8,7 @@ import DirSelection from '../Directory/DirSelection';
 import publicIcon from '../../assets/publicIcon.png';
 import privateIcon from '../../assets/privateIcon.png';
 import { Post, Highlight as HighlightType } from '../../recoil/PostDetailState';
+import { useUpdatePost } from '../../recoil/PostDetailState'; // Add this import
 
 interface PostUpdateProps {
   post: Post;
@@ -19,20 +20,32 @@ const PostUpdate: React.FC<PostUpdateProps> = ({ post, onSave, onCancel }) => {
   const [isPublic, setIsPublic] = useState(post.isPublic);
   const [note, setNote] = useState(post.note ?? '');
   const [highlights, setHighlights] = useState<HighlightType[]>(post.highlights);
+  const [selectedDirectoryId, setSelectedDirectoryId] = useState(post.directoryId ? post.directoryId.toString() : '');
+  const [deleteHighlightIds, setDeleteHighlightIds] = useState<number[]>([]);
 
-  const handleSave = () => {
-    const updatedPost = {
-      ...post,
-      isPublic,
-      note,
-      highlights,
-    };
-    onSave(updatedPost);
+  const updatePost = useUpdatePost(); // Add this hook
+
+  const handleSave = async () => {
+    try {
+      const updatedPostData = {
+        note,
+        directoryId: parseInt(selectedDirectoryId, 10),
+        isPublic,
+        deleteHighlightIds,
+      };
+
+      await updatePost(post.postId, updatedPostData); // Use the hook to update the post
+      onSave({ ...post, ...updatedPostData }); // Update local state with the new data
+      window.location.reload();
+    } catch (error) {
+      console.error('Failed to update post:', error);
+    }
   };
 
-  const handleRemoveHighlight = (content: string) => {
+  const handleRemoveHighlight = (highlightId: number, content: string) => {
     const newHighlights = highlights.filter((highlight) => highlight.content !== content);
     setHighlights(newHighlights);
+    setDeleteHighlightIds([...deleteHighlightIds, highlightId]);
   };
 
   const publicClass = isPublic ? 'bg-[#DBEAFE] text-[#3B559C]' : 'bg-red-200 text-red-800';
@@ -66,7 +79,7 @@ const PostUpdate: React.FC<PostUpdateProps> = ({ post, onSave, onCancel }) => {
           </span>
         </div>
         <div className="flex items-center">
-          <DirSelection />
+          <DirSelection selectedDirectoryId={selectedDirectoryId} onChange={(value) => setSelectedDirectoryId(value)} />
         </div>
       </div>
       <div className="flex mt-3">
@@ -101,12 +114,12 @@ const PostUpdate: React.FC<PostUpdateProps> = ({ post, onSave, onCancel }) => {
       </div>
       <div className="mt-4 ml-6">
         {highlights.map((highlight) => (
-          <div key={highlight.content} className="flex items-center mb-2">
+          <div key={highlight.highlightId} className="flex items-center mb-2">
             <HighlightItem text={highlight.content} color={highlight.color} />
             <Button
               icon="pi pi-times"
               className="p-button-text p-button-danger ml-2"
-              onClick={() => handleRemoveHighlight(highlight.content)}
+              onClick={() => handleRemoveHighlight(highlight.highlightId, highlight.content)}
             />
           </div>
         ))}

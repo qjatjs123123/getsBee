@@ -19,3 +19,21 @@ export const deletePost = async (postId: number) => {
 
   return response.data;
 };
+
+export const updatePost = async (
+  postId: number,
+  data: {
+    note: string;
+    directoryId: number;
+    isPublic: boolean;
+    deleteHighlightIds: number[];
+  },
+) => {
+  const response = await axios.patch(`/posts/${postId}`, data);
+
+  if (response.status !== 200) {
+    throw new Error('Failed to update post');
+  }
+
+  return response.data;
+};
