@@ -1,5 +1,6 @@
 // src/recoil/directoryState.ts
 import { atom, selector } from 'recoil';
+// import { selectorFamily } from 'recoil';
 import { getDirectories } from '../api/DirectoryApi';
 
 export interface Directory {
@@ -26,3 +27,11 @@ export const getDirectoryState = selector({
     return data;
   },
 });
+
+// export const getDirectoryState = selectorFamily<Directory[], number>({
+//   key: 'getDirectoryState',
+//   get: (memberId) => async () => {
+//     const data = await getDirectories(memberId);
+//     return data;
+//   },
+// });

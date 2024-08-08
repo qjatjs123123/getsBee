@@ -1,11 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Avatar } from 'primereact/avatar';
+import { useRecoilValueLoadable } from 'recoil';
 import logoIcon from '../../assets/logoIcon.png';
 import settingIcon from '../../assets/settingIcon.png';
 import Directory from '../Directory/Directory';
+import { userInfoByIdSelector, userHiveInfoByIdSelector } from '../../recoil/userState';
+// import { getDirectoryState } from '../../recoil/DirectoryState';
 
-const SideBar: React.FC = () => {
+interface SideBarProps {
+  memberId: number | null;
+}
+
+const SideBar: React.FC<SideBarProps> = ({ memberId }) => {
+  const userInfoLoadable = useRecoilValueLoadable(userInfoByIdSelector(memberId || 0));
+  const hiveInfoLoadable = useRecoilValueLoadable(userHiveInfoByIdSelector(memberId || 0));
+  // const directoriesLoadable = useRecoilValueLoadable(getDirectoryState(memberId || 0));
+  const userInfo = userInfoLoadable.state === 'hasValue' ? userInfoLoadable.contents : null;
+  const hiveInfo = hiveInfoLoadable.state === 'hasValue' ? hiveInfoLoadable.contents : null;
+  // const directories = directoriesLoadable.state === 'hasValue' ? directoriesLoadable.contents : [];
   const directories = [
     {
       directoryId: 2,
@@ -152,56 +165,60 @@ const SideBar: React.FC = () => {
     },
   ];
 
-  const user = {
-    avatar: 'https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png',
-    name: 'Hoseok Lee',
-    post: '5',
-    following: '120',
-    follower: '84',
-  };
-
   return (
     <aside className="fixed h-full w-[224px] bg-[#fff6e3] rounded-r-[28px] flex flex-col">
       <Link to="/" className="flex items-center ml-[20px] mt-[24px] font-bold">
         <img className="w-[140px] mr-[12px]" src={logoIcon} alt="beeIcon" />
       </Link>
       <div className="flex flex-col items-center mt-6">
-        <Avatar image={user.avatar} size="large" shape="circle" className="w-[80px] h-[80px]" />
-        <div className="mt-1 text-[19px] font-bold" style={{ color: '#253746' }}>
-          {user.name}
-        </div>
-        <div className="mt-3 flex space-x-6">
-          <div className="text-center">
-            <p className="text-[14px] font-bold" style={{ color: '#2D2C38' }}>
-              {user.post}
-            </p>
-            <p className="text-[11px] font-semibold" style={{ color: '#5C5C5C' }}>
-              게시글
-            </p>
-          </div>
-          <div className="text-center">
-            <p className="text-[14px] font-bold" style={{ color: '#2D2C38' }}>
-              {user.follower}
-            </p>
-            <p className="text-[11px] font-semibold" style={{ color: '#5C5C5C' }}>
-              팔로워
-            </p>
-          </div>
-          <div className="text-center">
-            <p className="text-[14px] font-bold" style={{ color: '#2D2C38' }}>
-              {user.following}
-            </p>
-            <p className="text-[11px] font-semibold" style={{ color: '#5C5C5C' }}>
-              팔로잉
-            </p>
-          </div>
-        </div>
+        {userInfo ? (
+          <>
+            <Avatar image={userInfo.picture} size="large" shape="circle" className="w-[80px] h-[80px]" />
+            <div className="mt-1 text-[19px] font-bold" style={{ color: '#253746' }}>
+              {userInfo.name}
+            </div>
+            {hiveInfo && (
+              <div className="mt-3 flex space-x-6">
+                <div className="text-center">
+                  <p className="text-[14px] font-bold" style={{ color: '#2D2C38' }}>
+                    {hiveInfo.postNumber}
+                  </p>
+                  <p className="text-[11px] font-semibold" style={{ color: '#5C5C5C' }}>
+                    게시글
+                  </p>
+                </div>
+                <div className="text-center">
+                  <p className="text-[14px] font-bold" style={{ color: '#2D2C38' }}>
+                    {hiveInfo.follower}
+                  </p>
+                  <p className="text-[11px] font-semibold" style={{ color: '#5C5C5C' }}>
+                    팔로워
+                  </p>
+                </div>
+                <div className="text-center">
+                  <p className="text-[14px] font-bold" style={{ color: '#2D2C38' }}>
+                    {hiveInfo.following}
+                  </p>
+                  <p className="text-[11px] font-semibold" style={{ color: '#5C5C5C' }}>
+                    팔로잉
+                  </p>
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <div>Loading...</div>
+        )}
         <hr className="w-[80%] mt-5" style={{ borderTop: '1px solid #EDDEEA' }} />
       </div>
-      <div className="mt-3 flexflex-col items-start px-8 overflow-y-auto scrollbar-hide">
-        <div className="text-[20px] font-bold" style={{ color: '#253746' }}>
-          {user.name}&apos;s
-        </div>
+      <div className="mt-3 flex flex-col items-start px-8 overflow-y-auto scrollbar-hide">
+        {userInfo ? (
+          <div className="text-[20px] font-bold" style={{ color: '#253746' }}>
+            {userInfo.name}&apos;s
+          </div>
+        ) : (
+          <div>Loading...</div>
+        )}
         {directories.map((directory) => (
           <Directory key={directory.directoryId} directory={directory} />
         ))}

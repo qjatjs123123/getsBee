@@ -16,3 +16,36 @@ export const patchUserInfo = async (data: { birthYear: number | null; category: 
     throw error;
   }
 };
+
+export const getUserInfoByEmailPrefix = async (emailPrefix: string) => {
+  try {
+    const response = await axios.get(`/members/search?emailPrefix=${emailPrefix}`);
+    console.log(response);
+    return response;
+  } catch (error) {
+    console.error('Error fetching user info by email prefix:', error);
+    throw error;
+  }
+};
+
+export const getUserInfoById = async (memberId: number) => {
+  try {
+    const response = await axios.get(`/members/${memberId}`);
+    console.log(response);
+    return response;
+  } catch (error) {
+    console.error('Error fetching user info by ID:', error);
+    throw error;
+  }
+};
+
+export const getUserHiveInfoById = async (memberId: number) => {
+  try {
+    const response = await axios.get(`/follows/hiveInfo/members/${memberId}`);
+    console.log(response);
+    return response;
+  } catch (error) {
+    console.error('Error fetching user hive info by ID:', error);
+    throw error;
+  }
+};
