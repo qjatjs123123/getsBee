@@ -14,7 +14,12 @@ export const logoutAPI = async () => {
       });
 
       if (response.status === 200) {
-        console.log('Logged out successfully');
+        window.postMessage(
+          {
+            type: 'TOKEN_DELETE',
+          },
+          '*',
+        );
       } else {
         console.warn('Unexpected response from server during logout');
       }
