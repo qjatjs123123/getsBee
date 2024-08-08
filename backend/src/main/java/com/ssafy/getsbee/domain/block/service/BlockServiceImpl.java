@@ -4,7 +4,9 @@ import com.ssafy.getsbee.domain.block.dto.request.BlockRequest;
 import com.ssafy.getsbee.domain.block.dto.response.BlockResponse;
 import com.ssafy.getsbee.domain.block.entity.Block;
 import com.ssafy.getsbee.domain.block.repository.BlockRepository;
+import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.service.MemberService;
+import com.ssafy.getsbee.global.error.ErrorCode;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.error.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +34,12 @@ public class BlockServiceImpl implements BlockService {
     @Override
     @Transactional
     public List<BlockResponse> addBlock(BlockRequest request, Long memberId) {
-        blockRepository.save(request.toEntity(memberService.findById(memberId)));
-        return getBlockResponseList(memberId);
+        Member member = memberService.findById(memberId);
+        if (blockRepository.existsByMemberAndDomain(member, request.domain())) {
+            throw new BadRequestException(DUPLICATE_BLOCK);
+        }
+        blockRepository.save(request.toEntity(member));
+        return getBlockResponseList(member.getId());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.ssafy.getsbee.domain.interest.entity;
 
 import com.ssafy.getsbee.domain.member.entity.Member;
+import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -51,6 +52,14 @@ public class Interest extends BaseTimeEntity {
         return Interest.builder()
                 .category(category)
                 .member(member)
+                .isDeleted(false)
+                .build();
+    }
+
+    public static Interest of(String url, Category category) {
+        return Interest.builder()
+                .url(url)
+                .category(category)
                 .isDeleted(false)
                 .build();
     }

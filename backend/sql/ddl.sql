@@ -26,8 +26,8 @@ CREATE TABLE directory
     `parent_directory_id`  BIGINT         NULL,
     `is_deleted`           TINYINT(1)     NOT NULL    DEFAULT 0,
     `member_id`            BIGINT         NOT NULL,
-    `created_at`  TIMESTAMP        NOT NULL,
-    `updated_at`  TIMESTAMP        NOT NULL,
+    `created_at`           TIMESTAMP      NOT NULL,
+    `updated_at`           TIMESTAMP      NOT NULL,
     PRIMARY KEY (directory_id),
     FOREIGN KEY (member_id) REFERENCES member(member_id)
 );
@@ -36,7 +36,7 @@ CREATE TABLE directory
 CREATE TABLE post
 (
     `post_id`         BIGINT           NOT NULL    AUTO_INCREMENT,
-    `title`           VARCHAR(50)      NOT NULL,
+    `title`           VARCHAR(300)     NULL,
     `url`             VARCHAR(2083)    NOT NULL,
     `note`            LONGTEXT         NULL,
     `thumbnail_url`   VARCHAR(2083)    NULL,
@@ -47,8 +47,8 @@ CREATE TABLE post
     `is_deleted`      TINYINT(1)       NOT NULL    DEFAULT 0,
     `member_id`       BIGINT           NOT NULL,
     `directory_id`    BIGINT           NULL,
-    `created_at`  TIMESTAMP        NOT NULL,
-    `updated_at`  TIMESTAMP        NOT NULL,
+    `created_at`      TIMESTAMP        NOT NULL,
+    `updated_at`      TIMESTAMP        NOT NULL,
     PRIMARY KEY (post_id),
     FOREIGN KEY (member_id) REFERENCES member(member_id),
     FOREIGN KEY (directory_id) REFERENCES directory(directory_id)
@@ -61,8 +61,8 @@ CREATE TABLE likes
     `is_deleted`  TINYINT(1)    NOT NULL    DEFAULT 0,
     `member_id`   BIGINT        NOT NULL,
     `post_id`     BIGINT        NOT NULL,
-    `created_at`  TIMESTAMP        NOT NULL,
-    `updated_at`  TIMESTAMP        NOT NULL,
+    `created_at`  TIMESTAMP     NOT NULL,
+    `updated_at`  TIMESTAMP     NOT NULL,
     PRIMARY KEY (like_id),
     FOREIGN KEY (member_id) REFERENCES member(member_id),
     FOREIGN KEY (post_id) REFERENCES post(post_id)
@@ -89,7 +89,7 @@ CREATE TABLE highlight
 (
     `highlight_id`  BIGINT        NOT NULL    AUTO_INCREMENT,
     `content`       LONGTEXT      NOT NULL,
-    `color`         VARCHAR(6)    NOT NULL,
+    `color`         VARCHAR(30)   NOT NULL,
     `start_index`   VARCHAR(200)  NULL,
     `last_index`    VARCHAR(200)  NULL,
     `start_offset`  INT           NULL,
@@ -137,11 +137,13 @@ CREATE TABLE follow
 -- interest Table Create SQL
 CREATE TABLE interest
 (
-    `interest_id`  BIGINT       NOT NULL    AUTO_INCREMENT,
-    `member_id`    BIGINT       NULL,
-    `url`          VARCHAR(13)  NULL,
-    `created_at`   TIMESTAMP    NOT NULL,
-    `updated_at`   TIMESTAMP    NOT NULL,
+    `interest_id`  BIGINT           NOT NULL    AUTO_INCREMENT,
+    `member_id`    BIGINT           NULL,
+    `url`          VARCHAR(2083)    NULL,
+    `category`     VARCHAR(13)      NULL,
+    `is_deleted`   TINYINT(1)       NOT NULL    DEFAULT 0,
+    `created_at`   TIMESTAMP        NOT NULL,
+    `updated_at`   TIMESTAMP        NOT NULL,
     PRIMARY KEY (interest_id),
     FOREIGN KEY (member_id) REFERENCES member(member_id)
 );

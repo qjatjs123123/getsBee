@@ -6,6 +6,6 @@ import java.util.List;
 
 public record MemberRequest(
         Integer birthYear,
-        List<Category> Category
+        List<Category> category
 ) {
 }
