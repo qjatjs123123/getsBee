@@ -28,5 +28,4 @@ public class MemberController {
     public MemberResponse showMemberInfo(@PathVariable("member-id") Long memberId) {
         return memberService.showMemberInfo(memberId);
     }
-
 }
