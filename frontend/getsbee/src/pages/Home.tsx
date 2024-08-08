@@ -41,9 +41,9 @@ const Home: React.FC = () => {
                 />
               ))}
               {loading && <div className="text-center py-4">Loading...</div>}
-              {!loading && !hasMore && posts.length > 0 && (
+              {/* {!loading && !hasMore && posts.length > 0 && (
                 <div className="text-center py-4">더 이상 포스트가 없습니다.</div>
-              )}
+              )} */}
               {!loading && posts.length === 0 && <div className="text-center py-4">포스트가 없습니다.</div>}
             </div>
             <div className="flex flex-col flex-grow p-4 items-start overflow-y-auto scrollbar-hide">
