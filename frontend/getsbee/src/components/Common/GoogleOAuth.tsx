@@ -15,7 +15,11 @@ const GoogleOAuth: FC = () => {
   const [user, setUser] = useRecoilState(userState);
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const serverAuthEndpoint = '/auth/login';
-
+  window.addEventListener('message', (event) => {
+    if (event.data.type === 'TOKEN_UPDATE') {
+      console.log('213123');
+    }
+  });
   const handleLoginSuccess = async (credentialResponse: CredentialResponse) => {
     console.log(credentialResponse);
     const { credential } = credentialResponse;
