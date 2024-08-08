@@ -1,14 +1,22 @@
-import { atom, selector } from 'recoil';
+import { atom, selector, selectorFamily } from 'recoil';
 import { recoilPersist } from 'recoil-persist';
+import { getUserInfoByEmailPrefix, getUserInfoById, getUserHiveInfoById } from '../api/UserInfoAPI';
 
 // Recoil Persist 설정
 const { persistAtom } = recoilPersist();
 
 // 사용자 정보를 위한 인터페이스 정의
 export interface UserInfo {
+  memberId: number;
   email: string;
   name: string;
   picture: string;
+}
+
+export interface HiveInfo {
+  following: number;
+  follower: number;
+  postNumber: number;
 }
 
 // 사용자 상태를 관리하는 atom
@@ -36,5 +44,44 @@ export const userRouteSelector = selector({
       return `/myhive/${username}`;
     }
     return null;
+  },
+});
+
+export const userInfoByEmailPrefixSelector = selectorFamily<UserInfo | null, string>({
+  key: 'userInfoByEmailPrefixSelector',
+  get: (emailPrefix) => async () => {
+    try {
+      const userInfo = await getUserInfoByEmailPrefix(emailPrefix);
+      return userInfo.data.data;
+    } catch (error) {
+      console.error('Error in selector:', error);
+      return null;
+    }
+  },
+});
+
+export const userInfoByIdSelector = selectorFamily<UserInfo | null, number>({
+  key: 'userInfoByIdSelector',
+  get: (memberId) => async () => {
+    try {
+      const userInfo = await getUserInfoById(memberId);
+      return userInfo.data.data;
+    } catch (error) {
+      console.error('Error in selector:', error);
+      return null;
+    }
+  },
+});
+
+export const userHiveInfoByIdSelector = selectorFamily<HiveInfo | null, number>({
+  key: 'userHiveInfoByIdSelector',
+  get: (memberId) => async () => {
+    try {
+      const hiveInfo = await getUserHiveInfoById(memberId);
+      return hiveInfo.data.data;
+    } catch (error) {
+      console.error('Error in selector:', error);
+      return null;
+    }
   },
 });

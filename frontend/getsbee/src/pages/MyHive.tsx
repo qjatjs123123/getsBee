@@ -1,8 +1,8 @@
 import React, { useState, useEffect, KeyboardEvent, useCallback } from 'react';
-// eslint-disable-next-line camelcase
 import { useParams } from 'react-router-dom';
+// eslint-disable-next-line camelcase
 import { useRecoilValueLoadable, useRecoilValue, useRecoilRefresher_UNSTABLE } from 'recoil';
-import { userState } from '../recoil/userState';
+import { userState, userInfoByEmailPrefixSelector } from '../recoil/userState';
 import SideBar from '../components/Common/SideBar';
 import Menu from '../components/Common/Menu';
 import Post from '../components/Contents/Post';
@@ -12,10 +12,17 @@ import DirectoryNav from '../components/Directory/DirectoryNav';
 import { getPostsByDirectoryState } from '../recoil/PostState';
 
 const MyHive: React.FC = () => {
-  const { username } = useParams();
+  const { username } = useParams<{ username: string }>();
   const currentUser = useRecoilValue(userState);
-
   const isOwnHive = currentUser?.email.split('@')[0] === username;
+  const userInfoLoadable = useRecoilValueLoadable(userInfoByEmailPrefixSelector(username || ''));
+  const [memberId, setMemberId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (userInfoLoadable.state === 'hasValue' && userInfoLoadable.contents) {
+      setMemberId(userInfoLoadable.contents.memberId);
+    }
+  }, [userInfoLoadable.state, userInfoLoadable.contents]);
 
   const userName = 'HoSeok Lee'; // 예시 사용자 이름
   const directories = [
@@ -67,7 +74,7 @@ const MyHive: React.FC = () => {
   return (
     <div className="flex h-screen">
       <div className="w-[224px]">
-        <SideBar />
+        <SideBar memberId={memberId} />
       </div>
       <div className="flex flex-col w-5/6 ml-2">
         <div className="flex justify-between items-center border-b ml-6">
@@ -82,7 +89,7 @@ const MyHive: React.FC = () => {
           <div className="flex flex-col items-center w-[465px] p-4 border-r overflow-y-auto scrollbar-hide">
             <div>
               <h1>{isOwnHive ? 'My Hive' : `${username}'s Hive`}</h1>
-              {isOwnHive ? <p>Welcome to your hive!</p> : <p>You're viewing {username}'s hive.</p>}
+              {isOwnHive ? <p>Welcome to your hive!</p> : <p>You&apos;re viewing {username}&apos;s hive.</p>}
               {/* 여기에 Hive의 내용을 표시하는 컴포넌트들을 추가하세요 */}
             </div>
             <SubSearchBar />
