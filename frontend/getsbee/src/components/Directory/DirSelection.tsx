@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { TreeSelect } from 'antd';
 import { useRecoilValueLoadable } from 'recoil';
+import { getUserInfo } from '../../api/UserInfoAPI';
 import { getDirectoryState, Directory } from '../../recoil/DirectoryState';
 
 interface TreeNode {
@@ -49,7 +50,20 @@ const DirSelection: React.FC<DirSelectionProps> = ({
   readOnly = false,
   onChange = () => {},
 }) => {
-  const directoriesLoadable = useRecoilValueLoadable(getDirectoryState);
+  const [memberId, setMemberId] = useState<number>(0);
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const userInfo = await getUserInfo();
+        setMemberId(userInfo.data.data.memberId);
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    };
+    fetchUserInfo();
+  }, []);
+
+  const directoriesLoadable = useRecoilValueLoadable(getDirectoryState(memberId));
 
   if (directoriesLoadable.state === 'loading') {
     return <p>Loading directories...</p>;
@@ -60,8 +74,7 @@ const DirSelection: React.FC<DirSelectionProps> = ({
   }
 
   const directories = directoriesLoadable.contents;
-  const treeData = convertToTreeData(directories.data);
-  console.log(treeData);
+  const treeData = convertToTreeData(directories);
 
   const handleChange = (newValue: string) => {
     onChange(newValue);

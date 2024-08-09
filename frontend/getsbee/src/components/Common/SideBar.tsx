@@ -6,7 +6,7 @@ import logoIcon from '../../assets/logoIcon.png';
 import settingIcon from '../../assets/settingIcon.png';
 import Directory from '../Directory/Directory';
 import { userInfoByIdSelector, userHiveInfoByIdSelector } from '../../recoil/userState';
-// import { getDirectoryState } from '../../recoil/DirectoryState';
+import { getDirectoryState } from '../../recoil/DirectoryState';
 
 interface SideBarProps {
   memberId: number | null;
@@ -15,155 +15,11 @@ interface SideBarProps {
 const SideBar: React.FC<SideBarProps> = ({ memberId }) => {
   const userInfoLoadable = useRecoilValueLoadable(userInfoByIdSelector(memberId || 0));
   const hiveInfoLoadable = useRecoilValueLoadable(userHiveInfoByIdSelector(memberId || 0));
-  // const directoriesLoadable = useRecoilValueLoadable(getDirectoryState(memberId || 0));
+  const directoriesLoadable = useRecoilValueLoadable(getDirectoryState(memberId || 0));
+
   const userInfo = userInfoLoadable.state === 'hasValue' ? userInfoLoadable.contents : null;
   const hiveInfo = hiveInfoLoadable.state === 'hasValue' ? hiveInfoLoadable.contents : null;
-  // const directories = directoriesLoadable.state === 'hasValue' ? directoriesLoadable.contents : [];
-  const directories = [
-    {
-      directoryId: 2,
-      name: 'Temporary',
-      depth: 1,
-      prevDirectoryId: null,
-      nextDirectoryId: 3,
-      parentDirectoryId: 1,
-      memberId: 123,
-      children: [],
-    },
-    {
-      directoryId: 3,
-      name: 'Bookmark',
-      depth: 1,
-      prevDirectoryId: 2,
-      nextDirectoryId: 4,
-      parentDirectoryId: 1,
-      memberId: 123,
-      children: [],
-    },
-    {
-      directoryId: 4,
-      name: 'IT',
-      depth: 1,
-      prevDirectoryId: 3,
-      nextDirectoryId: 9,
-      parentDirectoryId: 1,
-      memberId: 123,
-      children: [
-        {
-          directoryId: 5,
-          name: 'SpringBoot',
-          depth: 2,
-          prevDirectoryId: null,
-          nextDirectoryId: 6,
-          parentDirectoryId: 4,
-          memberId: 123,
-          children: [],
-        },
-        {
-          directoryId: 6,
-          name: 'MongoDB',
-          depth: 2,
-          prevDirectoryId: 5,
-          nextDirectoryId: 7,
-          parentDirectoryId: 4,
-          memberId: 123,
-          children: [],
-        },
-        {
-          directoryId: 7,
-          name: 'Cloud',
-          depth: 2,
-          prevDirectoryId: 6,
-          nextDirectoryId: 8,
-          parentDirectoryId: 4,
-          memberId: 123,
-          children: [],
-        },
-        {
-          directoryId: 8,
-          name: 'BlockChain',
-          depth: 2,
-          prevDirectoryId: 7,
-          nextDirectoryId: null,
-          parentDirectoryId: 4,
-          memberId: 123,
-          children: [],
-        },
-      ],
-    },
-    {
-      directoryId: 9,
-      name: 'Financial Sector',
-      depth: 1,
-      prevDirectoryId: 4,
-      nextDirectoryId: 13,
-      parentDirectoryId: 1,
-      memberId: 123,
-      children: [
-        {
-          directoryId: 10,
-          name: 'Bank',
-          depth: 2,
-          prevDirectoryId: null,
-          nextDirectoryId: 11,
-          parentDirectoryId: 9,
-          memberId: 123,
-          children: [],
-        },
-        {
-          directoryId: 11,
-          name: 'Insurance',
-          depth: 2,
-          prevDirectoryId: 10,
-          nextDirectoryId: 12,
-          parentDirectoryId: 9,
-          memberId: 123,
-          children: [],
-        },
-        {
-          directoryId: 12,
-          name: 'New Service',
-          depth: 2,
-          prevDirectoryId: 11,
-          nextDirectoryId: null,
-          parentDirectoryId: 9,
-          memberId: 123,
-          children: [],
-        },
-      ],
-    },
-    {
-      directoryId: 13,
-      name: "What's new",
-      depth: 1,
-      prevDirectoryId: 9,
-      nextDirectoryId: null,
-      parentDirectoryId: 1,
-      memberId: 123,
-      children: [
-        {
-          directoryId: 14,
-          name: 'IT',
-          depth: 2,
-          prevDirectoryId: null,
-          nextDirectoryId: 15,
-          parentDirectoryId: 13,
-          memberId: 123,
-          children: [],
-        },
-        {
-          directoryId: 15,
-          name: 'Service',
-          depth: 2,
-          prevDirectoryId: 14,
-          nextDirectoryId: null,
-          parentDirectoryId: 13,
-          memberId: 123,
-          children: [],
-        },
-      ],
-    },
-  ];
+  const directories = directoriesLoadable.state === 'hasValue' ? directoriesLoadable.contents : null;
 
   return (
     <aside className="fixed h-full w-[224px] bg-[#fff6e3] rounded-r-[28px] flex flex-col">
@@ -211,7 +67,7 @@ const SideBar: React.FC<SideBarProps> = ({ memberId }) => {
         )}
         <hr className="w-[80%] mt-5" style={{ borderTop: '1px solid #EDDEEA' }} />
       </div>
-      <div className="mt-3 flex flex-col items-start px-8 overflow-y-auto scrollbar-hide">
+      <div className="mt-3 items-start px-8 overflow-y-auto scrollbar-hide">
         {userInfo ? (
           <div className="text-[20px] font-bold" style={{ color: '#253746' }}>
             {userInfo.name}&apos;s
@@ -219,10 +75,21 @@ const SideBar: React.FC<SideBarProps> = ({ memberId }) => {
         ) : (
           <div>Loading...</div>
         )}
-        {directories.map((directory) => (
-          <Directory key={directory.directoryId} directory={directory} />
-        ))}
-        <div className="flex justify-end mt-3 mb-3">
+        {Array.isArray(directories) && directories.length > 0 ? (
+          directories
+            .filter((directory) => directory.name !== 'Bookmark')
+            .map((directory) => <Directory key={directory.directoryId} directory={directory} />)
+        ) : (
+          <div>Loading...</div>
+        )}
+        <div className="absolute bottom-5 left-5">
+          <i
+            className="pi pi-bookmark text-[#FFD233] hover:text-[#C09500] cursor-pointer"
+            title="Bookmark"
+            style={{ fontSize: '23px' }}
+          />
+        </div>
+        <div className="absolute bottom-5 right-5">
           <img className="w-[32px] h-[32px]" src={settingIcon} alt="settingIcon" />
         </div>
       </div>

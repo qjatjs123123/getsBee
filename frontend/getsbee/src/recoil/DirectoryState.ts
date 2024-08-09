@@ -1,6 +1,5 @@
 // src/recoil/directoryState.ts
-import { atom, selector } from 'recoil';
-import { selectorFamily } from 'recoil';
+import { atom, selectorFamily } from 'recoil';
 import { getDirectories } from '../api/DirectoryApi';
 
 export interface Directory {
@@ -19,19 +18,10 @@ export const directoryState = atom<Directory[]>({
   default: [],
 });
 
-// export const getDirectoryState = selector({
-//   key: 'getDirectoryState',
-//   get: async () => {
-//     const memberId = 2; // 여기에 실제 사용자 ID를 설정
-//     const data = await getDirectories(memberId);
-//     return data;
-//   },
-// });
-
 export const getDirectoryState = selectorFamily<Directory[], number>({
   key: 'getDirectoryState',
   get: (memberId) => async () => {
-    const data = await getDirectories(memberId);
-    return data;
+    const response = await getDirectories(memberId);
+    return response.data;
   },
 });
