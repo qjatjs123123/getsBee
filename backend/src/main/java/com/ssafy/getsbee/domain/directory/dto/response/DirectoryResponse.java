@@ -15,14 +15,15 @@ public record DirectoryResponse (
         Long parentDirectoryId,
         Long memberId,
         String memberName,
-        List<DirectoryResponse> children
+        List<DirectoryResponse> children,
+        Long postCount
 ) {
 
     @Builder
     public DirectoryResponse{
     }
 
-    public static DirectoryResponse fromEntity(Directory directory) {
+    public static DirectoryResponse fromEntity(Directory directory, Long postCount) {
         return new DirectoryResponse(
                 directory.getId(),
                 directory.getName(),
@@ -32,7 +33,8 @@ public record DirectoryResponse (
                 directory.getParentDirectory() != null ? directory.getParentDirectory().getId() : null,
                 directory.getMember().getId(),
                 directory.getMember().getName(),
-                new ArrayList<>()
+                new ArrayList<>(),
+                postCount
         );
     }
 }

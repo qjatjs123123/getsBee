@@ -181,7 +181,8 @@ public class DirectoryServiceImpl implements DirectoryService {
         for (Directory directory : directories) {
             if (directory.getDepth() == 0) continue;
             if (directory.getDepth() == 2) directory.changeName(directory.getName());
-            DirectoryResponse response = DirectoryResponse.fromEntity(directory);
+            Long postCount = postRepository.countPostsByDirectory(directory);
+            DirectoryResponse response = DirectoryResponse.fromEntity(directory, postCount);
             directoryMap.put(directory.getId(), response);
         }
 
