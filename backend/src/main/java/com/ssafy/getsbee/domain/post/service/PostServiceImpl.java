@@ -23,22 +23,28 @@ import com.ssafy.getsbee.domain.post.dto.response.PostResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostURLResponse;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.domain.post.repository.PostRepository;
+import com.ssafy.getsbee.global.consts.StaticConst;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.error.exception.ForbiddenException;
 import com.ssafy.getsbee.global.error.exception.NotFoundException;
 import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.ssafy.getsbee.global.consts.StaticConst.*;
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 
@@ -120,6 +126,7 @@ public class PostServiceImpl implements PostService {
         // post.changeDirectory(directoryRepository.findByMember(member));
 
         post.increaseViewCount();
+        log.info("memberId:{}, postId:{}, eventType:{}, timestamp:{}", member.getId(), post.getId(), VIEW, (new Date()).getTime());
         return PostResponse.from(post, highlightResponses,commentResponseList,
                 !isNotOwner(post.getMember(), member), isLike, isBookmark);
     }
@@ -160,6 +167,7 @@ public class PostServiceImpl implements PostService {
         }
         likeRepository.save(Like.of(member, post));
         post.increaseLikeCount();
+        log.info("memberId:{}, postId:{}, eventType:{}, evnetValue:{}, timestamp:{}", member.getId(), post.getId(), LIKE, (new Date()).getTime());
         return LikePostResponse.of(post);
     }
 

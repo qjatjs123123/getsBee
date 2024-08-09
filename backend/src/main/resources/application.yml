@@ -85,3 +85,6 @@ spring:
     activate:
       on-profile: "production"
     import: optional:file:.env-production[.properties]
+logging:
+  level:
+    root: info
