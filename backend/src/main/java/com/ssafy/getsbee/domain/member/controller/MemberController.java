@@ -30,9 +30,4 @@ public class MemberController {
     public MemberResponse showMemberInfo(@PathVariable("member-id") Long memberId) {
         return memberService.showMemberInfo(memberId);
     }
-
-    @GetMapping("/search")
-    public MemberResponse searchMember(@Valid SearchMemberCondition condition) {
-        return memberService.searchMember(condition);
-    }
 }

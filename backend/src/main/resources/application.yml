@@ -40,6 +40,24 @@ jwt:
 google:
   oidc:
     audience: ${GOOGLE_OIDC_AUDIENCE}
+cloud:
+  aws:
+    region:
+      static: ${AWS_REGION}
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    s3:
+      bucket: ${S3_BUCKET}
+      directory:
+        member: ${DIRECTORY_MEMBER}
+        post: ${DIRECTORY_POST}
+logging:
+  level:
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error
 ---
 spring:
   config:
@@ -48,7 +66,6 @@ spring:
     import: optional:file:.env-local[.properties]
   jpa:
     show-sql: true
-
 logging:
   level:
     org.elasticsearch: DEBUG

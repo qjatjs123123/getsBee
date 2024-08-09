@@ -26,8 +26,20 @@ public class StaticConst {
     /** Directory */
 
     /** Post */
-    public static final String EXTRACT_CATEGORY_PROMPT= "\nHere are the links and the Titles for the links. " +
+    public static final String EXTRACT_CATEGORY_PROMPT = "\nHere are the links and the Titles for the links. " +
             "Just answer which category this link belongs to below" +
             "\n[POLITICS, SOCIAL, CULTURE, ECONOMY, IT, WORLD, SPORTS, ENTERTAIN, HEALTH, TRAVEL, EDUCATION, LIVING, BEAUTY, FASHION, SCIENCE]";
     public static final String COMMA = ", ";
+
+    /** CSV */
+    public static final String MEMBER_CSV = "member.csv";
+    public static final String POST_CSV = "post.csv";
+    public static final String INTERACTION_CSV = "interaction.csv";
+    public static final String USER_ID = "USER_ID";
+    public static final String AGE = "AGE";
+    public static final String CATEGORY = "CATEGORY";
+    public static final String ITEM_ID = "ITEM_ID";
+    public static final String EVENT_TYPE = "EVENT_TYPE";
+    public static final String TIMESTAMP = "TIMESTAMP";
+    public static final String DEFAULT = "";
 }
