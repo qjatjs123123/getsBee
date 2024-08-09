@@ -31,7 +31,7 @@ const DirectoryUpdate: React.FC = () => {
   return (
     <div className="flex h-screen">
       <div className="w-[224px]">
-        <SideBar memberId={memberId} />
+        <SideBar memberId={memberId} isOwnHive={true} />
       </div>
       <div className="flex flex-col w-5/6 ml-2">
         <div className="flex justify-between items-center border-b ml-6">

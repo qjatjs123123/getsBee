@@ -11,6 +11,7 @@ export interface Directory {
   parentDirectoryId: number;
   memberId: number;
   children: Directory[];
+  postCount: number;
 }
 
 export const directoryState = atom<Directory[]>({
