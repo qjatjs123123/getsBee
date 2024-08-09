@@ -30,7 +30,7 @@ const Directory: React.FC<DirectoryProps> = ({ directory }) => {
 
   const fontSize = directory.depth === 1 ? 'text-[16px]' : 'text-[14px]';
 
-  const badge = directory.name === 'Temporary' ? '9' : '';
+  const badge = directory.name === 'Temporary' ? '' : '';
 
   return (
     <div className={`pl-${directory.depth * 1} my-1`}>
