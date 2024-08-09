@@ -15,6 +15,7 @@ import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.ssafy.getsbee.domain.follow.entity.Follow;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -33,11 +34,12 @@ public class FollowServiceImpl implements FollowService{
     private final PostRepository postRepository;
 
     @Override
+    @Transactional
     public void createFollow(Long directoryId) {
         Directory directory = directoryRepository.findDirectoryById(directoryId).orElseThrow(()->new BadRequestException(DIRECTORY_NOT_FOUND));
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         Member currentMember = memberRepository.findById(currentMemberId).orElseThrow(
-                ()->new NotFoundException(MEMBER_NOT_FOUND));
+                ()->new BadRequestException(MEMBER_NOT_FOUND));
 
         if(directory.getDepth()==0 || Objects.equals(directory.getName(), "Temporary") || Objects.equals(directory.getName(), "Bookmark")) {
             throw new BadRequestException(WRONG_DIRECTORY_FOLLOW);
@@ -46,6 +48,7 @@ public class FollowServiceImpl implements FollowService{
     }
 
     @Override
+    @Transactional
     public void deleteFollow(Long followId) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         Member currentMember = memberRepository.findById(currentMemberId).orElseThrow(
@@ -58,6 +61,7 @@ public class FollowServiceImpl implements FollowService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<FollowDirectoryResponse> findFollowingDirectories(Long memberId) { //내가 팔로잉 중인 디렉토리 정보
         List<Follow> follows = followRepository.findFollowingByMemberId(memberId);
 
@@ -84,6 +88,7 @@ public class FollowServiceImpl implements FollowService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<FollowDirectoryResponse> findFollowedDirectories(Long memberId) { //나를 팔로잉 중인 디렉토리 정보
         List<Follow> follows = followRepository.findFollowedByMemberId(memberId);
 
@@ -110,6 +115,7 @@ public class FollowServiceImpl implements FollowService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public HiveInfoResponse getHiveInfo(Long memberId) {
         return HiveInfoResponse.builder()
                 .follower(countFollowers(memberId))

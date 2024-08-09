@@ -1,5 +1,6 @@
 package com.ssafy.getsbee.domain.directory.entity;
 
+import com.ssafy.getsbee.domain.follow.entity.Follow;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.global.common.entity.BaseTimeEntity;
@@ -56,6 +57,10 @@ public class Directory extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "directory", cascade = REMOVE)
     private List<Post> posts = new ArrayList<>();
+
+    // 나를 팔로우 하는 Follow 관계
+    @OneToMany(mappedBy = "followedDirectory", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Follow> followedFollows = new ArrayList<>();
 
     @Builder
     public Directory(String name, int depth, Directory prevDirectory, Directory nextDirectory,

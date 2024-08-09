@@ -23,28 +23,33 @@ public class FollowRepositoryCustomImpl implements FollowRepositoryCustom{
 
     @Override
     @Transactional
-    public void createFollow(Member member, Directory directory) {
+    public Follow createFollow(Member member, Directory directory) {
         // 이미 팔로우 관계가 있는지 확인
-        boolean alreadyFollowing = !queryFactory
+        Follow existingFollow = queryFactory
                 .selectFrom(follow)
                 .where(
                         follow.followingMember.eq(member)
                                 .and(follow.followedDirectory.eq(directory))
                                 .and(follow.isDeleted.isFalse())
                 )
-                .fetch().isEmpty();
+                .fetchOne();
 
-        if (!alreadyFollowing) {
-            Follow follow = Follow.builder()
-                    .followingMember(member)
-                    .followedMember(directory.getMember())
-                    .followedDirectory(directory)
-                    .isDeleted(false)
-                    .build();
-
-            em.persist(follow);
+        if (existingFollow != null) {
+            return existingFollow;
         }
+
+        // 새로 팔로우 관계 생성
+        Follow newFollow = Follow.builder()
+                .followingMember(member)
+                .followedMember(directory.getMember())
+                .followedDirectory(directory)
+                .isDeleted(false)
+                .build();
+
+        em.persist(newFollow);
+        return newFollow;
     }
+
 
     @Override
     public Long countMemberFollowers(Member member) { //맴버의 디렉토리를 팔로우하는 사람들의 수

@@ -47,13 +47,15 @@ public record PostListResponse (
     public record Member(
             Long memberId,
             String memberName,
-            String memberPicture
+            String memberPicture,
+            String memberEmail
     ) {
         @Builder
-        public Member(Long memberId, String memberName, String memberPicture) {
+        public Member(Long memberId, String memberName, String memberPicture, String memberEmail) {
             this.memberId = memberId;
             this.memberName = memberName;
             this.memberPicture = memberPicture;
+            this.memberEmail = memberEmail;
         }
     }
     public record Directory(

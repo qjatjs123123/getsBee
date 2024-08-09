@@ -301,6 +301,7 @@ public class PostServiceImpl implements PostService {
                             .memberId(member.getId())
                             .memberName(member.getName())
                             .memberPicture(member.getPicture())
+                            .memberEmail(member.getEmail())
                             .build();
 
                     PostListResponse.Directory directoryInfo = PostListResponse.Directory.builder()
