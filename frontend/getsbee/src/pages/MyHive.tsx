@@ -1,6 +1,5 @@
 import React, { useState, useEffect, KeyboardEvent, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-// eslint-disable-next-line camelcase
 import { useRecoilValueLoadable, useRecoilValue, useRecoilRefresher_UNSTABLE } from 'recoil';
 import { userState, userInfoByEmailPrefixSelector } from '../recoil/userState';
 import SideBar from '../components/Common/SideBar';
@@ -26,8 +25,8 @@ const MyHive: React.FC = () => {
 
   const userName = username;
   const directories = [
-    { id: '1', name: 'IT' },
-    { id: '2', name: 'Cloud' },
+    { id: '1', name: '' },
+    { id: '2', name: '' },
   ];
   const postCount = 30;
 
@@ -74,15 +73,22 @@ const MyHive: React.FC = () => {
 
   return (
     <div className="flex h-screen">
-      <div className="w-[224px]">
+      <div className="w-56">
         <SideBar memberId={memberId} isOwnHive={isOwnHive} />
       </div>
       <div className="flex flex-col w-5/6 ml-2">
         <div className="flex justify-between items-center border-b ml-6">
           <div className="mt-[75px] mb-[5px]">
-            <DirectoryNav userName={userName} directories={directories} postCount={postCount} />
+            <DirectoryNav
+              userName={userName}
+              directories={directories}
+              postCount={postCount}
+              isOwnHive={true}
+              directoryId={0}
+              initialIsFollowing={false}
+            />
           </div>
-          <div className="mb-[33px] mr-[12px]">
+          <div className="mb-[33px] mr-3">
             <Menu />
           </div>
         </div>
@@ -103,9 +109,9 @@ const MyHive: React.FC = () => {
                 }}
                 onClick={() => !isEditing && setSelectedPostId(postData.post.postId)}
                 onKeyPress={(event) => handleKeyPress(event, postData.post.postId)}
-                tabIndex={0} // This makes the div focusable
+                tabIndex={0}
                 aria-label="button"
-                role="button" // This role indicates that the div is interactive
+                role="button"
               >
                 <Post
                   title={postData.post.title}
@@ -120,7 +126,7 @@ const MyHive: React.FC = () => {
               </div>
             ))}
           </div>
-          <div className="flex flex-grow justify-center items-start overflow-y-auto scrollbar-hide transform scale-[110%] mt-8 mb-8">
+          <div className="flex flex-grow justify-center items-start overflow-y-auto scrollbar-hide transform scale-110 mt-8 mb-8">
             {selectedPostId && (
               <PostDetail
                 postId={selectedPostId}
