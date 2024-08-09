@@ -5,6 +5,7 @@ import com.ssafy.getsbee.domain.directory.dto.response.DirectoryResponse;
 import com.ssafy.getsbee.domain.directory.dto.response.DirectorySearchResponse;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
+import com.ssafy.getsbee.domain.directory.dto.response.DirectoryInfoResponse;
 import com.ssafy.getsbee.domain.follow.entity.Follow;
 import com.ssafy.getsbee.domain.follow.repository.FollowRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
@@ -132,6 +133,18 @@ public class DirectoryServiceImpl implements DirectoryService {
 
         return new SliceImpl<>(responses, pageable, directoryDocumentIds.hasNext());
     }
+
+    @Override
+    public DirectoryInfoResponse showDirectoryInfo(Long directoryId) {
+        Directory directory = directoryRepository.findDirectoryById(directoryId).orElseThrow(()->new BadRequestException(DIRECTORY_NOT_FOUND));
+        Member member = directory.getMember();
+        Long postCount = postRepository.countPostsByDirectory(directory);
+        Member currentMember = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(()->new BadRequestException(MEMBER_NOT_FOUND));
+
+        return DirectoryInfoResponse.from(member, directory, postCount, followRepository.findByFollowingMemberAndFollowedDirectory(currentMember, directory)
+                .isPresent());
+    }
+
     private Directory findById(Long directoryId) {
         return directoryRepository.findDirectoryById(directoryId)
                 .orElseThrow(()->new BadRequestException(DIRECTORY_NOT_FOUND));
