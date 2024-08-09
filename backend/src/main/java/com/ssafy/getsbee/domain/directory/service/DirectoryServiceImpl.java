@@ -41,8 +41,9 @@ public class DirectoryServiceImpl implements DirectoryService {
     @Override
     public List<DirectoryResponse> findAllByMember(Member member) {
         List<Directory> directories = directoryRepository.findAllByMember(member);
-        filterDirectoriesByAuth(member.getId(), assembleDirectories(directories));
-        return assembleDirectories(directories);
+        List<DirectoryResponse> directoriesResponse = assembleDirectories(directories);
+        filterDirectoriesByAuth(member.getId(), directoriesResponse);
+        return directoriesResponse;
     }
 
     @Override
