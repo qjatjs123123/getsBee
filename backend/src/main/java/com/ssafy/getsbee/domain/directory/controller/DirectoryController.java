@@ -5,6 +5,7 @@ import com.ssafy.getsbee.domain.directory.dto.response.DirectoryResponse;
 import com.ssafy.getsbee.domain.directory.dto.response.DirectorySearchResponse;
 import com.ssafy.getsbee.domain.directory.service.DirectoryElasticServiceImpl;
 import com.ssafy.getsbee.domain.directory.service.DirectoryService;
+import com.ssafy.getsbee.domain.directory.dto.response.DirectoryInfoResponse;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -37,5 +38,10 @@ public class DirectoryController {
     @GetMapping("/search")
     public Slice<DirectorySearchResponse> getDirectoriesBySearch(@RequestParam String query, Pageable pageable, Long cursor) {
         return directoryService.showDirectoriesBySearch(query, pageable, cursor);
+    }
+
+    @GetMapping("/{directoryId}")
+    public DirectoryInfoResponse getDirectoryInfo(@PathVariable Long directoryId) {
+        return directoryService.showDirectoryInfo(directoryId);
     }
 }

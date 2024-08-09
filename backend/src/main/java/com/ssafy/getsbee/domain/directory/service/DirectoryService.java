@@ -4,6 +4,7 @@ import com.ssafy.getsbee.domain.directory.dto.request.DirectoryRequest;
 import com.ssafy.getsbee.domain.directory.dto.response.DirectoryResponse;
 import com.ssafy.getsbee.domain.directory.dto.response.DirectorySearchResponse;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
+import com.ssafy.getsbee.domain.directory.dto.response.DirectoryInfoResponse;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -21,4 +22,6 @@ public interface DirectoryService {
     String findFullNameByDirectory(Directory directory);
 
     Slice<DirectorySearchResponse> showDirectoriesBySearch(String query, Pageable pageable, Long cursor);
+
+    DirectoryInfoResponse showDirectoryInfo(Long directoryId);
 }
