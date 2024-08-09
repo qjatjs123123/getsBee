@@ -3,6 +3,7 @@ package com.ssafy.getsbee.domain.highlight.controller;
 import com.ssafy.getsbee.domain.highlight.dto.request.CreateHighlightRequest;
 import com.ssafy.getsbee.domain.highlight.dto.request.HighlightsRequest;
 import com.ssafy.getsbee.domain.highlight.dto.request.UpdateHighlightRequest;
+import com.ssafy.getsbee.domain.highlight.dto.request.UpdateIndexHighlight;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
 import com.ssafy.getsbee.domain.highlight.service.HighlightService;
 import com.ssafy.getsbee.domain.post.service.PostService;
@@ -36,9 +37,13 @@ public class HighlightController {
         highlightService.updateHighlight(highlightId, updateHighlightRequest, SecurityUtil.getCurrentMemberId());
     }
 
-
     @PostMapping("/list")
     public List<HighlightResponse> getHighlights(@RequestBody @Valid HighlightsRequest highlightsRequest){
         return highlightService.getHighlights(highlightsRequest.url(), SecurityUtil.getCurrentMemberId());
+    }
+
+    @PatchMapping("/update")
+    public void updateHighlightsIndex(@RequestBody @Valid List<UpdateIndexHighlight> updateIndexHighlights){
+        highlightService.updateHighlightsIndex(updateIndexHighlights, SecurityUtil.getCurrentMemberId());
     }
 }

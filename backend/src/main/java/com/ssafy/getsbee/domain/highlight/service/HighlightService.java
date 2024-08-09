@@ -2,6 +2,7 @@ package com.ssafy.getsbee.domain.highlight.service;
 
 import com.ssafy.getsbee.domain.highlight.dto.request.CreateHighlightRequest;
 import com.ssafy.getsbee.domain.highlight.dto.request.UpdateHighlightRequest;
+import com.ssafy.getsbee.domain.highlight.dto.request.UpdateIndexHighlight;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
 
 import java.util.List;
@@ -15,4 +16,6 @@ public interface HighlightService {
     void updateHighlight(Long highlightId, UpdateHighlightRequest updateHighlightRequest, Long memberId);
 
     List<HighlightResponse> getHighlights(String url, Long memberId);
+
+    void updateHighlightsIndex(List<UpdateIndexHighlight> updateIndexHighlights, Long memberId);
 }

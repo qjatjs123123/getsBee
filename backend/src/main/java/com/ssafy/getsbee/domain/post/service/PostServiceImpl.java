@@ -108,6 +108,7 @@ public class PostServiceImpl implements PostService {
                 .map(comment -> CommentResponse.of(comment, member))
                 .collect(Collectors.toList());
 
+        post.updateHighlights(highlightRepository.findAllByPost(post));
 
         List<HighlightResponse> highlightResponses = post.getHighlights()
                 .stream()
@@ -124,6 +125,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public void addBookmark(Long postId, Long memberId) {
         Member member = memberService.findById(memberId);
         Post post = findById(postId);
@@ -138,6 +140,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public void deleteBookmark(Long postId, Long memberId) {
         Member member = memberService.findById(memberId);
         Post post = findById(postId);
