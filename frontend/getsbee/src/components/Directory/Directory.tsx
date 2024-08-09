@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 interface Directory {
   directoryId: number;
@@ -13,10 +14,13 @@ interface Directory {
 
 interface DirectoryProps {
   directory: Directory;
+  username: string;
 }
 
-const Directory: React.FC<DirectoryProps> = ({ directory }) => {
+const Directory: React.FC<DirectoryProps> = ({ directory, username }) => {
   const [isExpanded, setIsExpanded] = useState(true);
+  const navigate = useNavigate();
+  const { directoryId } = useParams<{ directoryId: string }>();
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -28,10 +32,18 @@ const Directory: React.FC<DirectoryProps> = ({ directory }) => {
     }
   };
 
+  const handleDirectoryClick = () => {
+    navigate(`/myhive/${username}/${directory.directoryId}`);
+    window.location.reload();
+  };
+
   const fontSize = directory.depth === 1 ? 'text-[16px]' : 'text-[14px]';
 
   const badge = directory.name === 'Temporary' ? '' : '';
+  const isActive = directory.directoryId.toString() === directoryId;
 
+  const textColorClass = isActive ? 'text-[#07294D]' : 'text-[#8D8D8D]';
+  const hoverClass = isActive ? '' : 'hover:text-[#07294D]';
   return (
     <div className={`pl-${directory.depth * 1} my-1`}>
       <div className="flex items-center">
@@ -45,7 +57,10 @@ const Directory: React.FC<DirectoryProps> = ({ directory }) => {
             tabIndex={0}
           />
         )}
-        <span className={`font-bold text-[#8D8D8D] ${fontSize} hover:text-[#07294D] cursor-pointer`}>
+        <span
+          className={`font-bold ${fontSize} ${textColorClass} ${hoverClass} cursor-pointer`}
+          onClick={handleDirectoryClick}
+        >
           {directory.name}
         </span>
         {badge && (
@@ -60,7 +75,7 @@ const Directory: React.FC<DirectoryProps> = ({ directory }) => {
       {isExpanded && directory.children.length > 0 && (
         <div className="ml-5">
           {directory.children.map((child) => (
-            <Directory key={child.directoryId} directory={child} />
+            <Directory key={child.directoryId} directory={child} username={username} />
           ))}
         </div>
       )}
