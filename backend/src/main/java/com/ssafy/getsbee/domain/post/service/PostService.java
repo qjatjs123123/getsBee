@@ -5,6 +5,7 @@ import com.ssafy.getsbee.domain.post.dto.request.UpdatePostRequest;
 import com.ssafy.getsbee.domain.post.dto.response.LikePostResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostResponse;
+import com.ssafy.getsbee.domain.post.dto.response.PostURLResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -28,5 +29,5 @@ public interface PostService {
 
     Slice<PostListResponse> showPostList(PostListRequest postListRequest, Long cursor, Pageable pageable);
 
-    Slice<PostResponse> showPostListByUrl(String url, Long cursor, Pageable pageable);
+    Slice<PostURLResponse> showPostListByUrl(String url, Long cursor, Pageable pageable);
 }

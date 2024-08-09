@@ -11,7 +11,6 @@ public record CreateHighlightRequest (
         @NotNull
         String url,
         String thumbnailUrl,
-        @NotNull
         String title,
         @NotNull
         String content,

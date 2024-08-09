@@ -20,6 +20,7 @@ import com.ssafy.getsbee.domain.post.dto.request.UpdatePostRequest;
 import com.ssafy.getsbee.domain.post.dto.response.LikePostResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostResponse;
+import com.ssafy.getsbee.domain.post.dto.response.PostURLResponse;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.domain.post.repository.PostRepository;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
@@ -107,6 +108,7 @@ public class PostServiceImpl implements PostService {
                 .map(comment -> CommentResponse.of(comment, member))
                 .collect(Collectors.toList());
 
+        post.updateHighlights(highlightRepository.findAllByPost(post));
 
         List<HighlightResponse> highlightResponses = post.getHighlights()
                 .stream()
@@ -123,6 +125,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public void addBookmark(Long postId, Long memberId) {
         Member member = memberService.findById(memberId);
         Post post = findById(postId);
@@ -137,6 +140,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public void deleteBookmark(Long postId, Long memberId) {
         Member member = memberService.findById(memberId);
         Post post = findById(postId);
@@ -199,15 +203,16 @@ public class PostServiceImpl implements PostService {
     }
 
     @Transactional(readOnly = true)
-    public Slice<PostResponse> showPostListByUrl(String url, Long cursor, Pageable pageable) {
-        if(cursor == null) cursor = Long.MAX_VALUE;
+    public Slice<PostURLResponse> showPostListByUrl(String url, Long cursor, Pageable pageable) {
+        if (cursor == null) cursor = Long.MAX_VALUE;
 
         Slice<Post> posts = postRepository.findAllByUrlAndIdLessThan(url, cursor, pageable);
-        List<PostResponse> postResponses = posts.stream()
+        List<PostURLResponse> postURLResponses = posts.stream()
                 .map(post -> {
                     List<HighlightResponse> highlights = post.getHighlights()
                             .stream()
-                            .map(HighlightResponse::of).collect(Collectors.toList());
+                            .map(HighlightResponse::of)
+                            .collect(Collectors.toList());
 
                     List<CommentResponse> comments = new ArrayList<>();
                     Long currentMemberId = SecurityUtil.getCurrentMemberId();
@@ -216,12 +221,11 @@ public class PostServiceImpl implements PostService {
                     Boolean isBookmark = bookmarkRepository.findByPostAndMember(post, currentMember).isPresent();
                     Boolean isLike = likeRepository.existsByMemberAndPost(currentMember, post);
 
-                    return PostResponse.from(post, highlights, comments, !isNotOwner(post.getMember(), currentMember)
-                            , isLike, isBookmark);
+                    return PostURLResponse.from(post, highlights, comments, !isNotOwner(post.getMember(), currentMember), isLike, isBookmark);
                 })
                 .collect(Collectors.toList());
-//        return null;
-        return new SliceImpl<>(postResponses, pageable, posts.hasNext());
+
+        return new SliceImpl<>(postURLResponses, pageable, posts.hasNext());
     }
 
     private Slice<PostListResponse> showPostListByDirectoryIdAndKeyword(Long directoryId, String keyword,

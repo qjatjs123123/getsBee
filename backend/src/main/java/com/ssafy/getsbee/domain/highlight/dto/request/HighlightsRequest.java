@@ -1,9 +1,9 @@
 package com.ssafy.getsbee.domain.highlight.dto.request;
 
-import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 public record HighlightsRequest(
-        @Valid
+        @NotNull
         String url
 ) {
 }

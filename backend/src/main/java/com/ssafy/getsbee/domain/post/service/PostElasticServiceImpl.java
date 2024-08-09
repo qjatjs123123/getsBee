@@ -87,14 +87,16 @@ public class PostElasticServiceImpl implements PostElasticService {
         return changePageToSlice(page, pageable);
     }
 
-    public Slice<Long> changePageToSlice(Page<PostDocument> page, Pageable pageable){
+    public Slice<Long> changePageToSlice(Page<PostDocument> page, Pageable pageable) {
         boolean hasNext;
         List<Long> postIds = new ArrayList<>();
         page.getContent().stream().map(PostDocument::getPostId).forEach(postIds::add);
-        if(page.getTotalElements() == pageable.getPageSize() + 1) {
+        if(page.getContent().size() == pageable.getPageSize() + 1) {
             hasNext = true;
             postIds.remove(postIds.size() - 1);
-        }else hasNext = false;
+        } else {
+            hasNext = false;
+        }
 
         return new SliceImpl<>(postIds, pageable, hasNext);
     }

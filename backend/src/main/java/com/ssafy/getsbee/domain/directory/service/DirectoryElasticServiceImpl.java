@@ -52,7 +52,9 @@ public class DirectoryElasticServiceImpl implements DirectoryElasticService {
     public Slice<Long> findByKeyword(String keyword, Pageable pageable, Long directoryId) {
         Pageable pageable1 = PageRequest.ofSize(pageable.getPageSize() + 1);
 
-        if(directoryId == null) directoryId = Long.MAX_VALUE;
+        if (directoryId == null) {
+            directoryId = Long.MAX_VALUE;
+        }
 
         Page<DirectoryDocument> page = directoryElasticRepository
                 .findAllByDirectoryIdLessThanAndDirectoryNameIsLikeOrderByDirectoryIdDesc(directoryId, keyword, pageable1);
@@ -61,11 +63,12 @@ public class DirectoryElasticServiceImpl implements DirectoryElasticService {
         boolean hasNext;
         page.getContent().stream().map(DirectoryDocument::getDirectoryId).forEach(directoryIds::add);
 
-        if(page.getTotalElements() == pageable.getPageSize() + 1) {
+        if(page.getContent().size() == pageable.getPageSize() + 1) {
             hasNext = true;
             directoryIds.remove(directoryIds.size() - 1);
-        }else hasNext = false;
-
+        } else {
+            hasNext = false;
+        }
         return new SliceImpl<>(directoryIds, pageable1, hasNext);
     }
 }
