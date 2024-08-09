@@ -30,6 +30,7 @@ export interface FeedDetailItem {
   viewCount: number;
   likeCount: number;
   bookmarkCount: number;
+  memberEmail: string;
   memberImage: string;
   directoryId: number;
   directoryName: string;
