@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { Avatar } from 'primereact/avatar';
 import { Divider } from 'primereact/divider';
 import { Button } from 'primereact/button';
@@ -24,9 +25,15 @@ const FeedDetail: React.FC<FeedDetailProps> = React.memo(({ detail }) => {
       <div className="p-0 mt-4 ml-4 mr-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Avatar image={detail.memberImage} size="large" shape="circle" />
+            <Link to={`/myhive/${detail.memberEmail.split('@')[0]}`}>
+              <Avatar image={detail.memberImage} size="large" shape="circle" />
+            </Link>
             <div className="ml-2 flex flex-col justify-center">
-              <h2 className="text-lg font-bold">{detail.title}</h2>
+              <Link to={`/myhive/${detail.memberEmail.split('@')[0]}/${detail.directoryId}`}>
+                <h2 className="text-lg font-bold">
+                  {detail.memberEmail.split('@')[0]} / {detail.directoryName}
+                </h2>
+              </Link>
             </div>
           </div>
           <div className="flex items-center gap-4 mt-5 mr-2">

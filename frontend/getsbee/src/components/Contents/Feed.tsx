@@ -1,4 +1,6 @@
 import React, { forwardRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+
 import { Avatar } from 'primereact/avatar';
 import { Divider } from 'primereact/divider';
 import { Button } from 'primereact/button';
@@ -74,15 +76,13 @@ const Feed = forwardRef<HTMLDivElement, FeedProps>(
         style={{
           borderColor: isSelected ? '#FFC60A' : '#d1d5db',
           borderWidth: isSelected ? '3px' : '1px',
-          boxShadow: isSelected
-            ? '0 0 10px rgba(255, 198, 10, 0.5)'
-            : 'none',
+          boxShadow: isSelected ? '0 0 10px rgba(255, 198, 10, 0.5)' : 'none',
           transition: 'border-color 0.3s, border-width 0.3s, box-shadow 0.3s',
         }}
         onClick={() => {
           console.log('Clicked URL in Feed:', url);
           onClick(url);
-        }}// url을 onClick 핸들러에 전달
+        }} // url을 onClick 핸들러에 전달
       >
         <div className="p-0 mt-4 ml-4 mr-2">
           {headerTemplate()}

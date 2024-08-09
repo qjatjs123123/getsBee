@@ -12,7 +12,7 @@ const DirectoryNav: React.FC<DirectoryNavProps> = ({ userName, directories, post
     <div className="flex items-center space-x-2">
       <img src={folderIcon} alt="Folder" className="w-6 h-5" />
       <span className="text-[20px] font-bold text-[#959595]">{userName}&apos;s</span>
-      {directories.map((dir, index) => (
+      {/* {directories.map((dir, index) => (
         <React.Fragment key={dir.id}>
           <span className="text-[20px] font-bold text-[#959595]">&gt;</span>
           <span
@@ -22,7 +22,7 @@ const DirectoryNav: React.FC<DirectoryNavProps> = ({ userName, directories, post
           </span>
         </React.Fragment>
       ))}
-      <span className="font-bold text-[#253746]">({postCount})</span>
+      <span className="font-bold text-[#253746]">({postCount})</span> */}
     </div>
   );
 };
