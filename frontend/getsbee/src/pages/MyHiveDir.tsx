@@ -1,5 +1,6 @@
 import React, { useState, useEffect, KeyboardEvent, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
+// eslint-disable-next-line camelcase
 import { useRecoilValueLoadable, useRecoilValue, useRecoilRefresher_UNSTABLE } from 'recoil';
 import { userState, userInfoByEmailPrefixSelector } from '../recoil/userState';
 import SideBar from '../components/Common/SideBar';
@@ -8,10 +9,10 @@ import Post from '../components/Contents/Post';
 import PostDetail from '../components/Contents/PostDetail';
 import SubSearchBar from '../components/Common/SubSearchBar';
 import DirectoryNav from '../components/Directory/DirectoryNav';
-import { getPostsByMemberState } from '../recoil/PostState';
+import { getPostsByDirectoryState } from '../recoil/PostState';
 
-const MyHive: React.FC = () => {
-  const { username } = useParams<{ username: string }>();
+const MyHiveDir: React.FC = () => {
+  const { username, directoryId } = useParams<{ username: string; directoryId: string }>();
   const currentUser = useRecoilValue(userState);
   const isOwnHive = currentUser?.email.split('@')[0] === username;
   const userInfoLoadable = useRecoilValueLoadable(userInfoByEmailPrefixSelector(username || ''));
@@ -20,18 +21,28 @@ const MyHive: React.FC = () => {
   useEffect(() => {
     if (userInfoLoadable.state === 'hasValue' && userInfoLoadable.contents) {
       setMemberId(userInfoLoadable.contents.memberId);
+      console.log(memberId);
     }
   }, [userInfoLoadable.state, userInfoLoadable.contents]);
 
-  const userName = username;
+  const userName = username; // 예시 사용자 이름
+  // const directories = [
+  //   { id: '1', name: 'IT' },
+  //   { id: '2', name: 'Cloud' },
+  // ]; // 예시 디렉토리 경로
+  // const postCount = 30;
   const directories = [
-    { id: '1', name: 'IT' },
-    { id: '2', name: 'Cloud' },
-  ];
-  const postCount = 30;
+    { id: '1', name: '' },
+    { id: '2', name: '' },
+  ]; // 예시 디렉토리 경로
+  const postCount = 0;
 
-  const postLoadable = useRecoilValueLoadable(getPostsByMemberState({ memberId: memberId || 0, size: 10 }));
-  const refreshPosts = useRecoilRefresher_UNSTABLE(getPostsByMemberState({ memberId: memberId || 0, size: 10 }));
+  const postLoadable = useRecoilValueLoadable(
+    getPostsByDirectoryState({ directoryId: parseInt(directoryId || '0', 10), size: 10 }),
+  );
+  const refreshPosts = useRecoilRefresher_UNSTABLE(
+    getPostsByDirectoryState({ directoryId: parseInt(directoryId || '0', 10), size: 10 }),
+  );
 
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -40,7 +51,7 @@ const MyHive: React.FC = () => {
     if (postLoadable.state === 'hasValue' && postLoadable.contents.content.length > 0) {
       setSelectedPostId(postLoadable.contents.content[0].post.postId);
     }
-  }, [postLoadable.state, postLoadable.contents]);
+  }, [postLoadable.state]);
 
   const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>, postId: number) => {
     if (!isEditing && (event.key === 'Enter' || event.key === ' ')) {
@@ -50,7 +61,7 @@ const MyHive: React.FC = () => {
 
   const handlePostDeleted = useCallback(() => {
     refreshPosts();
-    setSelectedPostId(null);
+    setSelectedPostId(null); // Optionally reset the selected post ID
   }, [refreshPosts]);
 
   const handleStartEditing = () => {
@@ -61,11 +72,11 @@ const MyHive: React.FC = () => {
     setIsEditing(false);
   };
 
-  if (userInfoLoadable.state === 'loading' || postLoadable.state === 'loading') {
+  if (postLoadable.state === 'loading') {
     return <div>Loading...</div>;
   }
 
-  if (userInfoLoadable.state === 'hasError' || postLoadable.state === 'hasError') {
+  if (postLoadable.state === 'hasError') {
     return <div>Error: {postLoadable.contents}</div>;
   }
 
@@ -132,4 +143,4 @@ const MyHive: React.FC = () => {
   );
 };
 
-export default MyHive;
+export default MyHiveDir;

@@ -16,6 +16,7 @@ import RecommendDetail from './pages/RecommendDetail';
 import SearchPost from './pages/SearchPost';
 import SearchDirectory from './pages/SearchDirectory';
 import SearchURL from './pages/SearchURL';
+import MyHiveDir from './pages/MyHiveDir';
 
 function App() {
   const setUser = useSetRecoilState(userState);
@@ -42,6 +43,7 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/recommend" element={<Recommend />} />
       <Route path="/myhive" element={<Navigate to={userRoute || '/about'} replace />} />
+      <Route path="/myhive/:username/:directoryId" element={<MyHiveDir />} />
       <Route path="/myhive/:username" element={<MyHive />} />
       <Route path="/following" element={<Following />} />
       <Route path="/follower" element={<Follower />} />
