@@ -11,3 +11,13 @@ export const getDirectories = async (memberId: number) => {
 
   return response.data;
 };
+
+export const updateDirectories = async (memberId: number, directories: any[]) => {
+  const response = await axios.post(`/directories?memberId=${memberId}`, directories);
+
+  if (response.status !== 200) {
+    throw new Error('Failed to update directories');
+  }
+
+  return response.data;
+};

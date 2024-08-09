@@ -45,7 +45,8 @@ function App() {
       <Route path="/myhive/:username" element={<MyHive />} />
       <Route path="/following" element={<Following />} />
       <Route path="/follower" element={<Follower />} />
-      <Route path="/update" element={<DirectoryUpdate />} />
+      {/* <Route path="/update" element={<DirectoryUpdate />} /> */}
+      <Route path="/myhive/:username/update" element={<DirectoryUpdate />} />
       <Route path="/recommend/detail" element={<RecommendDetail />} />
       <Route path="/search/post" element={<SearchPost />} />
       <Route path="/search/directory" element={<SearchDirectory />} />
