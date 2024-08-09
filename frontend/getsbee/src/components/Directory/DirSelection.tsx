@@ -18,29 +18,17 @@ interface DirSelectionProps {
 }
 
 const convertToTreeData = (directories: Directory[]): TreeNode[] => {
-  const map = new Map<number, TreeNode>();
+  const mapDirectoryToTreeNode = (dir: Directory): TreeNode => {
+    return {
+      title: dir.name,
+      value: dir.directoryId.toString(),
+      children: dir.children ? dir.children.map(mapDirectoryToTreeNode) : [],
+    };
+  };
 
-  directories.forEach((dir) => {
-    if (dir.name !== 'Bookmark') {
-      map.set(dir.directoryId, { title: dir.name, value: dir.directoryId.toString(), children: [] });
-    }
-  });
-
-  directories.forEach((dir) => {
-    if (dir.name !== 'Bookmark' && dir.parentDirectoryId !== null) {
-      const parent = map.get(dir.parentDirectoryId);
-      if (parent) {
-        parent.children.push(map.get(dir.directoryId)!);
-      }
-    }
-  });
-
-  const treeData: TreeNode[] = [];
-  map.forEach((dir, key) => {
-    if (directories.find((d) => d.directoryId === key)?.depth === 1) {
-      treeData.push(dir);
-    }
-  });
+  const treeData: TreeNode[] = directories
+    .filter((dir) => dir.depth === 1 && dir.name !== 'Bookmark')
+    .map(mapDirectoryToTreeNode);
 
   return treeData;
 };
