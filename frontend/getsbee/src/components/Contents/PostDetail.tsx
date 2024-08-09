@@ -9,6 +9,7 @@ import HighlightItem from './HighlightItem';
 import PostUpdate from './PostUpdate';
 import publicIcon from '../../assets/publicIcon.png';
 import privateIcon from '../../assets/privateIcon.png';
+import { createComment, deleteComment } from '../../api/CommentApi';
 import {
   getPostDetailState,
   postDetailState,
@@ -82,6 +83,43 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
   };
 
   const postDetail = postDetailLoadable.state === 'hasValue' ? postDetailLoadable.contents.data : null;
+
+  const handleCommentSubmit = async () => {
+    if (value.trim()) {
+      try {
+        const newComment = await createComment(postId, value);
+        setPostDetail((prevDetail) => {
+          if (prevDetail) {
+            return {
+              ...prevDetail,
+              comments: [...prevDetail.comments, newComment],
+            };
+          }
+          return prevDetail;
+        });
+        setValue(''); // 댓글 등록 후 텍스트박스 초기화
+      } catch (error) {
+        console.error('Failed to submit comment:', error);
+      }
+    }
+  };
+
+  const handleCommentDelete = async (commentId: number) => {
+    try {
+      await deleteComment(commentId);
+      setPostDetail((prevDetail) => {
+        if (prevDetail) {
+          return {
+            ...prevDetail,
+            comments: prevDetail.comments.filter((comment) => comment.commentId !== commentId),
+          };
+        }
+        return prevDetail;
+      });
+    } catch (error) {
+      console.error('Failed to delete comment:', error);
+    }
+  };
 
   if (!postDetail) {
     return <div>No post details available</div>;
@@ -204,6 +242,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
           />
           <button
             type="button"
+            onClick={handleCommentSubmit}
             style={{
               backgroundColor: '#1E88E5',
               color: 'white',
@@ -224,16 +263,23 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
       <div className="ml-3">
         {postDetail.comments &&
           postDetail.comments.map((comment: CommentType) => (
-            <div key={comment.id} className="flex items-start mt-3">
+            <div key={comment.commentId} className="flex items-start mt-3">
               <img src={comment.avatar} alt="avatar" className="w-[30px] h-[30px] rounded-full" />
               <div className="ml-3 flex-1">
                 <div className="flex items-center">
-                  <p className="font-semibold mr-2">{comment.name}</p>
+                  <p className="font-semibold mr-2">{comment.memberName}</p>
                   <p className="text-[12px]" style={{ color: '#8D8D8D' }}>
-                    {comment.date}
+                    {comment.createdAt}
                   </p>
+                  {postDetail.isMyPost && comment.isMyComment && (
+                    <i
+                      className="pi pi-trash ml-auto text-[#8D8D8D] hover:text-[#07294D] cursor-pointer"
+                      onClick={() => handleCommentDelete(comment.commentId)}
+                      title="Delete Comment"
+                    />
+                  )}
                 </div>
-                <p className="text-[14px]">{comment.comment}</p>
+                <p className="text-[14px]">{comment.content}</p>
               </div>
             </div>
           ))}
