@@ -96,7 +96,7 @@ const Home: React.FC = () => {
             >
               <div className="flex items-center">
                 <img src={honeyComb} alt="honeyComb" className="w-9" />
-                <p className="ml-1 text-[#CC9C00] font-semibold text-[22px]">Others' Highlights</p>
+                <p className="ml-1 text-[#CC9C00] font-semibold text-[22px]">Others&apos; Highlights</p>
               </div>
               {detailInitialLoading && <div className="text-center py-4">초기 데이터를 불러오는 중...</div>}
               {memoizedDetailItems.map((detail, index) => (
