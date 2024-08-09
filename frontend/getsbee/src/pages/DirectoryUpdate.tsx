@@ -7,6 +7,7 @@ import SideBar from '../components/Common/SideBar';
 import Menu from '../components/Common/Menu';
 import DirectoryNav from '../components/Directory/DirectoryNav';
 import EditableDir from '../components/Directory/EditableDir';
+// import EditableDir2 from '../components/Directory/EditableDir2';
 
 const DirectoryUpdate: React.FC = () => {
   const { username } = useParams<{ username: string }>();
@@ -43,6 +44,7 @@ const DirectoryUpdate: React.FC = () => {
           </div>
         </div>
         <EditableDir memberId={memberId} />
+        {/* <EditableDir2 memberId={4} /> */}
       </div>
     </div>
   );

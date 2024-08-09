@@ -30,7 +30,7 @@ interface TreeNode {
   children: TreeNode[];
 }
 
-const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
+const EditableDir2: React.FC<EditableTreeProps> = ({ memberId }) => {
   const { username } = useParams<{ username: string }>();
 
   const [nodes, setNodes] = useState<NodeData[]>([]);
@@ -229,4 +229,4 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
   );
 };
 
-export default EditableDir;
+export default EditableDir2;
