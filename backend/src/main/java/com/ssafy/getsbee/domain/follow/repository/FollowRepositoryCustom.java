@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface FollowRepositoryCustom {
 
-    void createFollow(Member member, Directory directory);
+    Follow createFollow(Member member, Directory directory);
 
     Long countMemberFollowers(Member member);
 
