@@ -33,7 +33,7 @@ const SideBar: React.FC<SideBarProps> = ({ memberId }) => {
             <>
               <Avatar image={userInfo.picture} size="large" shape="circle" className="w-[80px] h-[80px]" />
               <div className="mt-1 text-[19px] font-bold" style={{ color: '#253746' }}>
-                {userInfo.name}
+                {username}
               </div>
               {hiveInfo && (
                 <div className="mt-3 flex space-x-6">
@@ -72,7 +72,7 @@ const SideBar: React.FC<SideBarProps> = ({ memberId }) => {
         <div className="mt-3 px-8 overflow-y-auto scrollbar-hide h-[calc(100vh-340px)]">
           {userInfo ? (
             <div className="text-[20px] font-bold" style={{ color: '#253746' }}>
-              {userInfo.name}&apos;s
+              {username}&apos;s
             </div>
           ) : (
             <div>Loading...</div>
