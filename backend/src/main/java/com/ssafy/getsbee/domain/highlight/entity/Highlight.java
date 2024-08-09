@@ -70,4 +70,11 @@ public class Highlight extends BaseTimeEntity {
     public void changeColor(String color) {
         this.color = color;
     }
+
+    public void changeIndexs(String startIndex, Integer startOffset, String lastIndex, Integer lastOffset) {
+        this.startIndex = startIndex;
+        this.startOffset = startOffset;
+        this.lastIndex = lastIndex;
+        this.lastOffset = lastOffset;
+    }
 }

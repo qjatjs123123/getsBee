@@ -4,6 +4,7 @@ import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.highlight.dto.request.CreateHighlightRequest;
 import com.ssafy.getsbee.domain.highlight.dto.request.UpdateHighlightRequest;
+import com.ssafy.getsbee.domain.highlight.dto.request.UpdateIndexHighlight;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
 import com.ssafy.getsbee.domain.highlight.entity.Highlight;
 import com.ssafy.getsbee.domain.highlight.repository.HighlightRepository;
@@ -84,6 +85,7 @@ public class HighlightServiceImpl implements HighlightService {
     }
 
     @Override
+    @Transactional
     public void updateHighlight(Long highlightId, UpdateHighlightRequest request, Long memberId) {
         Member member = memberService.findById(memberId);
         Highlight highlight = highlightRepository.findById(highlightId)
@@ -97,6 +99,7 @@ public class HighlightServiceImpl implements HighlightService {
     }
 
     @Override
+    @Transactional
     public List<HighlightResponse> getHighlights(String url, Long memberId) {
         Member member = memberService.findById(memberId);
         return postRepository.findAllByMemberAndUrl(member, url)
@@ -109,5 +112,23 @@ public class HighlightServiceImpl implements HighlightService {
                     return hr;
                 })
                 .orElseGet(ArrayList::new);
+    }
+
+    @Override
+    @Transactional
+    public void updateHighlightsIndex(List<UpdateIndexHighlight> requests, Long memberId) {
+        Member member = memberService.findById(memberId);
+
+        List<Highlight> highlights = new ArrayList<>();
+        requests.forEach(updateIndexHighlight -> {
+            Highlight highlight = highlightRepository.findById(updateIndexHighlight.highlightId())
+                    .orElseThrow(() -> new BadRequestException(HIGHLIGHT_NOT_FOUND));
+            if (highlight.getPost().getMember() != member) {
+                throw new BadRequestException(_FORBIDDEN);
+            }
+            highlight.changeIndexs(updateIndexHighlight.startIndex(), updateIndexHighlight.startOffset()
+                    , updateIndexHighlight.lastIndex(), updateIndexHighlight.lastOffset());
+            highlights.add(highlight);
+        });
     }
 }

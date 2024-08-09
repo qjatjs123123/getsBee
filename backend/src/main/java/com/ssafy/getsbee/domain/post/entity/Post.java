@@ -114,4 +114,8 @@ public class Post extends BaseTimeEntity {
     public void decreaseLikeCount() {
         this.likeCount--;
     }
+
+    public void updateHighlights(List<Highlight> highlights) {
+        this.highlights = highlights;
+    }
 }
