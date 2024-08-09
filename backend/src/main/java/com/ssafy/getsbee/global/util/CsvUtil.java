@@ -43,17 +43,17 @@ public class CsvUtil {
         } catch (IOException e) {
             throw new BadRequestException(CSV_ERROR);
         }
-        return null;
+        return memberCsv;
     }
 
     public File createPostCsv() {
         File postCsv = new File(System.getProperty("user.dir"), POST_CSV);
         List<Post> posts = postRepository.findAll();
-        String category = DEFAULT;
 
         try (FileWriter fileWriter = new FileWriter(postCsv);
              CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.withHeader(ITEM_ID, CATEGORY))) {
             for (Post post : posts) {
+                String category = DEFAULT;
                 Optional<Interest> interest = interestRepository.findByUrl(post.getUrl());
                 if (interest.isPresent()) {
                     category = interest.get().getCategory().getValue();
@@ -63,11 +63,11 @@ public class CsvUtil {
         } catch (IOException e) {
             throw new BadRequestException(CSV_ERROR);
         }
-        return null;
+        return postCsv;
     }
 
     private String transferToAge(Integer birthYear) {
-        return birthYear == null ? "" : Integer.toString(LocalDateTime.now().getYear() / 10 * 10);
+        return birthYear == null ? "" : Integer.toString((LocalDateTime.now().getYear() - birthYear) / 10 * 10);
     }
 
     private String interestToString(List<Interest> interests) {
