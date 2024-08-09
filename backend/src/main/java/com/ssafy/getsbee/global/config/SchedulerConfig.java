@@ -20,12 +20,12 @@ public class SchedulerConfig {
     @Value("${cloud.aws.s3.directory.post}")
     private String postDirectory;
 
-    @Scheduled(fixedRate = 1000 * 60 * 60)
+    @Scheduled(fixedRate = 1000 * 60 * 15)
     public void createMemberCsv() {
         s3Service.uploadFile(csvUtil.createMemberCsv(), memberDirectory);
     }
 
-    @Scheduled(fixedRate = 1000 * 60 * 60)
+    @Scheduled(fixedRate = 1000 * 60 * 15)
     public void createPostCsv() {
         s3Service.uploadFile(csvUtil.createPostCsv(), postDirectory);
     }
