@@ -8,6 +8,7 @@ public record DirectoryInfoResponse(
         String memberEmail,
         Long postCount,
         Integer depth,
+        String directoryName,
         String parentDirectoryName,
         Long parentDirectoryId,
         Boolean Follow,
@@ -17,13 +18,14 @@ public record DirectoryInfoResponse(
     public static DirectoryInfoResponse from(Member member, Directory directory, Long postCount, Boolean isFollow) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         return new DirectoryInfoResponse(
-                member.getEmail(),                             // memberEmail
-                postCount,                                     // postCount
-                directory.getDepth(),                          // depth
-                directory.getDepth() == 2 ? directory.getParentDirectory().getName() : null,  // parentDirectoryName
-                directory.getDepth() == 2 ? directory.getParentDirectory().getId() : null,    // parentDirectoryId
-                isFollow,                                      // Follow
-                currentMemberId.equals(directory.getMember().getId())                   // isMyDirectory
+                member.getEmail(),
+                postCount,
+                directory.getDepth(),
+                directory.getName(),
+                directory.getDepth() == 2 ? directory.getParentDirectory().getName() : null,
+                directory.getDepth() == 2 ? directory.getParentDirectory().getId() : null,
+                isFollow,
+                currentMemberId.equals(directory.getMember().getId())
         );
     }
 }
