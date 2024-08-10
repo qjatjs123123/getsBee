@@ -3,8 +3,8 @@ package com.ssafy.getsbee.domain.post.dto.response;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public record PostListResponse (
         Post post,
@@ -17,6 +17,57 @@ public record PostListResponse (
     public PostListResponse{
     }
 
+    public static PostListResponse from(
+            com.ssafy.getsbee.domain.post.entity.Post post,
+            List<com.ssafy.getsbee.domain.highlight.entity.Highlight> highlights,
+            Boolean isLikedByCurrentUser,
+            Boolean isBookmarkedByCurrentUser,
+            Integer relatedFeedNumber
+    ) {
+        List<String> highlightColors = highlights.stream()
+                .map(com.ssafy.getsbee.domain.highlight.entity.Highlight::getColor)
+                .distinct()
+                .collect(Collectors.toList());
+
+        com.ssafy.getsbee.domain.member.entity.Member member = post.getMember();
+        com.ssafy.getsbee.domain.directory.entity.Directory directory = post.getDirectory();
+
+        return PostListResponse.builder()
+                .post(Post.builder()
+                        .postId(post.getId())
+                        .title(post.getTitle())
+                        .url(post.getUrl())
+                        .thumbnail(post.getThumbnailUrl())
+                        .note(post.getNote())
+                        .isPublic(post.getIsPublic())
+                        .viewCount(post.getViewCount())
+                        .likeCount(post.getLikeCount())
+                        .bookmarkCount(post.getBookmarkCount())
+                        .createdAt(post.getCreatedAt())
+                        .build())
+                .member(Member.builder()
+                        .memberId(member.getId())
+                        .memberName(member.getName())
+                        .memberPicture(member.getPicture())
+                        .memberEmail(member.getEmail())
+                        .build())
+                .directory(Directory.builder()
+                        .directoryId(directory.getId())
+                        .directoryName(directory.getName())
+                        .build())
+                .highlight(Highlight.builder()
+                        .highlightColors(highlightColors)
+                        .highlightNumber(highlights.size())
+                        .firstHighlightColor(highlightColors.isEmpty() ? null : highlightColors.get(0))
+                        .firstHighlightContent(highlights.isEmpty() ? null : highlights.get(0).getContent())
+                        .build())
+                .info(Info.builder()
+                        .isLikedByCurrentUser(isLikedByCurrentUser)
+                        .isBookmarkedByCurrentUser(isBookmarkedByCurrentUser)
+                        .relatedFeedNumber(relatedFeedNumber)
+                        .build())
+                .build();
+    }
     public record Post(
             Long postId,
             String title,

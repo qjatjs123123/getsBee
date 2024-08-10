@@ -51,7 +51,6 @@ public class PostServiceImpl implements PostService {
     private final FollowRepository followRepository;
     private final LikeRepository likeRepository;
     private final MemberRepository memberRepository;
-    private final CommentRepository commentRepository;
 
     @Override
     @Transactional
@@ -273,63 +272,17 @@ public class PostServiceImpl implements PostService {
     }
 
     private Slice<PostListResponse> makePostListResponseWithPosts(Slice<Post> posts) {
+
         List<PostListResponse> postListResponses = posts.stream()
                 .map(post -> {
                     List<Highlight> highlights = highlightRepository.findAllByPost(post);
-                    List<String> highlightColors = highlights.stream()
-                            .map(Highlight::getColor)
-                            .distinct()
-                            .collect(Collectors.toList());
-
-                    Member member = post.getMember();
-                    Directory directory = post.getDirectory();
-
-                    PostListResponse.Post postInfo = PostListResponse.Post.builder()
-                            .postId(post.getId())
-                            .title(post.getTitle())
-                            .url(post.getUrl())
-                            .thumbnail(post.getThumbnailUrl())
-                            .note(post.getNote())
-                            .isPublic(post.getIsPublic())
-                            .viewCount(post.getViewCount())
-                            .likeCount(post.getLikeCount())
-                            .bookmarkCount(post.getBookmarkCount())
-                            .createdAt(post.getCreatedAt())
-                            .build();
-
-                    PostListResponse.Member memberInfo = PostListResponse.Member.builder()
-                            .memberId(member.getId())
-                            .memberName(member.getName())
-                            .memberPicture(member.getPicture())
-                            .memberEmail(member.getEmail())
-                            .build();
-
-                    PostListResponse.Directory directoryInfo = PostListResponse.Directory.builder()
-                            .directoryId(directory.getId())
-                            .directoryName(directory.getName())
-                            .build();
-
-                    PostListResponse.Highlight highlightInfo = PostListResponse.Highlight.builder()
-                            .highlightColors(highlightColors)
-                            .highlightNumber(highlightColors.size())
-                            .firstHighlightColor(highlightColors.isEmpty() ? null : highlightColors.get(0))
-                            .firstHighlightContent(highlights.isEmpty() ? null : highlights.get(0).getContent())
-                            .build();
-
-                    PostListResponse.Info info = PostListResponse.Info.builder()
-                            .isLikedByCurrentUser(checkIfLikedByCurrentUser(post)) // 구현 예정
-                            .isBookmarkedByCurrentUser(checkIfBookmarkedByCurrentUser(post))
-                            .relatedFeedNumber(null) // 구현 예정
-                            .build();
-
-                    return PostListResponse.builder()
-                            .post(postInfo)
-                            .member(memberInfo)
-                            .directory(directoryInfo)
-                            .highlight(highlightInfo)
-                            .info(info)
-                            .build();
-                }).collect(Collectors.toList());
+                    Integer relatedFeedNumber = postRepository.countPostsByUrl(post.getUrl());
+                    return PostListResponse.from(post, highlights,
+                            checkIfLikedByCurrentUser(post),
+                            checkIfBookmarkedByCurrentUser(post),
+                            relatedFeedNumber);
+                })
+                .collect(Collectors.toList());
 
         return new SliceImpl<>(postListResponses, posts.getPageable(), posts.hasNext());
     }
