@@ -62,54 +62,28 @@ public class FollowServiceImpl implements FollowService{
 
     @Override
     @Transactional(readOnly = true)
-    public List<FollowDirectoryResponse> findFollowingDirectories(Long memberId) { //내가 팔로잉 중인 디렉토리 정보
+    public List<FollowDirectoryResponse> findFollowingDirectories(Long memberId) { //내가 팔로우 중인
         List<Follow> follows = followRepository.findFollowingByMemberId(memberId);
-
         return follows.stream()
-                .map(f -> {
-                    Member followedMember = memberRepository.findById(f.getFollowedMember().getId())
+                .map(follow -> {
+                    Member followedMember = memberRepository.findById(follow.getFollowedMember().getId())
                             .orElseThrow(() -> new NotFoundException(MEMBER_NOT_FOUND));
-                    return FollowDirectoryResponse.builder()
-                            .directory(FollowDirectoryResponse.Directory.builder()
-                                    .directoryId(f.getFollowedDirectory().getId())
-                                    .directoryName(directoryService.findFullNameByDirectory(f.getFollowedDirectory()))
-                                    .build())
-                            .member(FollowDirectoryResponse.Member.builder()
-                                    .memberId(followedMember.getId())
-                                    .memberEmail(followedMember.getEmail())
-                                    .picture(followedMember.getPicture())
-                                    .build())
-                            .follow(FollowDirectoryResponse.Follow.builder()
-                                    .followId(f.getId())
-                                    .build())
-                            .build();
+                    String fullDirectoryName = directoryService.findFullNameByDirectory(follow.getFollowedDirectory());
+                    return FollowDirectoryResponse.from(follow, followedMember, fullDirectoryName);
                 })
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<FollowDirectoryResponse> findFollowedDirectories(Long memberId) { //나를 팔로잉 중인 디렉토리 정보
+    public List<FollowDirectoryResponse> findFollowedDirectories(Long memberId) { //나를 팔로우 중인
         List<Follow> follows = followRepository.findFollowedByMemberId(memberId);
-
         return follows.stream()
-                .map(f -> {
-                    Member followingMember = memberRepository.findById(f.getFollowingMember().getId())
+                .map(follow -> {
+                    Member followingMember = memberRepository.findById(follow.getFollowingMember().getId())
                             .orElseThrow(() -> new NotFoundException(MEMBER_NOT_FOUND));
-                    return FollowDirectoryResponse.builder()
-                            .directory(FollowDirectoryResponse.Directory.builder()
-                                    .directoryId(f.getFollowedDirectory().getId())
-                                    .directoryName(directoryService.findFullNameByDirectory(f.getFollowedDirectory()))
-                                    .build())
-                            .member(FollowDirectoryResponse.Member.builder()
-                                    .memberId(followingMember.getId())
-                                    .memberEmail(followingMember.getEmail())
-                                    .picture(followingMember.getPicture())
-                                    .build())
-                            .follow(FollowDirectoryResponse.Follow.builder()
-                                    .followId(f.getId())
-                                    .build())
-                            .build();
+                    String fullDirectoryName = directoryService.findFullNameByDirectory(follow.getFollowedDirectory());
+                    return FollowDirectoryResponse.from(follow, followingMember, fullDirectoryName);
                 })
                 .collect(Collectors.toList());
     }

@@ -37,4 +37,22 @@ public record FollowDirectoryResponse(
         public Follow{
         }
     }
+    public static FollowDirectoryResponse from(com.ssafy.getsbee.domain.follow.entity.Follow follow,
+                                               com.ssafy.getsbee.domain.member.entity.Member member,
+                                               String fullDirectoryName) {
+        return FollowDirectoryResponse.builder()
+                .directory(FollowDirectoryResponse.Directory.builder()
+                        .directoryId(follow.getFollowedDirectory().getId())
+                        .directoryName(fullDirectoryName)
+                        .build())
+                .member(FollowDirectoryResponse.Member.builder()
+                        .memberId(member.getId())
+                        .memberEmail(member.getEmail())
+                        .picture(member.getPicture())
+                        .build())
+                .follow(FollowDirectoryResponse.Follow.builder()
+                        .followId(follow.getId())
+                        .build())
+                .build();
+    }
 }
