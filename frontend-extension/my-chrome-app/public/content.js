@@ -9,11 +9,42 @@ let idx = -1;
 
 /* eslint-disable no-undef */
 window.addEventListener("load", () => {
+  getStoreHTML();
   sendPageContent();
-  init();
   originalHTML = document.body.innerHTML;
-  selectHighLightAPI();
+  // selectHighLightAPI();
 
+  function getStoreHTML() {
+    const URL = getURL();
+    chrome.storage.local.get([URL], function (result) {
+      const data = result[URL];
+
+      if (data) {
+        document.body.innerHTML = data;
+
+        // HTML이 적용된 후 스타일 및 스크립트 재적용
+        requestAnimationFrame(() => {
+          applyBeeStyles();
+          init();
+        });
+      } else {
+        init();
+      }
+    });
+  }
+  function applyBeeStyles() {
+    const beeTags = document.querySelectorAll("bee");
+    const beeData = Array.from(beeTags).map((tag) => {
+      return {
+        dataId: tag.getAttribute("data-id"),
+        backgroundColor: window.getComputedStyle(tag).backgroundColor,
+      };
+    });
+
+    beeData.forEach(({ dataId, backgroundColor }) => {
+      highLightHover(dataId, backgroundColor, getHoverColor(backgroundColor));
+    });
+  }
   setTimeout(() => {
     if (getDomain() === "n.news.naver.com") {
       document.body.innerHTML = originalHTML;

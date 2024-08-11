@@ -14,7 +14,7 @@ const useQuery = () => {
 const SearchPost: React.FC = () => {
   const query = useQuery();
   const [searchQuery, setSearchQuery] = useState<string>('');
-  // const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+  const [posts, setPosts] = useState<Array<any>>([]); // 상태 추가
   const selectedPostID = useRef<null | number>(null);
 
   useEffect(() => {
@@ -28,34 +28,18 @@ const SearchPost: React.FC = () => {
     getPostsBySearchState({ query: searchQuery, cursor: selectedPostID.current, size: 20 }),
   );
 
-  // if (postLoadable.state === 'loading') {
-  //   return <div>Loading...</div>;
-  // }
+  useEffect(() => {
+    if (postLoadable.state === 'hasValue') {
+      setPosts(postLoadable.contents.content || []); // 상태 업데이트
+      console.log(postLoadable.contents.content);
+    }
+  }, [postLoadable.state, postLoadable.contents.content]);
 
-  // if (postLoadable.state === 'hasError') {
-  //   return <div>Error loading posts</div>;
-  // }
-
-  if (postLoadable.state === 'hasValue') {
-    console.log('qwe');
-  }
-  // console.log(postLoadable);
-  const posts = postLoadable.contents.content ? postLoadable.contents.content : [];
-  console.log(posts);
-  // selectedPostID.current = postLoadable.contents.content[0].post.postId;
-  // const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>, postId: number) => {
-  //   if (event.key === 'Enter' || event.key === ' ') {
-  //     selectedPostID.current = postId;
-  //   }
-  // };
-
-  // if (postLoadable.state === 'loading') {
-  //   return <div>Loading...</div>;
-  // }
-
-  // if (postLoadable.state === 'hasError') {
-  //   return <div>Error: {postLoadable.contents}</div>;
-  // }
+  const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>, postId: number) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      selectedPostID.current = postId;
+    }
+  };
 
   return (
     <div className="flex flex-col h-screen">
@@ -69,7 +53,6 @@ const SearchPost: React.FC = () => {
                 <div
                   key={postData.post.postId}
                   className="mt-4 cursor-pointer"
-                  // onClick={() => setSelectedPostId(postData.post.postId)}
                   onKeyPress={(event) => handleKeyPress(event, postData.post.postId)}
                   tabIndex={0} // This makes the div focusable
                   aria-label="button"
@@ -90,7 +73,7 @@ const SearchPost: React.FC = () => {
               {searchQuery}
             </div>
             <div className="flex flex-grow justify-center items-start overflow-y-auto scrollbar-hide transform scale-[110%] mt-8 mb-8">
-              {selectedPostId && <PostDetail postId={selectedPostId} />}
+              {selectedPostID.current && <PostDetail postId={selectedPostID.current} />}
             </div>
           </div>
         </div>

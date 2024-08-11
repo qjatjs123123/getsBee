@@ -1,6 +1,17 @@
 /* eslint-disable no-undef */
 
 // 하이라이트 insert
+
+function storeHTML() {
+  const URL = getURL(); // URL 변수에 값 할당
+
+  // URL 변수를 키로 사용
+  const storageObject = {};
+  storageObject[URL] = document.body.innerHTML; // URL 변수를 키로 설정하고 data를 값으로 설정
+
+  chrome.storage.local.set(storageObject, function () {});
+}
+
 function processHighlight(data, colorh) {
   insertHighLight(data);
   const highlightRange = createRangeObject(data);
@@ -15,6 +26,7 @@ async function insertHighLightAPI(data) {
     const responseData = await postHighlightData(data);
     data.id = responseData.data.highlightId;
     processHighlight(data, getHoverColor(data.color));
+    storeHTML();
   } catch (error) {
     console.log(error);
   }
@@ -41,7 +53,7 @@ async function postHighlightData(data) {
 }
 
 // // 하이라이트 update
-async function updateHighlightData(data) {
+async function updateHighlightData(color) {
   const response = await fetch(
     `https://getsbee.kr/api/v1/highlights/${SELECTED_ID}`,
     {
@@ -50,7 +62,7 @@ async function updateHighlightData(data) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify({ color: data.color }),
+      body: JSON.stringify({ color }),
     }
   );
 
@@ -62,14 +74,15 @@ async function updateHighlightData(data) {
   return await response.json();
 }
 
-async function updateHighLightAPI(data, color, colorh) {
+async function updateHighLightAPI(color, colorh) {
   try {
     // api 성공하면 프론트에서는 id값과 range값 변환해서 저장하기
     //const id = '호출API'
-    await updateHighlightData(data);
+    await updateHighlightData(color);
     updateColorById(color, colorh);
+    storeHTML();
   } catch (error) {
-    loginCheck(401, () => updateHighLightAPI(data, color, colorh));
+    loginCheck(401, () => updateHighLightAPI(color, colorh));
   }
 }
 
@@ -100,8 +113,9 @@ async function deleteHighLightAPI() {
     //const id = '호출API'
     await deleteHighlightData();
     deleteHighlight();
-    const changeData = updateRangeInfo();
-    await updateRangeDataAPI(changeData);
+    // const changeData = updateRangeInfo();
+    // await updateRangeDataAPI(changeData);
+    storeHTML();
   } catch (error) {
     console.log(error);
   }
