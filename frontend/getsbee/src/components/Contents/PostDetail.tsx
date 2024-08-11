@@ -14,6 +14,7 @@ import {
   getPostDetailState,
   postDetailState,
   useDeletePost,
+  useToggleLike,
   Post,
   Highlight as HighlightType,
   Comment as CommentType,
@@ -34,12 +35,37 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
   const [value, setValue] = useState<string>('');
   const [isEditing, setIsEditing] = useState(false);
   const deletePost = useDeletePost();
+  const toggleLike = useToggleLike();
 
   useEffect(() => {
     if (postDetailLoadable.state === 'hasValue') {
       setPostDetail(postDetailLoadable.contents);
     }
   }, [postDetailLoadable, setPostDetail]);
+
+  const handleLikeToggle = async () => {
+    if (!postDetail) return;
+
+    // 즉시 UI 업데이트
+    setPostDetail({
+      ...postDetail,
+      isLike: !postDetail.isLike,
+      likeCount: postDetail.isLike ? postDetail.likeCount - 1 : postDetail.likeCount + 1,
+    });
+
+    try {
+      // 서버와 동기화
+      await toggleLike(postId);
+    } catch (error) {
+      console.error('Failed to toggle like:', error);
+      // 에러 발생 시 원래 상태로 되돌림
+      setPostDetail({
+        ...postDetail,
+        isLike: !postDetail.isLike,
+        likeCount: postDetail.isLike ? postDetail.likeCount + 1 : postDetail.likeCount - 1,
+      });
+    }
+  };
 
   const handleDelete = async () => {
     try {
@@ -189,7 +215,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
                 title="Edit"
                 onClick={() => {
                   setIsEditing(true);
-                  onStartEditing(); 
+                  onStartEditing();
                 }}
                 onKeyPress={handleKeyPress}
                 tabIndex={0}
@@ -198,7 +224,11 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
               />
             </span>
           )}
-          <i className="pi pi-heart mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer" title="Like" />
+          <i
+            className={`pi ${postDetail.isLike ? 'pi-heart-fill text-red-500' : 'pi-heart text-[#8D8D8D]'} mr-2 hover:text-red-500 cursor-pointer`}
+            title={postDetail.isLike ? 'Unlike' : 'Like'}
+            onClick={handleLikeToggle}
+          />
           <i className="pi pi-share-alt mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer" title="Share" />
           <i className="pi pi-bookmark mr-4 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer" title="Bookmark" />
         </div>

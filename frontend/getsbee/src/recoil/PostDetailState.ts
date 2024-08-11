@@ -1,6 +1,7 @@
 // src/recoil/PostDetailState.ts
 import { atom, selectorFamily, useRecoilCallback } from 'recoil';
 import { getPostDetail, deletePost, updatePost } from '../api/PostDetailApi';
+import { toggleLikeAPI } from '../api/SocialAPI';
 
 export interface Highlight {
   highlightId: number;
@@ -78,4 +79,46 @@ export const useUpdatePost = () => {
         set(postDetailState, updatedPost);
       },
   );
+};
+
+export const useToggleLike = () => {
+  return useRecoilCallback(({ set, snapshot }) => async (postId: number) => {
+    const currentPost = await snapshot.getPromise(getPostDetailState(postId));
+
+    if (!currentPost || !currentPost.data) {
+      console.error('Post not found');
+      return;
+    }
+
+    const originalLikeState = currentPost.data.isLike;
+    const originalLikeCount = currentPost.data.likeCount;
+
+    // Optimistically update the UI
+    const updatePostState = (isLike: boolean) => {
+      set(postDetailState, (prevPost) => {
+        if (!prevPost) return null;
+        return {
+          ...prevPost,
+          isLike: isLike,
+          likeCount: isLike ? prevPost.likeCount + 1 : prevPost.likeCount - 1,
+        };
+      });
+    };
+
+    updatePostState(!originalLikeState);
+
+    try {
+      await toggleLikeAPI(postId, originalLikeState);
+
+      // Refresh the post details to ensure server-client consistency
+      const updatedPost = await getPostDetail(postId);
+      set(postDetailState, updatedPost.data);
+    } catch (error) {
+      console.error('Failed to toggle like:', error);
+      // Revert the optimistic update if the API call failed
+      updatePostState(originalLikeState);
+      // Optionally, show an error message to the user
+      // showErrorToast('Failed to update like status. Please try again.');
+    }
+  });
 };
