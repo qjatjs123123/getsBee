@@ -17,6 +17,7 @@ import com.ssafy.getsbee.domain.post.repository.PostRepository;
 import com.ssafy.getsbee.domain.post.service.PostElasticService;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.error.exception.ForbiddenException;
+import com.ssafy.getsbee.global.util.LogUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.ssafy.getsbee.global.common.model.Interaction.*;
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
 
 @Service
@@ -46,7 +48,9 @@ public class HighlightServiceImpl implements HighlightService {
         Post post = postRepository.findByMemberAndUrl(member, request.url())
                         .orElseGet(()->{
                             Directory directory = directoryRepository.findTemporaryDirectoryByMember(member);
-                            return postRepository.save(request.toPostEntity(member, directory));
+                            Post newPost = postRepository.save(request.toPostEntity(member, directory));
+                            LogUtil.loggingInteraction(CREATE, newPost.getId());
+                            return newPost;
                         });
 
         if (!interestRepository.existsByUrl(post.getUrl())) {

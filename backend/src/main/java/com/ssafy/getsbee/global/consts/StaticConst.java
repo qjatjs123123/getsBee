@@ -41,4 +41,10 @@ public class StaticConst {
     public static final String EVENT_TYPE = "EVENT_TYPE";
     public static final String TIMESTAMP = "TIMESTAMP";
     public static final String DEFAULT = "";
+
+    /** Interaction */
+    public static final String VIEW = "VIEW";
+    public static final String LIKE = "LIKE";
+    public static final String BOOKMARK = "BOOKMARK";
+    public static final String CREATE = "CREATE";
 }

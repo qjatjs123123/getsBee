@@ -26,19 +26,24 @@ import com.ssafy.getsbee.domain.post.repository.PostRepository;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.error.exception.ForbiddenException;
 import com.ssafy.getsbee.global.error.exception.NotFoundException;
+import com.ssafy.getsbee.global.util.LogUtil;
 import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.ssafy.getsbee.global.common.model.Interaction.*;
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 
@@ -119,6 +124,7 @@ public class PostServiceImpl implements PostService {
         // post.changeDirectory(directoryRepository.findByMember(member));
 
         post.increaseViewCount();
+        LogUtil.loggingInteraction(VIEW, post.getId());
         return PostResponse.from(post, highlightResponses,commentResponseList,
                 !isNotOwner(post.getMember(), member), isLike, isBookmark);
     }
@@ -135,6 +141,7 @@ public class PostServiceImpl implements PostService {
 
         if (!bookmark.getIsDeleted()) {
             bookmark.addBookmark();
+            LogUtil.loggingInteraction(BOOKMARK, post.getId());
         }
     }
 
@@ -159,6 +166,7 @@ public class PostServiceImpl implements PostService {
         }
         likeRepository.save(Like.of(member, post));
         post.increaseLikeCount();
+        LogUtil.loggingInteraction(LIKE, post.getId());
         return LikePostResponse.of(post);
     }
 

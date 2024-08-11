@@ -7,6 +7,7 @@ import com.ssafy.getsbee.domain.member.repository.MemberRepository;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.domain.post.repository.PostRepository;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
+import com.ssafy.getsbee.global.util.LogUtil;
 import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.ssafy.getsbee.global.common.model.Interaction.*;
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
 
 @Service
@@ -46,7 +48,7 @@ public class CommentServiceImpl implements CommentService {
                 .build();
 
         post.getComments().add(comment);
-
+        LogUtil.loggingInteraction(COMMENT, post.getId());
         return commentRepository.save(comment);
     }
 
