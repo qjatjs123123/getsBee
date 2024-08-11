@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.ssafy.getsbee.global.common.model.Interaction.*;
-import static com.ssafy.getsbee.global.common.model.Interaction.VIEW;
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
 
 @Service

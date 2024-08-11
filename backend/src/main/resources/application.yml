@@ -87,4 +87,11 @@ spring:
     import: optional:file:.env-production[.properties]
 logging:
   level:
-    root: info
+    root: warn
+    com.ssafy.getsbee.global.util: info
+  file:
+    path: ./logs
+  logback:
+    rollingpolicy:
+      max-history: 30
+      max-file-size: 100MB
