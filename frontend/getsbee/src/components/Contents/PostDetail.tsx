@@ -2,7 +2,7 @@ import React, { useEffect, useState, KeyboardEvent } from 'react';
 import { Divider } from 'primereact/divider';
 import { Avatar } from 'primereact/avatar';
 import { InputTextarea } from 'primereact/inputtextarea';
-import { useRecoilValueLoadable, useSetRecoilState } from 'recoil';
+import { useRecoilValueLoadable, useSetRecoilState, useRecoilRefresher_UNSTABLE } from 'recoil';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import DirSelection from '../Directory/DirSelection';
 import HighlightItem from './HighlightItem';
@@ -18,17 +18,19 @@ import {
   Highlight as HighlightType,
   Comment as CommentType,
 } from '../../recoil/PostDetailState';
+import { formatDate } from '../util/util';
 
 interface PostDetailProps {
   postId: number;
-  onDelete: () => void; // 삭제 후 콜백을 받기 위한 prop
-  onStartEditing: () => void; // 수정 시작 시 호출될 콜백
-  onStopEditing: () => void; // 수정 종료 시 호출될 콜백
+  onDelete: () => void;
+  onStartEditing: () => void;
+  onStopEditing: () => void;
 }
 
 const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditing, onStopEditing }) => {
   const postDetailLoadable = useRecoilValueLoadable(getPostDetailState(postId));
   const setPostDetail = useSetRecoilState(postDetailState);
+  const refreshPostDetail = useRecoilRefresher_UNSTABLE(getPostDetailState(postId)); // 상태 리프레시 함수
   const [value, setValue] = useState<string>('');
   const [isEditing, setIsEditing] = useState(false);
   const deletePost = useDeletePost();
@@ -42,8 +44,8 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
   const handleDelete = async () => {
     try {
       await deletePost(postId);
-      setPostDetail(null); // 포스트 삭제 후 상태를 초기화하여 UI 업데이트
-      onDelete(); // 삭제 후 콜백 호출
+      setPostDetail(null);
+      onDelete();
     } catch (error) {
       console.error('Failed to delete post:', error);
     }
@@ -61,18 +63,18 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
   const handleUpdateSave = (updatedPost: Post) => {
     setPostDetail(updatedPost);
     setIsEditing(false);
-    onStopEditing(); // 수정 종료 시 호출
+    onStopEditing();
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-    onStopEditing(); // 수정 종료 시 호출
+    onStopEditing();
   };
 
   const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Enter' || event.key === ' ') {
       setIsEditing(true);
-      onStartEditing(); // 수정 시작 시 호출
+      onStartEditing();
     }
   };
 
@@ -88,16 +90,8 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
     if (value.trim()) {
       try {
         const newComment = await createComment(postId, value);
-        setPostDetail((prevDetail) => {
-          if (prevDetail) {
-            return {
-              ...prevDetail,
-              comments: [...prevDetail.comments, newComment],
-            };
-          }
-          return prevDetail;
-        });
-        setValue(''); // 댓글 등록 후 텍스트박스 초기화
+        refreshPostDetail(); // 포스트 데이터 리프레시 호출
+        setValue('');
       } catch (error) {
         console.error('Failed to submit comment:', error);
       }
@@ -107,15 +101,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
   const handleCommentDelete = async (commentId: number) => {
     try {
       await deleteComment(commentId);
-      setPostDetail((prevDetail) => {
-        if (prevDetail) {
-          return {
-            ...prevDetail,
-            comments: prevDetail.comments.filter((comment) => comment.commentId !== commentId),
-          };
-        }
-        return prevDetail;
-      });
+      refreshPostDetail(); // 포스트 데이터 리프레시 호출
     } catch (error) {
       console.error('Failed to delete comment:', error);
     }
@@ -203,7 +189,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
                 title="Edit"
                 onClick={() => {
                   setIsEditing(true);
-                  onStartEditing(); // 수정 시작 시 호출
+                  onStartEditing(); 
                 }}
                 onKeyPress={handleKeyPress}
                 tabIndex={0}
@@ -264,12 +250,12 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
         {postDetail.comments &&
           postDetail.comments.map((comment: CommentType) => (
             <div key={comment.commentId} className="flex items-start mt-3">
-              <img src={comment.avatar} alt="avatar" className="w-[30px] h-[30px] rounded-full" />
+              <img src={comment.avatar} alt="avatar" className="w-[30px] h-[30px] rounded-full mt-2" />
               <div className="ml-3 flex-1">
                 <div className="flex items-center">
                   <p className="font-semibold mr-2">{comment.memberName}</p>
                   <p className="text-[12px]" style={{ color: '#8D8D8D' }}>
-                    {comment.createdAt}
+                    {formatDate(comment.createdAt)}
                   </p>
                   {postDetail.isMyPost && comment.isMyComment && (
                     <i
