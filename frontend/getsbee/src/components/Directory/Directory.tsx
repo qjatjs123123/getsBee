@@ -15,9 +15,10 @@ interface Directory {
 interface DirectoryProps {
   directory: Directory;
   username: string;
+  tempCount: number;
 }
 
-const Directory: React.FC<DirectoryProps> = ({ directory, username }) => {
+const Directory: React.FC<DirectoryProps> = ({ directory, username, tempCount }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const navigate = useNavigate();
   const { directoryId } = useParams<{ directoryId: string }>();
@@ -39,7 +40,7 @@ const Directory: React.FC<DirectoryProps> = ({ directory, username }) => {
 
   const fontSize = directory.depth === 1 ? 'text-[16px]' : 'text-[14px]';
 
-  const badge = directory.name === 'Temporary' ? '' : '';
+  const badge = directory.name === 'Temporary' ? `${tempCount}` : '';
   const isActive = directory.directoryId.toString() === directoryId;
 
   const textColorClass = isActive ? 'text-[#07294D]' : 'text-[#8D8D8D]';

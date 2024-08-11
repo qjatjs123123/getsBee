@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { TreeTable } from 'primereact/treetable';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { Toast } from 'primereact/toast';
 import { getDirectories, updateDirectories } from '../../api/DirectoryApi';
 
 interface EditableTreeProps {
@@ -32,10 +33,19 @@ interface TreeNode {
 
 const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
   const { username } = useParams<{ username: string }>();
+  const navigate = useNavigate();
+  const toast = React.useRef<Toast>(null);
 
   const [nodes, setNodes] = useState<NodeData[]>([]);
   const [loading, setLoading] = useState(true);
   const [rootDirectoryId, setRootDirectoryId] = useState<string | number | null>(null);
+
+  // confirmDialog 스타일 정의
+  const confirmDialogStyle = {
+    width: '60vw',
+    minWidth: '350px',
+    maxWidth: '500px',
+  };
 
   useEffect(() => {
     const fetchDirectories = async () => {
@@ -56,6 +66,14 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
 
     fetchDirectories();
   }, [memberId]);
+
+  const isSpecialDirectory = (name: string) => {
+    return name === 'Temporary' || name === 'Bookmark';
+  };
+
+  const showToast = (severity: 'success' | 'info' | 'warn' | 'error', summary: string, detail: string) => {
+    toast.current?.show({ severity, summary, detail, life: 3000 });
+  };
 
   const addNode = (parentId: string | number | null, isSubDirectory: boolean = false) => {
     const newNode: NodeData = {
@@ -94,10 +112,17 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
   };
 
   const deleteNode = (id: string | number) => {
+    const nodeToDelete = nodes.find((node) => node.directoryId === id);
+    if (nodeToDelete && isSpecialDirectory(nodeToDelete.name)) {
+      showToast('warn', 'Action Denied', `The '${nodeToDelete.name}' directory cannot be deleted.`);
+      return;
+    }
+
     confirmDialog({
-      message: 'Are you sure you want to delete this directory?',
+      message: '디렉토리를 정말 삭제하시겠습니까? 하위 디렉토리 및 포함된 포스트들도 함께 삭제됩니다. ',
       header: 'Confirmation',
       icon: 'pi pi-exclamation-triangle',
+      style: confirmDialogStyle,
       accept: () => {
         setNodes((prevNodes) => {
           const deleteNodeRecursive = (nodes: NodeData[]): NodeData[] => {
@@ -127,6 +152,12 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
   };
 
   const updateNode = (id: string | number, newName: string) => {
+    const nodeToUpdate = nodes.find((node) => node.directoryId === id);
+    if (nodeToUpdate && isSpecialDirectory(nodeToUpdate.name)) {
+      showToast('warn', 'Action Denied', `The name of the '${nodeToUpdate.name}' directory cannot be changed.`);
+      return;
+    }
+
     setNodes((prevNodes) => {
       const updateNodeRecursive = (nodes: NodeData[]): NodeData[] => {
         return nodes.map((node) => {
@@ -155,18 +186,35 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
     return flatNodes;
   };
 
-  const handleSubmit = async () => {
-    try {
-      const flattenedNodes = flattenNodes(nodes);
-      console.log(JSON.stringify(flattenedNodes, null, 2));
-      await updateDirectories(memberId, flattenedNodes);
-      console.log('Directories updated successfully');
-    } catch (error) {
-      console.error('Failed to update directories:', error);
-    }
+  const handleSubmit = () => {
+    confirmDialog({
+      message: '변경사항을 저장하시겠습니까?',
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      style: confirmDialogStyle,
+      accept: async () => {
+        try {
+          const flattenedNodes = flattenNodes(nodes);
+          console.log(JSON.stringify(flattenedNodes, null, 2));
+          await updateDirectories(memberId, flattenedNodes);
+          showToast('success', 'Success', 'Directories updated successfully');
+          navigate(`/myhive/${username}`);
+        } catch (error) {
+          console.error('Failed to update directories:', error);
+          showToast('error', 'Error', 'Failed to update directories');
+        }
+      },
+      reject: () => {
+        showToast('info', 'Info', 'Changes were not saved');
+      },
+    });
   };
 
   const actionTemplate = (node: NodeData) => {
+    if (isSpecialDirectory(node.name)) {
+      return null; // 특별한 디렉토리에 대해서는 액션 버튼을 표시하지 않음
+    }
+
     return (
       <div className="flex justify-end space-x-2">
         {node.depth === 1 && (
@@ -186,6 +234,10 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
   };
 
   const nameTemplate = (node: NodeData) => {
+    if (isSpecialDirectory(node.name)) {
+      return <span>{node.name}</span>; // 특별한 디렉토리의 이름은 편집 불가능한 텍스트로 표시
+    }
+
     return (
       <InputText
         value={node.name}
@@ -201,6 +253,7 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
 
   return (
     <div className="flex justify-center">
+      <Toast ref={toast} />
       <div className="p-4 w-2/3 max-w-3xl">
         <ConfirmDialog />
         <div className="mb-4 flex justify-end items-center space-x-4">

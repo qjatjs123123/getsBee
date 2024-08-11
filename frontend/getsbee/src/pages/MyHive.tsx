@@ -25,11 +25,7 @@ const MyHive: React.FC = () => {
   }, [userInfoLoadable.state, userInfoLoadable.contents]);
 
   const userName = username;
-  const directories = [
-    { id: '1', name: 'IT' },
-    { id: '2', name: 'Cloud' },
-  ];
-  const postCount = 30;
+  const directories = [];
 
   const postLoadable = useRecoilValueLoadable(getPostsByMemberState({ memberId: memberId || 0, size: 10 }));
   const refreshPosts = useRecoilRefresher_UNSTABLE(getPostsByMemberState({ memberId: memberId || 0, size: 10 }));
@@ -74,35 +70,44 @@ const MyHive: React.FC = () => {
 
   return (
     <div className="flex h-screen">
-      <div className="w-[224px]">
-        <SideBar memberId={memberId} />
+      <div className="w-56">
+        <SideBar memberId={memberId} isOwnHive={isOwnHive} />
       </div>
       <div className="flex flex-col w-5/6 ml-2">
         <div className="flex justify-between items-center border-b ml-6">
           <div className="mt-[75px] mb-[5px]">
-            <DirectoryNav userName={userName} directories={directories} postCount={postCount} />
+            <DirectoryNav
+              userName={userName}
+              directories={directories}
+              postCount={posts.length}
+              isOwnHive={true}
+              directoryId={0}
+            />
           </div>
-          <div className="mb-[33px] mr-[12px]">
+          <div className="mb-[33px] mr-3">
             <Menu />
           </div>
         </div>
         <div className="flex flex-grow overflow-hidden">
           <div className="flex flex-col items-center w-[465px] p-4 border-r overflow-y-auto scrollbar-hide">
-            <div>
-              <h1>{isOwnHive ? 'My Hive' : `${username}'s Hive`}</h1>
-              {isOwnHive ? <p>Welcome to your hive!</p> : <p>You&apos;re viewing {username}&apos;s hive.</p>}
-              {/* 여기에 Hive의 내용을 표시하는 컴포넌트들을 추가하세요 */}
-            </div>
             <SubSearchBar />
             {posts.map((postData) => (
               <div
                 key={postData.post.postId}
-                className={`mt-4 cursor-pointer ${isEditing ? 'pointer-events-none opacity-50' : ''}`}
+                className={`mt-4 cursor-pointer ${
+                  selectedPostId === postData.post.postId
+                    ? 'border-[3px] border-[#FFC60A] border rounded-[16px]'
+                    : 'bg-white'
+                } ${isEditing ? 'pointer-events-none opacity-50' : ''}`}
+                style={{
+                  boxShadow: selectedPostId === postData.post.postId ? '0 0 10px rgba(255, 198, 10, 0.5)' : 'none',
+                  transition: 'border-color 0.3s, border-width 0.3s, box-shadow 0.3s',
+                }}
                 onClick={() => !isEditing && setSelectedPostId(postData.post.postId)}
                 onKeyPress={(event) => handleKeyPress(event, postData.post.postId)}
-                tabIndex={0} // This makes the div focusable
+                tabIndex={0}
                 aria-label="button"
-                role="button" // This role indicates that the div is interactive
+                role="button"
               >
                 <Post
                   title={postData.post.title}
@@ -117,7 +122,7 @@ const MyHive: React.FC = () => {
               </div>
             ))}
           </div>
-          <div className="flex flex-grow justify-center items-start overflow-y-auto scrollbar-hide transform scale-[110%] mt-8 mb-8">
+          <div className="flex flex-grow justify-center items-start overflow-y-auto scrollbar-hide transform scale-110 mt-8 mb-8">
             {selectedPostId && (
               <PostDetail
                 postId={selectedPostId}
