@@ -1,6 +1,4 @@
 import React, { forwardRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-
 import { Avatar } from 'primereact/avatar';
 import { Divider } from 'primereact/divider';
 import { Button } from 'primereact/button';
@@ -8,22 +6,58 @@ import HighlightItem from './HighlightItem';
 import { FeedItem } from '../../api/FeedAPI';
 import './Feed.css';
 
+import { toggleLikeAPI, toggleBookmarkAPI } from '../../api/SocialAPI';
 import honeyCombg from '../../assets/honeyCombg.png';
 import defaultThumbnail from '../../assets/defaultThumbnail.png';
 
 interface FeedProps extends FeedItem {
   className: string;
-  onClick: (url: string) => void; // url 매개변수 추가
+  onClick: (url: string) => void;
   isSelected: boolean;
-  url: string; // url prop 추가
+  url: string;
+  onUpdateFeed: (updatedFeed: FeedItem) => void;
 }
 
 const Feed = forwardRef<HTMLDivElement, FeedProps>(
-  ({ post, member, directory, highlight, info, className, onClick, isSelected, url }, ref) => {
+  ({ post, member, directory, highlight, info, className, onClick, isSelected, url, onUpdateFeed }, ref) => {
     const [thumbnailError, setThumbnailError] = useState(false);
 
     const handleThumbnailError = () => {
       setThumbnailError(true);
+    };
+
+    const handleLikeToggle = async () => {
+      const updatedInfo = {
+        ...info,
+        isLikedByCurrentUser: !info.isLikedByCurrentUser,
+      };
+      const updatedPost = {
+        ...post,
+        likeCount: info.isLikedByCurrentUser ? post.likeCount - 1 : post.likeCount + 1,
+      };
+      onUpdateFeed({ post: updatedPost, member, directory, highlight, info: updatedInfo });
+
+      try {
+        await toggleLikeAPI(post.postId, info.isLikedByCurrentUser);
+      } catch (error) {
+        console.error('Failed to toggle like:', error);
+        onUpdateFeed({ post, member, directory, highlight, info });
+      }
+    };
+
+    const handleBookmarkToggle = async () => {
+      const updatedInfo = {
+        ...info,
+        isBookmarkedByCurrentUser: !info.isBookmarkedByCurrentUser,
+      };
+      onUpdateFeed({ post, member, directory, highlight, info: updatedInfo });
+
+      try {
+        await toggleBookmarkAPI(post.postId, info.isBookmarkedByCurrentUser);
+      } catch (error) {
+        console.error('Failed to toggle bookmark:', error);
+        onUpdateFeed({ post, member, directory, highlight, info });
+      }
     };
 
     const headerTemplate = () => {
@@ -56,13 +90,21 @@ const Feed = forwardRef<HTMLDivElement, FeedProps>(
           <div className="flex flex-wrap items-center justify-end">
             <div className="flex items-center">
               <Button
-                icon="pi pi-bookmark"
-                style={{ color: info.isBookmarkedByCurrentUser ? '#CC9C00' : '#8F8F8F' }}
+                icon={`pi ${info.isLikedByCurrentUser ? 'pi-heart-fill' : 'pi-heart'}`}
+                style={{ color: info.isLikedByCurrentUser ? '#ff4136' : '#8F8F8F' }}
+                onClick={handleLikeToggle}
                 severity="secondary"
                 rounded
                 text
               />
-              <Button icon="pi pi-share-alt" style={{ color: '#8F8F8F' }} rounded text />
+              <Button
+                icon={`pi ${info.isBookmarkedByCurrentUser ? 'pi-bookmark-fill' : 'pi-bookmark'}`}
+                style={{ color: info.isBookmarkedByCurrentUser ? '#CC9C00' : '#8F8F8F' }}
+                onClick={handleBookmarkToggle}
+                severity="secondary"
+                rounded
+                text
+              />
             </div>
           </div>
         </div>

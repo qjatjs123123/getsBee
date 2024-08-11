@@ -8,7 +8,7 @@ import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 import { useFeedDetail } from '../hooks/useFeedDetail';
 
 const Home: React.FC = () => {
-  const { feedPosts, feedLoading, hasMoreFeed, loadMoreFeedPosts } = useInfiniteScroll(10);
+  const { feedPosts, feedLoading, hasMoreFeed, loadMoreFeedPosts, updateFeedItem } = useInfiniteScroll(10);
 
   const [selectedUrl, setSelectedUrl] = useState<string | null>(null);
 
@@ -85,6 +85,7 @@ const Home: React.FC = () => {
                   className={index > 0 ? 'mt-4' : ''}
                   onClick={() => handleFeedClick(item.post.url)}
                   isSelected={item.post.url === selectedUrl}
+                  onUpdateFeed={updateFeedItem}
                 />
               ))}
               {feedLoading && <div className="text-center py-4">Loading...</div>}

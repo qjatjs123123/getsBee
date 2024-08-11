@@ -40,10 +40,17 @@ export const useInfiniteScroll = (initialSize: number = 20) => {
     loadMorePosts();
   }, []);
 
+  const updateFeedItem = useCallback((updatedFeed: FeedItem) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((post) => (post.post.postId === updatedFeed.post.postId ? updatedFeed : post)),
+    );
+  }, []);
+
   return {
     feedPosts: posts,
     feedLoading: loading,
     hasMoreFeed: hasMore,
     loadMoreFeedPosts: loadMorePosts,
+    updateFeedItem,
   };
 };
