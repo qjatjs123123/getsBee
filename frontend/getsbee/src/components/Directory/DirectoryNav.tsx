@@ -10,8 +10,9 @@ interface DirectoryNavProps {
   directories: { id: string; name: string; directoryId: string }[];
   postCount: number;
   directoryId: number;
-  initialIsFollowing: boolean;
+  isFollowing: boolean;
   isOwnHive: boolean;
+  onFollowChange: (newFollowState: boolean) => void;
 }
 
 const DirectoryNav: React.FC<DirectoryNavProps> = ({
@@ -19,11 +20,11 @@ const DirectoryNav: React.FC<DirectoryNavProps> = ({
   directories,
   postCount,
   directoryId,
-  initialIsFollowing,
+  isFollowing,
   isOwnHive,
+  onFollowChange,
 }) => {
-  const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
-
+  const [dialogKey, setDialogKey] = useState(0);
   const { username } = useParams<{ username: string }>();
 
   const handleFollowClick = () => {
@@ -32,7 +33,7 @@ const DirectoryNav: React.FC<DirectoryNavProps> = ({
       header: isFollowing ? '언팔로우' : '팔로우',
       icon: 'pi pi-exclamation-triangle',
       accept: handleConfirm,
-      reject: () => {},
+      reject: handleReject,
       acceptLabel: '확인',
       rejectLabel: '취소',
     });
@@ -41,15 +42,21 @@ const DirectoryNav: React.FC<DirectoryNavProps> = ({
   const handleConfirm = async () => {
     try {
       if (isFollowing) {
-        await deleteFollow(directoryId);
+        const response = await deleteFollow(directoryId);
+        console.log(response);
       } else {
         await createFollow(directoryId);
       }
-      setIsFollowing(!isFollowing);
+      onFollowChange(!isFollowing);
     } catch (error) {
       console.error('Error following/unfollowing directory:', error);
-      // 에러 처리 로직 (예: 사용자에게 알림)
+    } finally {
+      setDialogKey((prevKey) => prevKey + 1);
     }
+  };
+
+  const handleReject = () => {
+    setDialogKey((prevKey) => prevKey + 1);
   };
 
   return (
@@ -72,7 +79,7 @@ const DirectoryNav: React.FC<DirectoryNavProps> = ({
         </React.Fragment>
       ))}
       <span className="font-bold text-gray-800">({postCount})</span>
-      {!isOwnHive && (
+      {!isOwnHive && directories.length > 0 && (
         <Button
           label={isFollowing ? '팔로잉' : '팔로우'}
           icon={isFollowing ? 'pi pi-check' : 'pi pi-plus'}
@@ -80,7 +87,7 @@ const DirectoryNav: React.FC<DirectoryNavProps> = ({
           onClick={handleFollowClick}
         />
       )}
-      <ConfirmDialog />
+      <ConfirmDialog key={dialogKey} />
     </div>
   );
 };

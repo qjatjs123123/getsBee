@@ -82,7 +82,6 @@ const MyHive: React.FC = () => {
               postCount={posts.length}
               isOwnHive={true}
               directoryId={0}
-              initialIsFollowing={false}
             />
           </div>
           <div className="mb-[33px] mr-3">

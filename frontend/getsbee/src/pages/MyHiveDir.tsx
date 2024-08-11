@@ -18,8 +18,8 @@ const MyHiveDir: React.FC = () => {
   const isOwnHive = currentUser?.email.split('@')[0] === username;
   const userInfoLoadable = useRecoilValueLoadable(userInfoByEmailPrefixSelector(username || ''));
   const [memberId, setMemberId] = useState<number | null>(null);
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [directoryInfo, setDirectoryInfo] = useState<DirectoryInfo>(null);
+  const [isFollowing, setIsFollowing] = useState<boolean | null>(null);
+  const [directoryInfo, setDirectoryInfo] = useState<DirectoryInfo | null>(null);
 
   useEffect(() => {
     if (userInfoLoadable.state === 'hasValue' && userInfoLoadable.contents) {
@@ -76,7 +76,6 @@ const MyHiveDir: React.FC = () => {
         },
       ];
     } else {
-      // 예외 처리: depth가 1 또는 2가 아닌 경우
       console.warn(`Unexpected depth: ${info.depth}`);
       newDirectories = [
         {
@@ -141,7 +140,6 @@ const MyHiveDir: React.FC = () => {
   }
 
   const posts = postLoadable.contents.content;
-  const directoryName = posts.length > 0 ? posts[0].directory.directoryName : '';
 
   return (
     <div className="flex h-screen">
@@ -156,7 +154,7 @@ const MyHiveDir: React.FC = () => {
               directories={directories}
               postCount={posts.length}
               directoryId={parseInt(directoryId || '0', 10)}
-              initialIsFollowing={isFollowing}
+              isFollowing={isFollowing}
               isOwnHive={isOwnHive}
               onFollowChange={handleFollowChange}
             />
