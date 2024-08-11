@@ -1,11 +1,11 @@
-import React, { useState, useEffect, KeyboardEvent } from 'react';
+import React, { useState, useEffect, KeyboardEvent, useRef } from 'react';
 import { useRecoilValueLoadable } from 'recoil';
 import { useLocation } from 'react-router-dom';
 import Header from '../components/Common/Header';
 import SearchTab from '../components/Common/SearchTab';
 import Post from '../components/Contents/Post';
 import PostDetail from '../components/Contents/PostDetail';
-import { getPostsByDirectoryState } from '../recoil/PostState';
+import { getPostsBySearchState } from '../recoil/PostState';
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
@@ -14,6 +14,8 @@ const useQuery = () => {
 const SearchPost: React.FC = () => {
   const query = useQuery();
   const [searchQuery, setSearchQuery] = useState<string>('');
+  // const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+  const selectedPostID = useRef<null | number>(null);
 
   useEffect(() => {
     const queryParam = query.get('query');
@@ -22,30 +24,38 @@ const SearchPost: React.FC = () => {
     }
   }, [query]);
 
-  const postLoadable = useRecoilValueLoadable(getPostsByDirectoryState({ directoryId: 5, size: 10 }));
-  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+  const postLoadable = useRecoilValueLoadable(
+    getPostsBySearchState({ query: searchQuery, cursor: selectedPostID.current, size: 20 }),
+  );
 
-  useEffect(() => {
-    if (postLoadable.state === 'hasValue' && postLoadable.contents.content.length > 0) {
-      setSelectedPostId(postLoadable.contents.content[0].post.postId);
-    }
-  }, [postLoadable.state]);
+  // if (postLoadable.state === 'loading') {
+  //   return <div>Loading...</div>;
+  // }
 
-  const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>, postId: number) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      setSelectedPostId(postId);
-    }
-  };
+  // if (postLoadable.state === 'hasError') {
+  //   return <div>Error loading posts</div>;
+  // }
 
-  if (postLoadable.state === 'loading') {
-    return <div>Loading...</div>;
+  if (postLoadable.state === 'hasValue') {
+    console.log('qwe');
   }
+  // console.log(postLoadable);
+  const posts = postLoadable.contents.content ? postLoadable.contents.content : [];
+  console.log(posts);
+  // selectedPostID.current = postLoadable.contents.content[0].post.postId;
+  // const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>, postId: number) => {
+  //   if (event.key === 'Enter' || event.key === ' ') {
+  //     selectedPostID.current = postId;
+  //   }
+  // };
 
-  if (postLoadable.state === 'hasError') {
-    return <div>Error: {postLoadable.contents}</div>;
-  }
+  // if (postLoadable.state === 'loading') {
+  //   return <div>Loading...</div>;
+  // }
 
-  const posts = postLoadable.contents.content;
+  // if (postLoadable.state === 'hasError') {
+  //   return <div>Error: {postLoadable.contents}</div>;
+  // }
 
   return (
     <div className="flex flex-col h-screen">
@@ -59,7 +69,7 @@ const SearchPost: React.FC = () => {
                 <div
                   key={postData.post.postId}
                   className="mt-4 cursor-pointer"
-                  onClick={() => setSelectedPostId(postData.post.postId)}
+                  // onClick={() => setSelectedPostId(postData.post.postId)}
                   onKeyPress={(event) => handleKeyPress(event, postData.post.postId)}
                   tabIndex={0} // This makes the div focusable
                   aria-label="button"

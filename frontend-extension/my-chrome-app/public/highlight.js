@@ -1,61 +1,19 @@
 /* eslint-disable no-undef */
-function getTrack(node) {
-  const track = [];
-  while (node.tagName !== "HTML") {
-    const siblingNodes = Array.from(node.parentNode.childNodes);
-    const index = siblingNodes.indexOf(node);
-    track.push(index);
-    node = node.parentNode;
+function updateRangeInfo() {
+  const array = [];
+
+  for (let range of RANGE_DATA_ARR) {
+    const highlightID = range.id;
+    const elements = document.querySelectorAll(`[data-id="${highlightID}"]`);
+    if (elements.length === 0) continue;
+
+    const new_range = document.createRange();
+
+    const startElement = elements[0];
+    const endElement = elements[elements.length - 1];
   }
-  // 마지막으로 HTML 태그의 인덱스 (0)를 추가합니다.
-  track.push(0);
-  return track.reverse(); // 트랙을 뒤집어 루트부터 노드까지의 경로를 반환합니다.
-}
 
-function getReverseTrack(rootNode, track) {
-  let currentNode = rootNode;
-  for (let i = 1; i < track.length; i++) {
-    // track[0]은 항상 0이므로 생략합니다.
-    currentNode = currentNode.childNodes[track[i]];
-  }
-  return currentNode;
-}
-
-function ArrayToString(arr) {
-  return arr.join();
-}
-
-function deleteHighlight() {
-  const elements = document.querySelectorAll(`[data-id="${SELECTED_ID}"]`);
-
-  elements.forEach((element) => {
-    if (element) {
-      const parent = element.parentNode;
-      while (element.firstChild) {
-        parent.insertBefore(element.firstChild, element);
-      }
-      element.remove();
-    }
-  });
-}
-
-function updateColorById(color, colorh) {
-  // 선택된 ID를 가진 모든 요소를 선택합니다
-  const elements = document.querySelectorAll(`[data-id="${SELECTED_ID}"]`);
-  elements.forEach((element) => {
-    if (element) {
-      element.style.backgroundColor = color;
-      element.dataset.id = element.dataset.id; // 기존 data-id 값을 유지
-      element.style.cursor = "pointer";
-    }
-  });
-  highLightHover(SELECTED_ID, color, colorh);
-}
-
-function updateHighlight(color, colorh) {
-  const rangeData = findRangeDataById();
-  rangeData.color = color;
-  updateHighLightAPI(rangeData, color, colorh);
+  return array;
 }
 
 ///추가
@@ -103,10 +61,12 @@ function getPixelPosition(relativeHeight) {
 function compareRanges(range, content) {
   return range.toString().indexOf(content) !== -1;
 }
-function findNodeAtPosition(pixelPosition, param, isEnd) {
-  let nodes = [document.body];
+
+function findNodeAtPosition(pixelPosition, rangeData, isEnd) {
   let foundNode = null;
-  const array = [];
+  let foundOffset = null;
+  let containsStart = false;
+
   function traverseNode(node) {
     if (node.nodeType === Node.TEXT_NODE) {
       const range = document.createRange();
@@ -118,25 +78,34 @@ function findNodeAtPosition(pixelPosition, param, isEnd) {
         const adjustedBottom = rect.bottom + window.scrollY;
 
         if (adjustedTop <= pixelPosition && adjustedBottom >= pixelPosition) {
-          // 범위에 맞는 하이라이트 범위를 찾기 위해 범위를 조정합니다.
-          const highlightRange = document.createRange();
+          // 오프셋 찾기
+          let nodeText = range.toString();
+          let savedSentence = rangeData.content;
           if (!isEnd) {
-            highlightRange.setStart(node, param.startOffset);
-            highlightRange.setEnd(node, node.textContent.length);
-          } else {
-            highlightRange.setStart(node, 0);
-            highlightRange.setEnd(node, param.lastOffset);
-          }
+            // 저장된 문장이 포함되는지 확인
+            for (let j = 0; j < nodeText.length; j++) {
+              let textStart = nodeText.slice(j, j + savedSentence.length);
 
-          const str = highlightRange.toString().trim();
-          console.log(
-            param.content.trim(),
-            str,
-            param.content.trim().includes(str)
-          );
-          if (param.content.trim().includes(str)) {
-            array.push(node);
+              if (savedSentence.startsWith(textStart)) {
+                containsStart = true;
+                foundNode = node;
+                foundOffset = j;
+                break;
+              }
+            }
+          } else {
+            for (let j = 0; j < nodeText.length; j++) {
+              let textStart = nodeText.slice(0, j);
+              if (savedSentence.endsWith(textStart)) {
+                containsStart = true;
+                foundNode = node;
+                foundOffset = j;
+                break;
+              }
+            }
           }
+          if (containsStart) break;
+          return true; // 원하는 노드와 오프셋을 찾으면 순회를 종료
         }
       }
     } else {
@@ -149,7 +118,36 @@ function findNodeAtPosition(pixelPosition, param, isEnd) {
 
   traverseNode(document.body);
 
-  return array;
+  if (foundNode !== null && foundOffset !== null) {
+    return {
+      node: foundNode,
+      offset: foundOffset,
+      containsStart: containsStart,
+    };
+  } else {
+    return null;
+  }
+}
+
+function getOffsetInNode(node, pixelPosition, isEnd) {
+  const range = document.createRange();
+  let length = node.textContent.length;
+
+  for (let i = 0; i < length; i++) {
+    range.setStart(node, i);
+    range.setEnd(node, i + 1);
+    const rect = range.getClientRects()[0];
+
+    if (rect) {
+      const adjustedTop = rect.top + window.scrollY;
+      const adjustedBottom = rect.bottom + window.scrollY;
+
+      if (adjustedTop <= pixelPosition && adjustedBottom >= pixelPosition) {
+        return isEnd ? i + 1 : i;
+      }
+    }
+  }
+  return isEnd ? length : 0;
 }
 
 function getDocumentHeight() {
@@ -162,23 +160,133 @@ function getDocumentHeight() {
     document.documentElement.clientHeight
   );
 }
+////
 
-///
 function dragHighlight(range, color, colorh) {
   const { startRelativeHeight, endRelativeHeight } =
     calculateRelativePosition(range);
 
   const rangeData = createRangeData({
     content: range.toString(),
-    startIndex: startRelativeHeight,
+    startIndex: String(startRelativeHeight),
     startOffset: range.startOffset,
-    lastIndex: endRelativeHeight,
+    lastIndex: String(endRelativeHeight),
     lastOffset: range.endOffset,
     color: color,
   });
-
+  console.log(rangeData);
   // 하이라이트 저장 API 호출
   insertHighLightAPI(rangeData);
+}
+
+///
+// function dragHighlight(range, color, colorh) {
+//   const { startRelativeHeight, endRelativeHeight } =
+//     calculateRelativePosition(range);
+
+//   const rangeData = createRangeData({
+//     content: range.toString(),
+//     startIndex: startRelativeHeight,
+//     startOffset: range.startOffset,
+//     lastIndex: endRelativeHeight,
+//     lastOffset: range.endOffset,
+//     color: color,
+//   });
+
+//   // 하이라이트 저장 API 호출
+//   insertHighLightAPI(rangeData);
+// }
+
+function IsRangeSame(originData, newData) {
+  if (
+    originData.startIndex !== newData.startIndex ||
+    originData.startOffset !== newData.startOffset ||
+    originData.lastIndex !== newData.lastIndex ||
+    originData.lastOffset !== newData.lastOffset
+  )
+    return false;
+  return true;
+}
+
+function getTrack(Node) {
+  const track = [];
+  while (Node.nodeName !== "HTML") {
+    const siblingNodes = Array.from(Node.parentNode.childNodes);
+    for (let i = 0; i < siblingNodes.length; i++) {
+      if (siblingNodes[i] === Node) track.push(i);
+    }
+
+    Node = Node.parentNode;
+  }
+
+  return track;
+}
+
+function getReverseTrack(rootNode, track) {
+  let currentNode = rootNode;
+  for (let i = track.length - 1; i >= 0; i--) {
+    currentNode = currentNode.childNodes[track[i]];
+  }
+  return currentNode;
+}
+
+function ArrayToString(arr) {
+  return arr.join();
+}
+
+function deleteHighlight() {
+  const elements = document.querySelectorAll(`[data-id="${SELECTED_ID}"]`);
+
+  elements.forEach((element) => {
+    if (element) {
+      const parent = element.parentNode;
+      while (element.firstChild) {
+        parent.insertBefore(element.firstChild, element);
+      }
+      element.remove();
+    }
+  });
+}
+
+function updateColorById(color, colorh) {
+  // 선택된 ID를 가진 모든 요소를 선택합니다
+  const elements = document.querySelectorAll(`[data-id="${SELECTED_ID}"]`);
+
+  elements.forEach((element) => {
+    if (element) {
+      element.style.backgroundColor = color;
+      element.dataset.id = element.dataset.id; // 기존 data-id 값을 유지
+      element.style.cursor = "pointer";
+    }
+  });
+  highLightHover(SELECTED_ID, color, colorh);
+}
+
+async function updateHighlight(color, colorh) {
+  if (SELECTED_ID >= 0) {
+    const rangeData = findRangeDataById();
+
+    rangeData.color = color;
+    updateHighLightAPI(rangeData, color, colorh);
+  } else {
+    const rangeData = findRecommendDataById();
+    rangeData.color = color;
+
+    const responseData = await postHighlightData(rangeData);
+
+    rangeData.id = responseData.data.highlightId;
+    const elements = document.querySelectorAll(`[data-id="${SELECTED_ID}"]`);
+
+    elements.forEach((element) => {
+      if (element) {
+        element.style.backgroundColor = color;
+        element.dataset.id = rangeData.id; // 기존 data-id 값을 유지
+        element.style.cursor = "pointer";
+      }
+    });
+    SELECTED_ID = rangeData.id;
+    highLightHover(SELECTED_ID, color, colorh);
+  }
 }
 
 // function dragHighlight(range, color, colorh) {
@@ -190,6 +298,7 @@ function dragHighlight(range, color, colorh) {
 //     lastOffset: range.endOffset,
 //     color: color,
 //   });
+
 //   // 하이라이트 저장 API 호출
 //   insertHighLightAPI(rangeData);
 // }
@@ -254,7 +363,7 @@ function createHighlightBeeTag(id, color) {
   return highlightBeeTag;
 }
 
-function highLightHover(id, color, colorh) {
+function highLightHover(id, color, colorh, range) {
   const elements = document.querySelectorAll(`[data-id="${id}"]`);
 
   elements.forEach((element) => {
@@ -274,12 +383,15 @@ function highLightHover(id, color, colorh) {
       elements.forEach((el) => {
         event.stopPropagation();
         const clickedElement = event.currentTarget;
-        const clickedId = clickedElement.dataset.id;
+        const clickedId = Number(clickedElement.dataset.id);
+
+        SELECTED_ID = clickedId;
 
         // SELECTED_ID를 클릭한 요소의 data-id로 설정합니다
-        SELECTED_ID = Number(clickedId);
+
         const left = event.clientX + window.scrollX + 10;
         const top = event.clientY + window.scrollY + 10;
+
         displayTooltip(left, top);
         // deleteHighlight();
       });

@@ -1,9 +1,9 @@
-/* eslint-disable no-undef */
 let selection = null;
-// const RANGE_DATA_ARR = [];
 const RANGE_DATA_ARR = [];
-
+const RANGE_ARR = [];
+const RECOMMEND_DATA_ARR = [];
 let SELECTED_ID = 0;
+
 function getDomain() {
   // url return
   return window.location.hostname;
@@ -46,56 +46,43 @@ function createRangeData({
     title: getTitle(),
     content,
     color,
-    startIndex: String(startIndex),
+    startIndex,
     startOffset,
-    lastIndex: String(lastIndex),
+    lastIndex,
     lastOffset,
     type: "TEXT",
   };
   return data;
 }
 
-function findNodeByHTMLString(htmlString) {
-  const nodes = document.body.querySelectorAll("*");
-  for (let node of nodes) {
-    if (node.outerHTML === htmlString) {
-      return node;
-    }
-  }
-  return null;
-}
-
 function createRangeObject(rangeData) {
   const startpos = getPixelPosition(Number(rangeData.startIndex));
   const endpos = getPixelPosition(Number(rangeData.lastIndex));
 
-  const startNodeArr = findNodeAtPosition(startpos, rangeData, false);
-  const endNodeArr = findNodeAtPosition(endpos, rangeData, true);
+  const startInfo = findNodeAtPosition(startpos, rangeData, false);
+  const endInfo = findNodeAtPosition(endpos, rangeData, true);
 
   let startIdx = 0;
   let endIdx = 0;
-  console.log(startNodeArr, endNodeArr);
-  for (let i = 0; i < startNodeArr.length; i++) {
-    const startNode = startNodeArr[i];
-    for (let j = 0; j < endNodeArr.length; j++) {
-      const endNode = endNodeArr[j];
+  // for (let i = 0; i < startNodeArr.length; i++) {
+  //   const startNode = startNodeArr[i];
+  //   for (let j = 0; j < endNodeArr.length; j++) {
+  //     const endNode = endNodeArr[j];
 
-      const highlightRange = document.createRange();
-      highlightRange.setStart(startNode, rangeData.startOffset);
-      highlightRange.setEnd(endNode, rangeData.lastOffset);
-      console.log(highlightRange.toString().trim(), rangeData.content.trim());
-      if (highlightRange.toString().trim() === rangeData.content.trim()) {
-        startIdx = i;
-        endIdx = j;
-        console.log("123123");
-      }
-    }
-  }
-
+  //     const highlightRange = document.createRange();
+  //     highlightRange.setStart(startNode, rangeData.startOffset);
+  //     highlightRange.setEnd(endNode, rangeData.lastOffset);
+  //     if (highlightRange.toString().trim() === rangeData.content.trim()) {
+  //       startIdx = i;
+  //       endIdx = j;
+  //     }
+  //   }
+  // }
+  console.log(startInfo, endInfo);
   // Create a range for highlighting
   const highlightRange = document.createRange();
-  highlightRange.setStart(startNode, rangeData.startOffset);
-  highlightRange.setEnd(endNode, rangeData.lastOffset);
+  highlightRange.setStart(startInfo.node, startInfo.offset);
+  highlightRange.setEnd(endInfo.node, endInfo.offset);
 
   console.log(highlightRange, highlightRange.toString());
   return highlightRange;
@@ -124,8 +111,14 @@ function findRangeDataById() {
   return RANGE_DATA_ARR.find((obj) => obj.id === SELECTED_ID) || null;
 }
 
+function findRecommendDataById() {
+  // 배열에서 id가 일치하는 객체를 찾습니다
+  return RECOMMEND_DATA_ARR.find((obj) => obj.id === SELECTED_ID) || null;
+}
+
 function getHoverColor(color) {
   if (color === "rgb(255, 255, 131)") return YELLOW_COLOR_H;
   else if (color === "rgb(166, 255, 233)") return BLUE_COLOR_H;
+  else if (color === "rgb(198, 198, 198)") return GRAY_COLOR_H;
   else return RED_COLOR_H;
 }

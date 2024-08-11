@@ -7,7 +7,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // eslint-disable-next-line no-undef
     accessToken = message.accessToken;
     refreshToken = message.refreshToken;
-    userState = message.userState;
 
     chrome.runtime.sendMessage({
       type: "SEND_DATA",

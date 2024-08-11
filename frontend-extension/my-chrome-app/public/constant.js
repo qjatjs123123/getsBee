@@ -1,9 +1,12 @@
 const YELLOW_COLOR = "rgb(255, 255, 131)"; // 50% 투명도
 const BLUE_COLOR = "rgb(166, 255, 233)"; // 50% 투명도
 const RED_COLOR = "rgb(255, 199, 186)"; // 50% 투명도
+const GRAY_COLOR = "rgb(235, 235, 235)";
 const YELLOW_COLOR_H = "rgb(255, 255, 0)"; // 50% 투명도
 const BLUE_COLOR_H = "rgb(138, 255, 215)"; // 50% 투명도
 const RED_COLOR_H = "rgb(255, 187, 171)"; // 50% 투명도
+const GRAY_COLOR_H = "rgb(245, 245, 245)";
+
 const TOOLTIP_BGC = "#fff";
 const TOOLTIP_BORDER_RADIUS = "5px";
 const TOOLTIP_FONTSIZE = "14px";

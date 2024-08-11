@@ -1,16 +1,17 @@
 /* eslint-disable no-undef */
 import "./Header.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function Header() {
   const [img, setImg] = useState("");
 
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === "SEND_DATA") {
-      console.log(message);
-      setImg(message.data.userState.picture);
-    }
-  });
+  useEffect(() => {
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      if (message.type === "SEND_DATA" && message.data.userState.picture) {
+        setImg(message.data.userState.picture);
+      }
+    });
+  }, []);
 
   return (
     <>
