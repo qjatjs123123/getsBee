@@ -41,6 +41,6 @@ echo "Pulling latest docker image..."
 docker pull hoshogi/getsbee-backend-develop:latest
 
 echo "Running new docker container..."
-docker run -d -p 8080:8080 --name getsbee-backend-develop hoshogi/getsbee-backend-develop:latest
+docker run -d -p 8080:8080 --name getsbee-backend-develop -v /home/ubuntu/logs:/home/ubuntu/logs hoshogi/getsbee-backend-develop:latest
 
 echo "Deployment completed successfully."
