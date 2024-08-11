@@ -136,14 +136,23 @@ public class DirectoryServiceImpl implements DirectoryService {
 
     @Override
     public DirectoryInfoResponse showDirectoryInfo(Long directoryId) {
-        Directory directory = directoryRepository.findDirectoryById(directoryId).orElseThrow(()->new BadRequestException(DIRECTORY_NOT_FOUND));
+        Directory directory = directoryRepository.findDirectoryById(directoryId)
+                .orElseThrow(() -> new BadRequestException(DIRECTORY_NOT_FOUND));
         Member member = directory.getMember();
         Long postCount = postRepository.countPostsByDirectory(directory);
-        Member currentMember = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(()->new BadRequestException(MEMBER_NOT_FOUND));
 
-        return DirectoryInfoResponse.from(member, directory, postCount, followRepository.findByFollowingMemberAndFollowedDirectory(currentMember, directory)
-                .isPresent());
+        Member currentMember = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .orElseThrow(() -> new BadRequestException(MEMBER_NOT_FOUND));
+
+        Follow follow = followRepository.findByFollowingMemberAndFollowedDirectory(currentMember, directory)
+                .orElse(null);
+
+        Boolean isFollow = (follow != null);
+        Long followId = isFollow ? follow.getId() : null;
+
+        return DirectoryInfoResponse.from(member, directory, postCount, isFollow, followId);
     }
+
 
     private Directory findById(Long directoryId) {
         return directoryRepository.findDirectoryById(directoryId)
