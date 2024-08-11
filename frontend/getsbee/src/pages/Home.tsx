@@ -73,8 +73,8 @@ const Home: React.FC = () => {
           <Tab />
           <div className="flex flex-grow overflow-hidden">
             <div
-              className="w-[600px] p-1 border-r overflow-y-auto scrollbar-hide"
-              style={{ height: 'calc(100vh - 100px)' }}
+              className="w-[600px] p-1 border-r overflow-y-auto scrollbar-hide flex flex-col items-center"
+              style={{ height: 'calc(100vh - 100px)', paddingBottom: '2rem' }}
             >
               {feedPosts.map((item, index) => (
                 <Feed
@@ -82,7 +82,7 @@ const Home: React.FC = () => {
                   {...item}
                   url={item.post.url}
                   ref={index === feedPosts.length - 1 ? lastPostElementRef : undefined}
-                  className={index > 0 ? 'mt-4' : ''}
+                  className={`${index > 0 ? 'mt-4' : ''} ${index === feedPosts.length - 1 ? 'mb-12' : ''} w-full max-w-[500px]`}
                   onClick={() => handleFeedClick(item.post.url)}
                   isSelected={item.post.url === selectedUrl}
                   onUpdateFeed={updateFeedItem}
@@ -93,9 +93,9 @@ const Home: React.FC = () => {
             </div>
             <div
               className="flex flex-col flex-grow p-4 items-start overflow-y-auto scrollbar-hide"
-              style={{ height: 'calc(100vh - 100px)' }}
+              style={{ height: 'calc(100vh - 100px)', paddingBottom: '2rem' }}
             >
-              <div className="flex items-center">
+              <div className="flex items-center mb-4">
                 <img src={honeyComb} alt="honeyComb" className="w-9" />
                 <p className="ml-1 text-[#CC9C00] font-semibold text-[22px]">Others&apos; Highlights</p>
               </div>
@@ -104,7 +104,9 @@ const Home: React.FC = () => {
                 <div
                   key={`${detail.postId}-${index}`}
                   ref={index === memoizedDetailItems.length - 1 ? lastDetailElementRef : undefined}
-                  className="border-b transform scale-[95%]"
+                  className={`border-b transform scale-[95%] w-full ${
+                    index === memoizedDetailItems.length - 1 ? 'mb-8' : 'mb-4'
+                  }`}
                 >
                   <FeedDetail detail={detail} />
                 </div>
