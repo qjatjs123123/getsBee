@@ -11,11 +11,13 @@ public record DirectoryInfoResponse(
         String directoryName,
         String parentDirectoryName,
         Long parentDirectoryId,
-        Boolean Follow,
-        Boolean isMyDirectory
+        Boolean isFollow,
+        Boolean isMyDirectory,
+
+        Long followId
 ) {
 
-    public static DirectoryInfoResponse from(Member member, Directory directory, Long postCount, Boolean isFollow) {
+    public static DirectoryInfoResponse from(Member member, Directory directory, Long postCount, Boolean isFollow, Long followId) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         return new DirectoryInfoResponse(
                 member.getEmail(),
@@ -25,7 +27,8 @@ public record DirectoryInfoResponse(
                 directory.getDepth() == 2 ? directory.getParentDirectory().getName() : null,
                 directory.getDepth() == 2 ? directory.getParentDirectory().getId() : null,
                 isFollow,
-                currentMemberId.equals(directory.getMember().getId())
+                currentMemberId.equals(directory.getMember().getId()),
+                followId
         );
     }
 }
