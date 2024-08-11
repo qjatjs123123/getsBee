@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { Button } from 'primereact/button';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import folderIcon from '../../assets/folderIcon.png';
@@ -6,7 +7,7 @@ import { createFollow, deleteFollow } from '../../api/FollowingListApi';
 
 interface DirectoryNavProps {
   userName: string;
-  directories: { id: string; name: string }[];
+  directories: { id: string; name: string; directoryId: string }[];
   postCount: number;
   directoryId: number;
   initialIsFollowing: boolean;
@@ -22,6 +23,8 @@ const DirectoryNav: React.FC<DirectoryNavProps> = ({
   isOwnHive,
 }) => {
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
+
+  const { username } = useParams<{ username: string }>();
 
   const handleFollowClick = () => {
     confirmDialog({
@@ -52,13 +55,20 @@ const DirectoryNav: React.FC<DirectoryNavProps> = ({
   return (
     <div className="flex items-center space-x-2">
       <img src={folderIcon} alt="Folder" className="w-6 h-5" />
-      <span className="text-xl font-bold text-gray-500">{userName}&apos;s</span>
+      <Link to={`/myhive/${username}`} className="text-xl font-bold text-gray-500 hover:underline">
+        {userName}&apos;s
+      </Link>
       {directories.map((dir, index) => (
         <React.Fragment key={dir.id}>
           <span className="text-xl font-bold text-gray-500">&gt;</span>
-          <span className={`text-xl font-bold ${index === directories.length - 1 ? 'text-gray-800' : 'text-gray-500'}`}>
+          <Link
+            to={`/myhive/${username}/${dir.directoryId}`}
+            className={`text-xl font-bold ${
+              index === directories.length - 1 ? 'text-gray-800' : 'text-gray-500'
+            } hover:underline`}
+          >
             {dir.name}
-          </span>
+          </Link>
         </React.Fragment>
       ))}
       <span className="font-bold text-gray-800">({postCount})</span>

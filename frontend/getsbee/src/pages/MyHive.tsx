@@ -1,5 +1,6 @@
 import React, { useState, useEffect, KeyboardEvent, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
+// eslint-disable-next-line camelcase
 import { useRecoilValueLoadable, useRecoilValue, useRecoilRefresher_UNSTABLE } from 'recoil';
 import { userState, userInfoByEmailPrefixSelector } from '../recoil/userState';
 import SideBar from '../components/Common/SideBar';
@@ -24,11 +25,7 @@ const MyHive: React.FC = () => {
   }, [userInfoLoadable.state, userInfoLoadable.contents]);
 
   const userName = username;
-  const directories = [
-    { id: '1', name: '' },
-    { id: '2', name: '' },
-  ];
-  const postCount = 30;
+  const directories = [];
 
   const postLoadable = useRecoilValueLoadable(getPostsByMemberState({ memberId: memberId || 0, size: 10 }));
   const refreshPosts = useRecoilRefresher_UNSTABLE(getPostsByMemberState({ memberId: memberId || 0, size: 10 }));
@@ -82,7 +79,7 @@ const MyHive: React.FC = () => {
             <DirectoryNav
               userName={userName}
               directories={directories}
-              postCount={postCount}
+              postCount={posts.length}
               isOwnHive={true}
               directoryId={0}
               initialIsFollowing={false}

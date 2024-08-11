@@ -10,6 +10,7 @@ import PostDetail from '../components/Contents/PostDetail';
 import SubSearchBar from '../components/Common/SubSearchBar';
 import DirectoryNav from '../components/Directory/DirectoryNav';
 import { getPostsByDirectoryState } from '../recoil/PostState';
+import { DirectoryInfo, getDirectoryInfo } from '../api/DirectoryApi';
 
 const MyHiveDir: React.FC = () => {
   const { username, directoryId } = useParams<{ username: string; directoryId: string }>();
@@ -18,6 +19,7 @@ const MyHiveDir: React.FC = () => {
   const userInfoLoadable = useRecoilValueLoadable(userInfoByEmailPrefixSelector(username || ''));
   const [memberId, setMemberId] = useState<number | null>(null);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [directoryInfo, setDirectoryInfo] = useState<DirectoryInfo>(null);
 
   useEffect(() => {
     if (userInfoLoadable.state === 'hasValue' && userInfoLoadable.contents) {
@@ -38,9 +40,74 @@ const MyHiveDir: React.FC = () => {
   useEffect(() => {
     if (postLoadable.state === 'hasValue' && postLoadable.contents.content.length > 0) {
       setSelectedPostId(postLoadable.contents.content[0].post.postId);
-      setIsFollowing(postLoadable.contents.isFollowing || false);
     }
   }, [postLoadable.state, postLoadable.contents]);
+
+  interface Directory {
+    id: string;
+    name: string;
+    directoryId: string;
+  }
+
+  const [directories, setDirectories] = useState<Directory[]>([]);
+
+  const updateDirectories = (info: DirectoryInfo) => {
+    let newDirectories: Directory[];
+
+    if (info.depth === 1) {
+      newDirectories = [
+        {
+          id: '1',
+          name: info.directoryName,
+          directoryId: directoryId || '0',
+        },
+      ];
+    } else if (info.depth === 2) {
+      newDirectories = [
+        {
+          id: '1',
+          name: info.parentDirectoryName || 'Parent Directory',
+          directoryId: info.parentDirectoryId?.toString() || '0',
+        },
+        {
+          id: '2',
+          name: info.directoryName,
+          directoryId: directoryId || '0',
+        },
+      ];
+    } else {
+      // 예외 처리: depth가 1 또는 2가 아닌 경우
+      console.warn(`Unexpected depth: ${info.depth}`);
+      newDirectories = [
+        {
+          id: '1',
+          name: info.directoryName,
+          directoryId: directoryId || '0',
+        },
+      ];
+    }
+
+    setDirectories(newDirectories);
+  };
+
+  useEffect(() => {
+    const fetchDirectoryInfo = async () => {
+      try {
+        if (directoryId) {
+          const data = await getDirectoryInfo(parseInt(directoryId, 10));
+          setDirectoryInfo(data.data);
+          updateDirectories(data.data);
+          setIsFollowing(data.data.Follow);
+          console.log(data.data);
+          console.log(data.data.Follow);
+        }
+      } catch (error) {
+        console.error('Failed to get directory info:', error);
+      }
+    };
+
+    fetchDirectoryInfo();
+  }, [directoryId]);
 
   const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>, postId: number) => {
     if (!isEditing && (event.key === 'Enter' || event.key === ' ')) {
@@ -86,7 +153,7 @@ const MyHiveDir: React.FC = () => {
           <div className="mt-[75px] mb-[5px]">
             <DirectoryNav
               userName={username || ''}
-              directories={[{ id: directoryId || '0', name: directoryName }]}
+              directories={directories}
               postCount={posts.length}
               directoryId={parseInt(directoryId || '0', 10)}
               initialIsFollowing={isFollowing}

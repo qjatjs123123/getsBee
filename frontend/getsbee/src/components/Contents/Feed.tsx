@@ -33,7 +33,7 @@ const Feed = forwardRef<HTMLDivElement, FeedProps>(
             <div className="flex items-center">
               <Avatar image={member.memberPicture} size="normal" shape="circle" />
               <div className="ml-2 flex justify-center">
-                <h2 className="text-sm font-bold text-gray-600">{member.memberName}</h2>
+                <h2 className="text-sm font-bold text-gray-600">{member.memberEmail.split('@')[0]}</h2>
               </div>
             </div>
             <div className="ml-2 flex justify-end">
