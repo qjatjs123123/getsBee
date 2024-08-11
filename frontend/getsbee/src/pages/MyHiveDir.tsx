@@ -17,25 +17,13 @@ const MyHiveDir: React.FC = () => {
   const isOwnHive = currentUser?.email.split('@')[0] === username;
   const userInfoLoadable = useRecoilValueLoadable(userInfoByEmailPrefixSelector(username || ''));
   const [memberId, setMemberId] = useState<number | null>(null);
+  const [isFollowing, setIsFollowing] = useState(false);
 
   useEffect(() => {
     if (userInfoLoadable.state === 'hasValue' && userInfoLoadable.contents) {
       setMemberId(userInfoLoadable.contents.memberId);
-      console.log(memberId);
     }
   }, [userInfoLoadable.state, userInfoLoadable.contents]);
-
-  const userName = username; // 예시 사용자 이름
-  // const directories = [
-  //   { id: '1', name: 'IT' },
-  //   { id: '2', name: 'Cloud' },
-  // ]; // 예시 디렉토리 경로
-  // const postCount = 30;
-  const directories = [
-    { id: '1', name: '' },
-    { id: '2', name: '' },
-  ]; // 예시 디렉토리 경로
-  const postCount = 0;
 
   const postLoadable = useRecoilValueLoadable(
     getPostsByDirectoryState({ directoryId: parseInt(directoryId || '0', 10), size: 10 }),
@@ -50,8 +38,9 @@ const MyHiveDir: React.FC = () => {
   useEffect(() => {
     if (postLoadable.state === 'hasValue' && postLoadable.contents.content.length > 0) {
       setSelectedPostId(postLoadable.contents.content[0].post.postId);
+      setIsFollowing(postLoadable.contents.isFollowing || false);
     }
-  }, [postLoadable.state]);
+  }, [postLoadable.state, postLoadable.contents]);
 
   const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>, postId: number) => {
     if (!isEditing && (event.key === 'Enter' || event.key === ' ')) {
@@ -61,7 +50,7 @@ const MyHiveDir: React.FC = () => {
 
   const handlePostDeleted = useCallback(() => {
     refreshPosts();
-    setSelectedPostId(null); // Optionally reset the selected post ID
+    setSelectedPostId(null);
   }, [refreshPosts]);
 
   const handleStartEditing = () => {
@@ -70,6 +59,10 @@ const MyHiveDir: React.FC = () => {
 
   const handleStopEditing = () => {
     setIsEditing(false);
+  };
+
+  const handleFollowChange = (newFollowState: boolean) => {
+    setIsFollowing(newFollowState);
   };
 
   if (postLoadable.state === 'loading') {
@@ -81,18 +74,27 @@ const MyHiveDir: React.FC = () => {
   }
 
   const posts = postLoadable.contents.content;
+  const directoryName = posts.length > 0 ? posts[0].directory.directoryName : '';
 
   return (
     <div className="flex h-screen">
-      <div className="w-[224px]">
+      <div className="w-56">
         <SideBar memberId={memberId} isOwnHive={isOwnHive} />
       </div>
       <div className="flex flex-col w-5/6 ml-2">
         <div className="flex justify-between items-center border-b ml-6">
           <div className="mt-[75px] mb-[5px]">
-            <DirectoryNav userName={userName} directories={directories} postCount={postCount} />
+            <DirectoryNav
+              userName={username || ''}
+              directories={[{ id: directoryId || '0', name: directoryName }]}
+              postCount={posts.length}
+              directoryId={parseInt(directoryId || '0', 10)}
+              initialIsFollowing={isFollowing}
+              isOwnHive={isOwnHive}
+              onFollowChange={handleFollowChange}
+            />
           </div>
-          <div className="mb-[33px] mr-[12px]">
+          <div className="mb-[33px] mr-3">
             <Menu />
           </div>
         </div>
@@ -113,9 +115,9 @@ const MyHiveDir: React.FC = () => {
                 }}
                 onClick={() => !isEditing && setSelectedPostId(postData.post.postId)}
                 onKeyPress={(event) => handleKeyPress(event, postData.post.postId)}
-                tabIndex={0} // This makes the div focusable
+                tabIndex={0}
                 aria-label="button"
-                role="button" // This role indicates that the div is interactive
+                role="button"
               >
                 <Post
                   title={postData.post.title}
@@ -130,7 +132,7 @@ const MyHiveDir: React.FC = () => {
               </div>
             ))}
           </div>
-          <div className="flex flex-grow justify-center items-start overflow-y-auto scrollbar-hide transform scale-[110%] mt-8 mb-8">
+          <div className="flex flex-grow justify-center items-start overflow-y-auto scrollbar-hide transform scale-110 mt-8 mb-8">
             {selectedPostId && (
               <PostDetail
                 postId={selectedPostId}
