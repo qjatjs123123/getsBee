@@ -42,4 +42,4 @@ out/
 
 ### log
 *.csv
-/logs/*.log
+/logs/
