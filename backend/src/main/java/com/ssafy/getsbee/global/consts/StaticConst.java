@@ -38,7 +38,7 @@ public class StaticConst {
     public static final String AGE = "AGE";
     public static final String CATEGORY = "CATEGORY";
     public static final String ITEM_ID = "ITEM_ID";
-    public static final String CREATION_TIME = "CREATION_TIME";
+    public static final String CREATION_TIMESTAMP = "CREATION_TIMESTAMP";
     public static final String EVENT_TYPE = "EVENT_TYPE";
     public static final String TIMESTAMP = "TIMESTAMP";
     public static final String DEFAULT = "";
