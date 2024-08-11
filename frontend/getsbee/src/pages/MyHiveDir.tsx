@@ -18,7 +18,9 @@ const MyHiveDir: React.FC = () => {
   const isOwnHive = currentUser?.email.split('@')[0] === username;
   const userInfoLoadable = useRecoilValueLoadable(userInfoByEmailPrefixSelector(username || ''));
   const [memberId, setMemberId] = useState<number | null>(null);
-  const [isFollowing, setIsFollowing] = useState<boolean | null>(null);
+  const [isFollowing, setIsFollowing] = useState<boolean>(false);
+  const [followId, setFollowId] = useState<number | null>(null);
+  const [postCount, setPostCount] = useState<number | null>(null);
   const [directoryInfo, setDirectoryInfo] = useState<DirectoryInfo | null>(null);
 
   useEffect(() => {
@@ -96,9 +98,9 @@ const MyHiveDir: React.FC = () => {
           const data = await getDirectoryInfo(parseInt(directoryId, 10));
           setDirectoryInfo(data.data);
           updateDirectories(data.data);
-          setIsFollowing(data.data.Follow);
-          console.log(data.data);
-          console.log(data.data.Follow);
+          setIsFollowing(data.data.isFollow);
+          setFollowId(data.data.followId);
+          setPostCount(data.data.postCount);
         }
       } catch (error) {
         console.error('Failed to get directory info:', error);
@@ -127,8 +129,11 @@ const MyHiveDir: React.FC = () => {
     setIsEditing(false);
   };
 
-  const handleFollowChange = (newFollowState: boolean) => {
+  const handleFollowChange = (newFollowState: boolean, newFollowId?: number) => {
     setIsFollowing(newFollowState);
+    if (newFollowId !== undefined) {
+      setFollowId(newFollowId);
+    }
   };
 
   if (postLoadable.state === 'loading') {
@@ -152,9 +157,10 @@ const MyHiveDir: React.FC = () => {
             <DirectoryNav
               userName={username || ''}
               directories={directories}
-              postCount={posts.length}
+              postCount={postCount}
               directoryId={parseInt(directoryId || '0', 10)}
               isFollowing={isFollowing}
+              followId={followId}
               isOwnHive={isOwnHive}
               onFollowChange={handleFollowChange}
             />

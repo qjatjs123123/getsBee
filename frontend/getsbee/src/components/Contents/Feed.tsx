@@ -95,14 +95,18 @@ const Feed = forwardRef<HTMLDivElement, FeedProps>(
             )}
             <div className="flex items-center gap-2 mt-3 border border-gray-300 rounded-[12px] mr-3">
               <div className="w-[100px] h-[100px] overflow-hidden rounded-s-[10px]">
-                {thumbnailError ? (
-                  <img src={defaultThumbnail} alt="Placeholder" className="w-full h-full object-cover object-center" />
-                ) : (
+                {post.thumbnail && !thumbnailError ? (
                   <img
                     src={post.thumbnail}
                     alt="Thumbnail"
                     className="w-full h-full object-cover object-center"
                     onError={handleThumbnailError}
+                  />
+                ) : (
+                  <img
+                    src={defaultThumbnail}
+                    alt="Default Thumbnail"
+                    className="w-full h-full object-cover object-center"
                   />
                 )}
               </div>

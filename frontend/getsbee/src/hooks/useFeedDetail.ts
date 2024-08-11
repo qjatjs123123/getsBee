@@ -7,7 +7,7 @@ export const useFeedDetail = (url: string | null, initialSize: number = 20) => {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [initialLoading, setInitialLoading] = useState(false);
-  
+
   const prevUrlRef = useRef<string | null>(null);
 
   const loadDetails = useCallback(
@@ -19,7 +19,7 @@ export const useFeedDetail = (url: string | null, initialSize: number = 20) => {
       if (isInitialLoad) {
         setInitialLoading(true);
         setCursor(null);
-        setDetails([]);  // Clear previous details when loading new URL
+        setDetails([]); // Clear previous details when loading new URL
       }
 
       try {
@@ -31,15 +31,15 @@ export const useFeedDetail = (url: string | null, initialSize: number = 20) => {
             return newDetails;
           } else {
             const uniqueNewDetails = newDetails.filter(
-              (newDetail) => !prevDetails.some((prevDetail) => prevDetail.postId === newDetail.postId)
+              (newDetail) => !prevDetails.some((prevDetail) => prevDetail.postId === newDetail.postId),
             );
             return [...prevDetails, ...uniqueNewDetails];
           }
         });
-        
+
         setCursor(newDetails.length > 0 ? newDetails[newDetails.length - 1].postId : null);
         setHasMore(newDetails.length === initialSize);
-        
+
         if (isInitialLoad) {
           prevUrlRef.current = url;
         }

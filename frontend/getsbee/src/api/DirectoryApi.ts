@@ -1,7 +1,8 @@
 import axios from './axiosConfig';
 
 export interface DirectoryInfo {
-  follow: boolean;
+  isFollow: boolean;
+  followId: number;
   depth: number;
   directoryName: string;
   isMyDirectory: boolean;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button } from 'primereact/button';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
@@ -11,8 +11,9 @@ interface DirectoryNavProps {
   postCount: number;
   directoryId: number;
   isFollowing: boolean;
+  followId: number | null;
   isOwnHive: boolean;
-  onFollowChange: (newFollowState: boolean) => void;
+  onFollowChange: (newFollowState: boolean, newFollowId?: number) => void;
 }
 
 const DirectoryNav: React.FC<DirectoryNavProps> = ({
@@ -20,12 +21,21 @@ const DirectoryNav: React.FC<DirectoryNavProps> = ({
   directories,
   postCount,
   directoryId,
-  isFollowing,
+  isFollowing: initialIsFollowing,
+  followId: initialFollowId,
   isOwnHive,
   onFollowChange,
 }) => {
   const [dialogKey, setDialogKey] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
+  const [followId, setFollowId] = useState(initialFollowId);
   const { username } = useParams<{ username: string }>();
+
+  useEffect(() => {
+    setIsFollowing(initialIsFollowing);
+    setFollowId(initialFollowId);
+  }, [initialIsFollowing, initialFollowId]);
 
   const handleFollowClick = () => {
     confirmDialog({
@@ -40,17 +50,27 @@ const DirectoryNav: React.FC<DirectoryNavProps> = ({
   };
 
   const handleConfirm = async () => {
+    setIsProcessing(true);
     try {
       if (isFollowing) {
-        const response = await deleteFollow(directoryId);
-        console.log(response);
+        if (followId !== null) {
+          await deleteFollow(followId);
+          setIsFollowing(false);
+          setFollowId(null);
+          onFollowChange(false);
+        } else {
+          console.error('followId is null');
+        }
       } else {
-        await createFollow(directoryId);
+        const response = await createFollow(directoryId);
+        setIsFollowing(true);
+        setFollowId(response.data.followId);
+        onFollowChange(true, response.data.followId);
       }
-      onFollowChange(!isFollowing);
     } catch (error) {
       console.error('Error following/unfollowing directory:', error);
     } finally {
+      setIsProcessing(false);
       setDialogKey((prevKey) => prevKey + 1);
     }
   };
@@ -83,8 +103,9 @@ const DirectoryNav: React.FC<DirectoryNavProps> = ({
         <Button
           label={isFollowing ? '팔로잉' : '팔로우'}
           icon={isFollowing ? 'pi pi-check' : 'pi pi-plus'}
-          className={`ml-4 ${isFollowing ? 'p-button-outlined' : 'p-button-primary'}`}
+          className={`ml-4 ${isFollowing ? 'font-bold bg-gray-300 text-gray-700 border-2 border-gray-300 hover:bg-gray-400' : 'font-bold bg-[#FFBF09] border-2 border-[#FFBF09] shadow-none hover:bg-[#E5AB08]'}`}
           onClick={handleFollowClick}
+          disabled={isProcessing}
         />
       )}
       <ConfirmDialog key={dialogKey} />
