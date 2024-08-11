@@ -66,3 +66,13 @@ body {
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari, and Opera */
 }
+
+.p-tooltip {
+  max-width: 'auto';
+}
+
+.p-tooltip .p-tooltip-text {
+  font-size: 11px;
+  line-height: 1.2;
+  text-align: center;
+}

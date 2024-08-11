@@ -14,11 +14,12 @@ export interface Highlight {
 }
 
 export interface Comment {
-  id: string;
-  name: string;
-  comment: string;
-  date: string;
-  avatar: string;
+  commentId: number;
+  content: string;
+  memberId: string;
+  memberName: string;
+  createdAt: string;
+  isMyComment: boolean;
 }
 
 export interface Post {

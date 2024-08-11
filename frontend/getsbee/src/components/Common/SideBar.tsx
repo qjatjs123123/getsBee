@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Avatar } from 'primereact/avatar';
 import { useRecoilValueLoadable } from 'recoil';
+import { Tooltip } from 'primereact/tooltip';  // Tooltip 컴포넌트 추가
 import logoIcon from '../../assets/logoIcon.png';
 import settingIcon from '../../assets/settingIcon.png';
 import Directory from '../Directory/Directory';
@@ -131,11 +132,15 @@ const SideBar: React.FC<SideBarProps> = ({ memberId, isOwnHive }) => {
               onClick={handleBookmarkClick}
             />
             <img
+              id="setting-icon"
               className="w-[32px] h-[32px] cursor-pointer hover:opacity-80"
               src={settingIcon}
               alt="settingIcon"
               onClick={handleSettingClick}
+              data-pr-tooltip="디렉토리를 수정할 수 있어요!"
+              data-pr-position="top"
             />
+            <Tooltip target="#setting-icon" />
           </div>
         </>
       )}
