@@ -15,6 +15,7 @@ import {
   postDetailState,
   useDeletePost,
   useToggleLike,
+  useToggleBookmark,
   Post,
   Highlight as HighlightType,
   Comment as CommentType,
@@ -36,6 +37,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
   const [isEditing, setIsEditing] = useState(false);
   const deletePost = useDeletePost();
   const toggleLike = useToggleLike();
+  const toggleBookmark = useToggleBookmark();
 
   useEffect(() => {
     if (postDetailLoadable.state === 'hasValue') {
@@ -46,24 +48,66 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
   const handleLikeToggle = async () => {
     if (!postDetail) return;
 
-    // 즉시 UI 업데이트
-    setPostDetail({
-      ...postDetail,
-      isLike: !postDetail.isLike,
-      likeCount: postDetail.isLike ? postDetail.likeCount - 1 : postDetail.likeCount + 1,
+    // Optimistic update
+    setPostDetail((prevPost) => {
+      if (!prevPost) return null;
+      return {
+        ...prevPost,
+        isLike: !prevPost.isLike,
+        likeCount: prevPost.isLike ? prevPost.likeCount - 1 : prevPost.likeCount + 1,
+      };
     });
 
     try {
-      // 서버와 동기화
+      // Server synchronization
       await toggleLike(postId);
+      // Refresh post detail to ensure consistency with server
+      refreshPostDetail();
     } catch (error) {
       console.error('Failed to toggle like:', error);
-      // 에러 발생 시 원래 상태로 되돌림
-      setPostDetail({
-        ...postDetail,
-        isLike: !postDetail.isLike,
-        likeCount: postDetail.isLike ? postDetail.likeCount + 1 : postDetail.likeCount - 1,
+      // Revert optimistic update on error
+      setPostDetail((prevPost) => {
+        if (!prevPost) return null;
+        return {
+          ...prevPost,
+          isLike: !prevPost.isLike,
+          likeCount: prevPost.isLike ? prevPost.likeCount - 1 : prevPost.likeCount + 1,
+        };
       });
+      // Optionally, show an error message to the user
+    }
+  };
+
+  const handleBookmarkToggle = async () => {
+    if (!postDetail) return;
+
+    // Optimistic update
+    setPostDetail((prevPost) => {
+      if (!prevPost) return null;
+      return {
+        ...prevPost,
+        isBookmark: !prevPost.isBookmark,
+        bookmarkCount: prevPost.isBookmark ? prevPost.bookmarkCount - 1 : prevPost.bookmarkCount + 1,
+      };
+    });
+
+    try {
+      // Server synchronization
+      await toggleBookmark(postId);
+      // Refresh post detail to ensure consistency with server
+      refreshPostDetail();
+    } catch (error) {
+      console.error('Failed to toggle bookmark:', error);
+      // Revert optimistic update on error
+      setPostDetail((prevPost) => {
+        if (!prevPost) return null;
+        return {
+          ...prevPost,
+          isBookmark: !prevPost.isBookmark,
+          bookmarkCount: prevPost.isBookmark ? prevPost.bookmarkCount - 1 : prevPost.bookmarkCount + 1,
+        };
+      });
+      // Optionally, show an error message to the user
     }
   };
 
@@ -229,8 +273,12 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
             title={postDetail.isLike ? 'Unlike' : 'Like'}
             onClick={handleLikeToggle}
           />
+          <i
+            className={`pi ${postDetail.isBookmark ? 'pi-bookmark-fill text-yellow-500' : 'pi-bookmark text-[#8D8D8D]'} mr-2 hover:text-yellow-500 cursor-pointer`}
+            title={postDetail.isBookmark ? 'Remove Bookmark' : 'Bookmark'}
+            onClick={handleBookmarkToggle}
+          />
           <i className="pi pi-share-alt mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer" title="Share" />
-          <i className="pi pi-bookmark mr-4 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer" title="Bookmark" />
         </div>
       </div>
       <div className="mt-4 ml-6">
