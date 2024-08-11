@@ -93,5 +93,5 @@ logging:
     path: ./logs
   logback:
     rollingpolicy:
-      max-history: 30
+      max-history: 365
       max-file-size: 100MB
