@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -51,14 +52,14 @@ public class CsvUtil {
         List<Post> posts = postRepository.findAll();
 
         try (FileWriter fileWriter = new FileWriter(postCsv);
-             CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.withHeader(ITEM_ID, CATEGORY))) {
+             CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.withHeader(ITEM_ID, CATEGORY, CREATION_TIME))) {
             for (Post post : posts) {
-                String category = DEFAULT;
+                String category = "ALL";
                 Optional<Interest> interest = interestRepository.findByUrl(post.getUrl());
                 if (interest.isPresent()) {
                     category = interest.get().getCategory().getValue();
                 }
-                csvPrinter.printRecord(post.getId(), category);
+                csvPrinter.printRecord(post.getId(), category, Timestamp.valueOf(post.getCreatedAt()).getTime());
             }
         } catch (IOException e) {
             throw new BadRequestException(CSV_ERROR);
@@ -67,12 +68,12 @@ public class CsvUtil {
     }
 
     private String transferToAge(Integer birthYear) {
-        return birthYear == null ? "" : Integer.toString((LocalDateTime.now().getYear() - birthYear) / 10 * 10);
+        return birthYear == null ? "0" : Integer.toString((LocalDateTime.now().getYear() - birthYear) / 10 * 10);
     }
 
     private String interestToString(List<Interest> interests) {
         if (interests.isEmpty()) {
-            return DEFAULT;
+            return "ALL";
         }
         StringJoiner category = new StringJoiner("|");
         for (Interest interest : interests) {
