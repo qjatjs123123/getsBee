@@ -52,7 +52,8 @@ public class CsvUtil {
         List<Post> posts = postRepository.findAll();
 
         try (FileWriter fileWriter = new FileWriter(postCsv);
-             CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.withHeader(ITEM_ID, CATEGORY, CREATION_TIME))) {
+             CSVPrinter csvPrinter = new CSVPrinter(fileWriter,
+                     CSVFormat.DEFAULT.withHeader(ITEM_ID, CATEGORY, CREATION_TIMESTAMP))) {
             for (Post post : posts) {
                 String category = "ALL";
                 Optional<Interest> interest = interestRepository.findByUrl(post.getUrl());
