@@ -95,10 +95,8 @@ public class HighlightServiceImpl implements HighlightService {
         if(post.getHighlights().isEmpty() && post.getNote()== null){
             postRepository.delete(post);
         }
-        Long postId = post.getId();
 
-        String directoryPath = directoryBodyPath;
-        String fileName = directoryPath + "/" + postId + ".txt";
+        String fileName = post.getBodyUrl();
         s3Service.deleteS3(fileName);
 
         saveMessageToS3(request.message(), post);
@@ -118,8 +116,7 @@ public class HighlightServiceImpl implements HighlightService {
 
         Post post = highlight.getPost();
 
-        String directoryPath = directoryBodyPath;
-        String fileName = directoryPath + "/" + post.getId() + ".txt";
+        String fileName = post.getBodyUrl();
         s3Service.deleteS3(fileName);
         saveMessageToS3(request.message(), post);
     }
@@ -162,7 +159,6 @@ public class HighlightServiceImpl implements HighlightService {
     @Transactional
     public String showBodyFromUrlAndMemberId(HighlightsRequest highlightsRequest) {
         Member member = memberService.findById(highlightsRequest.memberId());
-        System.out.println(member.getId() + " " + highlightsRequest.url());
         Post post = postRepository.findByMemberAndUrl(member, highlightsRequest.url())
                 .orElseThrow(() -> new BadRequestException(POST_NOT_FOUND));
 
@@ -171,9 +167,8 @@ public class HighlightServiceImpl implements HighlightService {
 
 
     private String saveMessageToS3(String message, Post post) {
-        Long postId = post.getId();
         String directoryPath = directoryBodyPath;
-        String fileName = postId + ".txt";
+        String fileName = UUID.randomUUID() + ".txt";
 
         try {
             File tempFile = new File(System.getProperty("java.io.tmpdir"), fileName);
