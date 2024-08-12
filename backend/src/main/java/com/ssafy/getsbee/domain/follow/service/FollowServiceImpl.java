@@ -69,7 +69,9 @@ public class FollowServiceImpl implements FollowService{
                     Member followedMember = memberRepository.findById(follow.getFollowedMember().getId())
                             .orElseThrow(() -> new NotFoundException(MEMBER_NOT_FOUND));
                     String fullDirectoryName = directoryService.findFullNameByDirectory(follow.getFollowedDirectory());
-                    return FollowDirectoryResponse.from(follow, followedMember, fullDirectoryName);
+                    Long followCount = followRepository.countFollowByFollowedDirectory(follow.getFollowedDirectory());
+                    Long postCount = postRepository.countPostsByDirectory(follow.getFollowedDirectory());
+                    return FollowDirectoryResponse.from(follow, followedMember, fullDirectoryName, postCount, followCount);
                 })
                 .collect(Collectors.toList());
     }
@@ -83,7 +85,9 @@ public class FollowServiceImpl implements FollowService{
                     Member followingMember = memberRepository.findById(follow.getFollowingMember().getId())
                             .orElseThrow(() -> new NotFoundException(MEMBER_NOT_FOUND));
                     String fullDirectoryName = directoryService.findFullNameByDirectory(follow.getFollowedDirectory());
-                    return FollowDirectoryResponse.from(follow, followingMember, fullDirectoryName);
+                    Long followCount = followRepository.countFollowByFollowedDirectory(follow.getFollowedDirectory());
+                    Long postCount = postRepository.countPostsByDirectory(follow.getFollowedDirectory());
+                    return FollowDirectoryResponse.from(follow, followingMember, fullDirectoryName, postCount, followCount);
                 })
                 .collect(Collectors.toList());
     }

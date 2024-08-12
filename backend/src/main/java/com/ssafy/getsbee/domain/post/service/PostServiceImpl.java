@@ -237,6 +237,16 @@ public class PostServiceImpl implements PostService {
         return new SliceImpl<>(postURLResponses, pageable, posts.hasNext());
     }
 
+    @Override
+    public Slice<PostListResponse> showHotPostList() {
+        List<Post> posts = postRepository.showHotPostList();
+        Pageable pageable = PageRequest.of(0, posts.size());
+        Slice<Post> slicePost = new SliceImpl<>(posts, pageable, false);
+
+        return makePostListResponseWithPosts(slicePost);
+    }
+
+
     private Slice<PostListResponse> showPostListByDirectoryIdAndKeyword(Long directoryId, String keyword,
                                                                         Long cursor, Pageable pageable) {
         Directory directory = directoryRepository.findDirectoryById(directoryId)
@@ -305,7 +315,10 @@ public class PostServiceImpl implements PostService {
     private boolean checkIfBookmarkedByCurrentUser(Post post) {
         Member currentMember = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NotFoundException(MEMBER_NOT_FOUND));
-        return bookmarkRepository.findByPostAndMember(post, currentMember).isPresent();
+
+        return bookmarkRepository.findByPostAndMember(post, currentMember)
+                .filter(bookmark -> !bookmark.getIsDeleted())
+                .isPresent();
     }
 
     private Post findById(Long postId) {

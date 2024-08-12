@@ -4,7 +4,9 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
+import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.post.entity.Post;
+import com.ssafy.getsbee.domain.post.entity.QPost;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -13,10 +15,12 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.ssafy.getsbee.domain.post.entity.QPost.post;
+import static com.ssafy.getsbee.global.consts.StaticConst.HOT_POST_WEEK_OFFSET;
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
 
 @Repository
@@ -121,4 +125,41 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         return new SliceImpl<>(posts, pageable, hasNext);
     }
 
+    @Override
+    public List<Post> showHotPostList() {
+        QPost post = QPost.post;
+
+        LocalDateTime hotPostOffset = LocalDateTime.now().minusWeeks(HOT_POST_WEEK_OFFSET);
+
+        // Fetching the posts based on the criteria
+        List<Post> hotPosts = queryFactory
+                .selectFrom(post)
+                .where(post.createdAt.after(hotPostOffset)
+                        .and(post.isDeleted.isFalse()))
+                .orderBy(post.viewCount.desc())
+                .limit(99)
+                .fetch();
+
+        return hotPosts;
+    }
+
+    @Override
+    public Long countPostsByMember(Member member) {
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+
+        BooleanExpression condition = post.member.eq(member)
+                .and(post.directory.name.ne("Bookmark"));
+        
+        if (member.getId().equals(currentMemberId)) {
+            condition = condition.or(post.directory.name.eq("Temporary"));
+        } else {
+            condition = condition.and(post.directory.name.ne("Temporary"));
+        }
+
+        return queryFactory
+                .select(post.count())
+                .from(post)
+                .where(condition)
+                .fetchOne();
+    }
 }
