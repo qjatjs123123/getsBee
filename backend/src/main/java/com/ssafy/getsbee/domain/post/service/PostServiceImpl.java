@@ -119,14 +119,14 @@ public class PostServiceImpl implements PostService {
                 .map(HighlightResponse::of).collect(Collectors.toList());
 
         //좋아요 여부 필요
-        Boolean isBookmark = bookmarkRepository.findByPostAndMember(post, member).isPresent();
+        Bookmark bookmark = bookmarkRepository.findByPostAndMember(post, member)
+                .orElseThrow(()->new BadRequestException(BOOKMARK_NOT_FOUND));
         Boolean isLike = likeRepository.existsByMemberAndPost(member, post);
-        // post.changeDirectory(directoryRepository.findByMember(member));
 
         post.increaseViewCount();
         LogUtil.loggingInteraction(VIEW, post.getId());
         return PostResponse.from(post, highlightResponses,commentResponseList,
-                !isNotOwner(post.getMember(), member), isLike, isBookmark);
+                !isNotOwner(post.getMember(), member), isLike, bookmark.getIsDeleted());
     }
 
     @Override
