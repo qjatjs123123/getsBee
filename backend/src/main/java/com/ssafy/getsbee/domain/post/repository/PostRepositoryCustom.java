@@ -1,6 +1,7 @@
 package com.ssafy.getsbee.domain.post.repository;
 
 import com.ssafy.getsbee.domain.directory.entity.Directory;
+import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,4 +18,6 @@ public interface PostRepositoryCustom {
     Slice<Post> findAllByDirectoryId(Long directoryId, Long cursor, Pageable pageable);
 
     Slice<Post> findAllByUrlAndIdLessThan(String url, Long cursor, Pageable pageable);
+
+    List<Post> showHotPostList();
 }

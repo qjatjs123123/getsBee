@@ -4,7 +4,11 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
+import com.ssafy.getsbee.domain.highlight.entity.Highlight;
+import com.ssafy.getsbee.domain.highlight.repository.HighlightRepository;
+import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.entity.Post;
+import com.ssafy.getsbee.domain.post.entity.QPost;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +17,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +30,8 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
     private final DirectoryRepository directoryRepository;
+    private final HighlightRepository highlightRepository;
+    private final PostRepository postRepository;
 
     @Override
     public Slice<Post> findAllByMemberId(Long memberId, Long cursor, Pageable pageable) {
@@ -120,5 +127,25 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 
         return new SliceImpl<>(posts, pageable, hasNext);
     }
+
+    @Override
+    public List<Post> showHotPostList() {
+        QPost post = QPost.post;
+
+        LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
+
+        // Fetching the posts based on the criteria
+        List<Post> hotPosts = queryFactory
+                .selectFrom(post)
+                .where(post.createdAt.after(oneWeekAgo)
+                        .and(post.isDeleted.isFalse()))
+                .orderBy(post.viewCount.desc())
+                .limit(99)
+                .fetch();
+
+        return hotPosts;
+    }
+
+
 
 }

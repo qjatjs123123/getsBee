@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.security.core.parameters.P;
 
+import java.util.List;
+
 public interface PostService {
 
     void deletePost(Long postId, Long memberId);
@@ -30,4 +32,6 @@ public interface PostService {
     Slice<PostListResponse> showPostList(PostListRequest postListRequest, Long cursor, Pageable pageable);
 
     Slice<PostURLResponse> showPostListByUrl(String url, Long cursor, Pageable pageable);
+
+    Slice<PostListResponse> showHotPostList();
 }
