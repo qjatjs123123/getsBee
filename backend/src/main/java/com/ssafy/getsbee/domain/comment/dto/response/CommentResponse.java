@@ -10,17 +10,19 @@ public record CommentResponse(
     Long commentId,
     String content,
     Long memberId,
+    String memberEmail,
     String memberName,
     String memberImage,
     LocalDateTime createdAt,
     Boolean isMyComment
 ) {
     @Builder
-    public CommentResponse(Long commentId, String content, Long memberId, String memberName, String memberImage,
-                           LocalDateTime createdAt, Boolean isMyComment) {
+    public CommentResponse(Long commentId, String content, Long memberId, String memberEmail, String memberName,
+                           String memberImage, LocalDateTime createdAt, Boolean isMyComment) {
         this.commentId = commentId;
         this.content = content;
         this.memberId = memberId;
+        this.memberEmail = memberEmail;
         this.memberName = memberName;
         this.memberImage = memberImage;
         this.createdAt = createdAt;
@@ -32,8 +34,9 @@ public record CommentResponse(
                 .commentId(comment.getId())
                 .content(comment.getContent())
                 .memberId(comment.getMember().getId())
+                .memberEmail(comment.getMember().getEmail())
                 .memberName(comment.getMember().getName())
-                .memberImage(member.getPicture())
+                .memberImage(comment.getMember().getPicture())
                 .createdAt(comment.getCreatedAt())
                 .isMyComment(member == comment.getMember())
                 .build();
