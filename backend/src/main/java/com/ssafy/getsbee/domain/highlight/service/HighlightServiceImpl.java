@@ -1,5 +1,6 @@
 package com.ssafy.getsbee.domain.highlight.service;
 
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.highlight.dto.request.CreateHighlightRequest;
@@ -18,12 +19,17 @@ import com.ssafy.getsbee.domain.post.service.PostElasticService;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.error.exception.ForbiddenException;
 import com.ssafy.getsbee.global.util.LogUtil;
+import com.ssafy.getsbee.infra.s3.S3Service;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static com.ssafy.getsbee.global.common.model.Interaction.*;
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
@@ -39,6 +45,10 @@ public class HighlightServiceImpl implements HighlightService {
     private final PostElasticService postElasticService;
     private final ExtractCategoryService extractCategoryService;
     private final InterestRepository interestRepository;
+    private final S3Service s3Service;
+
+    @Value("${cloud.aws.s3.directory.body}")
+    private String directoryBodyPath;
 
     @Override
     @Transactional
@@ -63,9 +73,8 @@ public class HighlightServiceImpl implements HighlightService {
         highlightRepository.save(highlight);
 
         String message = request.message();
-        String s3Url = saveMessageToS3(post.getId(), message);
+        String s3Url = saveMessageToS3(message);
 
-        // Post의 body_url 필드를 업데이트합니다.
         post.changeBodyUrl(s3Url);
         postRepository.save(post);
         
@@ -73,32 +82,28 @@ public class HighlightServiceImpl implements HighlightService {
         return HighlightResponse.of(highlight.getId());
     }
 
-    private String saveMessageToS3(Long id, String message) {
-        String fileName = "post-messages/" + postId + ".txt";
-        // S3에 파일을 업로드하고 URL을 반환하는 로직을 구현해야 합니다.
-        // 예시로 AWS SDK를 사용한 S3 파일 업로드 코드를 작성합니다.
+    private String saveMessageToS3(String message) {
+        String directoryPath = directoryBodyPath;
+
+        String fileName = UUID.randomUUID() + ".txt";
+        File tempFile = null;
 
         try {
-            // message 내용을 ByteArrayInputStream으로 변환
-            byte[] messageBytes = message.getBytes(StandardCharsets.UTF_8);
-            InputStream inputStream = new ByteArrayInputStream(messageBytes);
-
-            // S3 객체 메타데이터 설정
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentLength(messageBytes.length);
-            metadata.setContentType("text/plain");
-
-            // S3에 파일 업로드
-            amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, inputStream, metadata)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
-
-            // 업로드한 파일의 URL 반환
-            return amazonS3Client.getUrl(bucketName, fileName).toString();
-        } catch (AmazonServiceException e) {
-            // S3 예외 처리 로직 추가
-            throw new RuntimeException("Failed to upload file to S3", e);
+            tempFile = new File(System.getProperty("java.io.tmpdir"), fileName);
+            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+                fos.write(message.getBytes(StandardCharsets.UTF_8));
+            }
+            return s3Service.uploadFile(tempFile, directoryPath);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to convert message to file", e);
+        } finally {
+            if (tempFile != null && tempFile.exists()) {
+                tempFile.delete();
+            }
         }
     }
+
+
 
     @Override
     @Transactional
