@@ -25,7 +25,7 @@ const SearchPost: React.FC = () => {
       const container = postsContainerRef.current;
       const { scrollTop, scrollHeight, clientHeight } = container;
 
-      if (scrollTop + clientHeight === scrollHeight) {
+      if (scrollTop + clientHeight >= scrollHeight - 5) {
         setCursorID(posts[posts.length - 1]?.post.postId || null);
       }
     }
@@ -48,6 +48,11 @@ const SearchPost: React.FC = () => {
     if (queryParam !== searchQuery) {
       setSearchQuery(queryParam);
       initialLoad.current = true;
+      setCursorID(null);
+
+      if (postsContainerRef.current) {
+        postsContainerRef.current.scrollTop = 0;
+      }
     }
   }, [query]);
 

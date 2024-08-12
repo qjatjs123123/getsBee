@@ -6,7 +6,7 @@ import Spinner from "./Spinner"; // 스피너 컴포넌트 import
 import Item from "./Item";
 const { Readability } = require("@mozilla/readability");
 
-function Content() {
+function Content({ isEnabled }) {
   const [textContents, setContent] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [result, setResult] = useState([]);
@@ -14,6 +14,7 @@ function Content() {
   const [error, setError] = useState(false);
   const apiKey = process.env.REACT_APP_API_KEY;
   const contentRef = useRef(null);
+  const login = useRef(false);
 
   function htmlStringToDocument(htmlString) {
     const parser = new DOMParser();
@@ -94,13 +95,16 @@ function Content() {
       };
     }
   }
-
   // 페이지 로드 시 chrome.storage에서 데이터 가져오기
   useEffect(() => {
     chrome.runtime.sendMessage({
       type: "GET_DATA",
     });
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      if (message.type === "SEND_DATA" && message.data.accessToken) {
+        login.current = true;
+      }
+
       const tmp = message.data.resultArr;
 
       if (tmp.length !== 0) {
@@ -180,6 +184,11 @@ function Content() {
 
   // 추천 버튼 클릭 시 실행되는 함수
   const recommend = async () => {
+    if (!login.current) {
+      window.open("https://getsbee.kr/about", "_blank");
+      return;
+    }
+
     setError(false); // 추천 요청 시작 시 에러 상태를 false로 초기화
     setLoading(true); // 추천 요청 시작 시 로딩 상태를 true로 설정
     const genAI = new GoogleGenerativeAI(apiKey);
@@ -202,18 +211,32 @@ function Content() {
         </div>
       );
     }
-
     if (result.length === 0) {
       return (
         <div className="buttonDiv">
-          <span> 해당 페이지의 핵심 문장을 GPT 추천 받아보세요. </span>{" "}
-          <div className="button" onClick={recommend}>
-            원클릭 핵심 문장 추천{" "}
-          </div>{" "}
+          {!isEnabled ? (
+            <>
+              <span>해당 페이지의 핵심 문장을 GPT 추천 받아보세요.</span>
+              <div className="button" onClick={recommend}>
+                원클릭 핵심 문장 추천
+              </div>
+            </>
+          ) : (
+            <>
+              <span>
+                기능이 비활성화되었습니다. 로그인하여 활성화해 주세요.
+              </span>
+              <div
+                className="button disabled"
+                onClick={(e) => e.preventDefault()}
+              >
+                원클릭 핵심 문장 추천
+              </div>
+            </>
+          )}
         </div>
       );
     }
-
     return result.map((idx) => <Item key={idx} content={idx} />);
   };
 
