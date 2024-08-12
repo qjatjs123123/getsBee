@@ -12,10 +12,10 @@ import org.springframework.data.repository.query.Param;
 
 public interface FollowRepository extends JpaRepository<Follow, Long>, FollowRepositoryCustom {
 
-    @Query("SELECT f FROM Follow f WHERE f.followingMember.id = :memberId")
+    @Query("SELECT f FROM Follow f WHERE f.followingMember.id = :memberId AND f.isDeleted = false")
     List<Follow> findFollowingByMemberId(@Param("memberId") Long memberId);
 
-    @Query("SELECT f FROM Follow f WHERE f.followedMember.id = :memberId")
+    @Query("SELECT f FROM Follow f WHERE f.followedMember.id = :memberId AND f.isDeleted = false")
     List<Follow> findFollowedByMemberId(@Param("memberId") Long memberId);
 
     Optional<Follow> findByFollowingMemberAndFollowedDirectory(Member member, Directory directory);

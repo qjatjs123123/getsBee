@@ -27,6 +27,6 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostRepositor
 
     Optional<Post> findAllByMemberAndUrl(Member member, String url);
 
-    @Query("SELECT COUNT(p) FROM Post p WHERE p.url = :url")
+    @Query("SELECT COUNT(p) FROM Post p WHERE p.url = :url AND p.isDeleted = false")
     Integer countPostsByUrl(@Param("url") String url);
 }
