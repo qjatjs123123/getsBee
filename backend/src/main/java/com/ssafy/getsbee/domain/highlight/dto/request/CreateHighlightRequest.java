@@ -25,7 +25,8 @@ public record CreateHighlightRequest (
         @NotNull
         Integer lastOffset,
         @NotNull
-        Type type
+        Type type,
+        String message
 ) {
     public Post toPostEntity(Member member, Directory directory) {
         return Post.builder()

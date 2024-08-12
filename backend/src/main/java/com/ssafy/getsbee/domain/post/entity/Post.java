@@ -121,4 +121,8 @@ public class Post extends BaseTimeEntity {
     public void updateHighlights(List<Highlight> highlights) {
         this.highlights = highlights;
     }
+
+    public void changeBodyUrl(String bodyUrl) {
+        this.bodyUrl = bodyUrl;
+    }
 }

@@ -59,13 +59,45 @@ public class HighlightServiceImpl implements HighlightService {
                             interestRepository.save(Interest.of(post.getUrl(), category)));
         }
 
-        //[추가기능] Type image면 s3 로직 추가 필요
-
         Highlight highlight = request.toHighlightEntity(post);
         highlightRepository.save(highlight);
 
+        String message = request.message();
+        String s3Url = saveMessageToS3(post.getId(), message);
+
+        // Post의 body_url 필드를 업데이트합니다.
+        post.changeBodyUrl(s3Url);
+        postRepository.save(post);
+        
         postElasticService.savePostDocument(highlight);
         return HighlightResponse.of(highlight.getId());
+    }
+
+    private String saveMessageToS3(Long id, String message) {
+        String fileName = "post-messages/" + postId + ".txt";
+        // S3에 파일을 업로드하고 URL을 반환하는 로직을 구현해야 합니다.
+        // 예시로 AWS SDK를 사용한 S3 파일 업로드 코드를 작성합니다.
+
+        try {
+            // message 내용을 ByteArrayInputStream으로 변환
+            byte[] messageBytes = message.getBytes(StandardCharsets.UTF_8);
+            InputStream inputStream = new ByteArrayInputStream(messageBytes);
+
+            // S3 객체 메타데이터 설정
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(messageBytes.length);
+            metadata.setContentType("text/plain");
+
+            // S3에 파일 업로드
+            amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, inputStream, metadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+
+            // 업로드한 파일의 URL 반환
+            return amazonS3Client.getUrl(bucketName, fileName).toString();
+        } catch (AmazonServiceException e) {
+            // S3 예외 처리 로직 추가
+            throw new RuntimeException("Failed to upload file to S3", e);
+        }
     }
 
     @Override
