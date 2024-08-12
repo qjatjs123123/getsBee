@@ -126,7 +126,7 @@ public class PostServiceImpl implements PostService {
         post.increaseViewCount();
         LogUtil.loggingInteraction(VIEW, post.getId());
         return PostResponse.from(post, highlightResponses,commentResponseList,
-                !isNotOwner(post.getMember(), member), isLike, bookmark.getIsDeleted());
+                !isNotOwner(post.getMember(), member), isLike, !bookmark.getIsDeleted());
     }
 
     @Override
