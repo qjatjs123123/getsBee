@@ -27,7 +27,7 @@
 
 body {
   font-family: 'Roboto', sans-serif;
-  overflow: hidden;
+  // overflow: hidden;
 }
 
 .p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-link {
