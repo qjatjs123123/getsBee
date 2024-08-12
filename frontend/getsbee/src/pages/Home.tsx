@@ -104,7 +104,7 @@ const Home: React.FC = () => {
                 <div
                   key={`${detail.postId}-${index}`}
                   ref={index === memoizedDetailItems.length - 1 ? lastDetailElementRef : undefined}
-                  className={`border-b transform scale-[95%] w-full ${
+                  className={`border-b transform scale-[90%] w-full ${
                     index === memoizedDetailItems.length - 1 ? 'mb-8' : 'mb-4'
                   }`}
                 >
