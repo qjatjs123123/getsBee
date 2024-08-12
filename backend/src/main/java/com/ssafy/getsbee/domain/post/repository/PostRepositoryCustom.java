@@ -1,6 +1,7 @@
 package com.ssafy.getsbee.domain.post.repository;
 
 import com.ssafy.getsbee.domain.directory.entity.Directory;
+import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import org.springframework.data.domain.Page;
@@ -20,4 +21,6 @@ public interface PostRepositoryCustom {
     Slice<Post> findAllByUrlAndIdLessThan(String url, Long cursor, Pageable pageable);
 
     List<Post> showHotPostList();
+
+    Long countPostsByMember(Member member);
 }
