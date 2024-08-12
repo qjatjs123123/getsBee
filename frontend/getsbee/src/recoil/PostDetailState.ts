@@ -19,6 +19,8 @@ export interface Comment {
   content: string;
   memberId: string;
   memberName: string;
+  memberImage: string;
+  memberEmail: string;
   createdAt: string;
   isMyComment: boolean;
 }
