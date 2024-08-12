@@ -46,4 +46,9 @@ public class HighlightController {
     public void updateHighlightsIndex(@RequestBody @Valid List<UpdateIndexHighlight> updateIndexHighlights){
         highlightService.updateHighlightsIndex(updateIndexHighlights, SecurityUtil.getCurrentMemberId());
     }
+
+    @PostMapping("/body")
+    public String showBodyFromUrlAndMemberId(@RequestBody @Valid HighlightsRequest highlightsRequest){
+        return highlightService.showBodyFromUrlAndMemberId(highlightsRequest);
+    }
 }
