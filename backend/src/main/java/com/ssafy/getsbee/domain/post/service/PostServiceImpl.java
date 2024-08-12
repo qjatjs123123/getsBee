@@ -119,9 +119,11 @@ public class PostServiceImpl implements PostService {
                 .map(HighlightResponse::of).collect(Collectors.toList());
 
         //좋아요 여부 필요
-        Boolean isBookmark = bookmarkRepository.findByPostAndMember(post, member).isPresent();
+        Boolean isBookmark = bookmarkRepository.findByPostAndMember(post, member)
+                .filter(bookmark -> !bookmark.getIsDeleted())
+                .isPresent();
+
         Boolean isLike = likeRepository.existsByMemberAndPost(member, post);
-        // post.changeDirectory(directoryRepository.findByMember(member));
 
         post.increaseViewCount();
         LogUtil.loggingInteraction(VIEW, post.getId());
