@@ -315,7 +315,10 @@ public class PostServiceImpl implements PostService {
     private boolean checkIfBookmarkedByCurrentUser(Post post) {
         Member currentMember = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NotFoundException(MEMBER_NOT_FOUND));
-        return bookmarkRepository.findByPostAndMember(post, currentMember).isPresent();
+
+        return bookmarkRepository.findByPostAndMember(post, currentMember)
+                .filter(bookmark -> !bookmark.getIsDeleted())
+                .isPresent();
     }
 
     private Post findById(Long postId) {
