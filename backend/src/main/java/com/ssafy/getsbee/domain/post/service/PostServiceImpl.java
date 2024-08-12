@@ -141,7 +141,7 @@ public class PostServiceImpl implements PostService {
                 .orElseGet(() -> bookmarkRepository.save(new Bookmark(member, post,
                         directoryRepository.findBookmarkDirectoryByMember(member))));
 
-        if (!bookmark.getIsDeleted()) {
+        if (bookmark.getIsDeleted()) {
             bookmark.addBookmark();
             LogUtil.loggingInteraction(BOOKMARK, post.getId());
         }
