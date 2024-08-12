@@ -17,6 +17,7 @@ import SearchPost from './pages/SearchPost';
 import SearchDirectory from './pages/SearchDirectory';
 import SearchURL from './pages/SearchURL';
 import MyHiveDir from './pages/MyHiveDir';
+import Error from './pages/Error';
 
 function App() {
   const setUser = useSetRecoilState(userState);
@@ -53,6 +54,7 @@ function App() {
         <Route path="/search/post" element={<SearchPost />} />
         <Route path="/search/directory" element={<SearchDirectory />} />
         <Route path="/search/url" element={<SearchURL />} />
+        <Route path="/error" element={<Error />} />
       </Route>
     </Routes>
   );
