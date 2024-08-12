@@ -6,12 +6,9 @@ import com.ssafy.getsbee.domain.post.dto.response.LikePostResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostURLResponse;
-import org.springframework.data.domain.Page;
+import com.ssafy.getsbee.domain.post.entity.Post;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.security.core.parameters.P;
-
-import java.util.List;
 
 public interface PostService {
 
@@ -32,6 +29,8 @@ public interface PostService {
     Slice<PostListResponse> showPostList(PostListRequest postListRequest, Long cursor, Pageable pageable);
 
     Slice<PostURLResponse> showPostListByUrl(String url, Long cursor, Pageable pageable);
+
+    Post findById(Long postId);
 
     Slice<PostListResponse> showHotPostList();
 }

@@ -56,9 +56,9 @@ public class CsvUtil {
                      CSVFormat.DEFAULT.withHeader(ITEM_ID, CATEGORY, CREATION_TIMESTAMP))) {
             for (Post post : posts) {
                 String category = "ALL";
-                Optional<Interest> interest = interestRepository.findByUrl(post.getUrl());
-                if (interest.isPresent()) {
-                    category = interest.get().getCategory().getValue();
+                List<Interest> interest = interestRepository.findByUrl(post.getUrl());
+                if (!interest.isEmpty()) {
+                    category = interest.get(0).getCategory().getValue();
                 }
                 csvPrinter.printRecord(post.getId(), category, Timestamp.valueOf(post.getCreatedAt()).getTime());
             }

@@ -210,6 +210,7 @@ public class PostServiceImpl implements PostService {
         
     }
 
+    @Override
     @Transactional(readOnly = true)
     public Slice<PostURLResponse> showPostListByUrl(String url, Long cursor, Pageable pageable) {
         if (cursor == null) cursor = Long.MAX_VALUE;
@@ -237,6 +238,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Post findById(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new BadRequestException(POST_NOT_FOUND));
+    }
+
     public Slice<PostListResponse> showHotPostList() {
         List<Post> posts = postRepository.showHotPostList();
         Pageable pageable = PageRequest.of(0, posts.size());
@@ -244,7 +251,6 @@ public class PostServiceImpl implements PostService {
 
         return makePostListResponseWithPosts(slicePost);
     }
-
 
     private Slice<PostListResponse> showPostListByDirectoryIdAndKeyword(Long directoryId, String keyword,
                                                                         Long cursor, Pageable pageable) {
@@ -326,11 +332,6 @@ public class PostServiceImpl implements PostService {
         return bookmarkRepository.findByPostAndMember(post, currentMember)
                 .filter(bookmark -> !bookmark.getIsDeleted())
                 .isPresent();
-    }
-
-    private Post findById(Long postId) {
-        return postRepository.findById(postId)
-                .orElseThrow(() -> new BadRequestException(POST_NOT_FOUND));
     }
 
     private Boolean isNotOwner(Member member, Member OwnerMember) {
