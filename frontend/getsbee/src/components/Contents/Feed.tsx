@@ -85,18 +85,18 @@ const Feed = forwardRef<HTMLDivElement, FeedProps>(
         <div className="flex items-center justify-between p-[3px]">
           <div className="flex items-center gap-2">
             <img className="custom-image" src={honeyCombg} alt="honeyComb" />
-            <p className="m-0 font-bold opacity-50">{post.likeCount}</p>
+            <p className="m-0 font-bold opacity-50">{info.relatedFeedNumber}</p>
           </div>
           <div className="flex flex-wrap items-center justify-end">
             <div className="flex items-center">
-              <Button
+              {/* <Button
                 icon={`pi ${info.isLikedByCurrentUser ? 'pi-heart-fill' : 'pi-heart'}`}
                 style={{ color: info.isLikedByCurrentUser ? '#ff4136' : '#8F8F8F' }}
                 onClick={handleLikeToggle}
                 severity="secondary"
                 rounded
                 text
-              />
+              /> */}
               <Button
                 icon={`pi ${info.isBookmarkedByCurrentUser ? 'pi-bookmark-fill' : 'pi-bookmark'}`}
                 style={{ color: info.isBookmarkedByCurrentUser ? '#CC9C00' : '#8F8F8F' }}
