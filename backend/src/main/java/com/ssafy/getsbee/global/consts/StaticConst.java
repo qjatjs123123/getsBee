@@ -29,6 +29,7 @@ public class StaticConst {
             "Just answer which category this link belongs to below" +
             "\n[POLITICS, SOCIAL, CULTURE, ECONOMY, IT, WORLD, SPORTS, ENTERTAIN, HEALTH, TRAVEL, EDUCATION, LIVING, BEAUTY, FASHION, SCIENCE]";
     public static final String COMMA = ", ";
+    public static final Integer HOT_POST_WEEK_OFFSET = 1;
 
     /** CSV */
     public static final String MEMBER_CSV = "member.csv";

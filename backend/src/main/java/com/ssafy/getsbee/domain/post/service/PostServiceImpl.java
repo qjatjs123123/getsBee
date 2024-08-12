@@ -141,10 +141,8 @@ public class PostServiceImpl implements PostService {
                 .orElseGet(() -> bookmarkRepository.save(new Bookmark(member, post,
                         directoryRepository.findBookmarkDirectoryByMember(member))));
 
-        if (!bookmark.getIsDeleted()) {
-            bookmark.addBookmark();
-            LogUtil.loggingInteraction(BOOKMARK, post.getId());
-        }
+        bookmark.addBookmark();
+        LogUtil.loggingInteraction(BOOKMARK, post.getId());
     }
 
     @Override
@@ -155,6 +153,7 @@ public class PostServiceImpl implements PostService {
 
         Bookmark bookmark = bookmarkRepository.findByPostAndMember(post, member)
                 .orElseThrow(() -> new BadRequestException(BOOKMARK_NOT_FOUND));
+
         bookmark.removeBookmark();
     }
 
@@ -245,6 +244,14 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new BadRequestException(POST_NOT_FOUND));
     }
 
+    public Slice<PostListResponse> showHotPostList() {
+        List<Post> posts = postRepository.showHotPostList();
+        Pageable pageable = PageRequest.of(0, posts.size());
+        Slice<Post> slicePost = new SliceImpl<>(posts, pageable, false);
+
+        return makePostListResponseWithPosts(slicePost);
+    }
+
     private Slice<PostListResponse> showPostListByDirectoryIdAndKeyword(Long directoryId, String keyword,
                                                                         Long cursor, Pageable pageable) {
         Directory directory = directoryRepository.findDirectoryById(directoryId)
@@ -285,7 +292,15 @@ public class PostServiceImpl implements PostService {
     }
 
     private Slice<PostListResponse> showPostListByDirectoryId(Long directoryId, Long cursor, Pageable pageable) {
-        Slice<Post> posts = postRepository.findAllByDirectoryId(directoryId, cursor, pageable);
+        Directory directory = directoryRepository.findDirectoryById(directoryId)
+                .orElseThrow(() -> new BadRequestException(DIRECTORY_NOT_FOUND));
+
+        Slice<Post> posts = null;
+        if(directory.getName().equals("Bookmark")){
+            posts = bookmarkRepository.findAllPostByMember(directory.getMember(), cursor, pageable);
+        } else {
+            posts = postRepository.findAllByDirectoryId(directoryId, cursor, pageable);
+        }
         return makePostListResponseWithPosts(posts);
     }
 
@@ -313,7 +328,10 @@ public class PostServiceImpl implements PostService {
     private boolean checkIfBookmarkedByCurrentUser(Post post) {
         Member currentMember = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NotFoundException(MEMBER_NOT_FOUND));
-        return bookmarkRepository.findByPostAndMember(post, currentMember).isPresent();
+
+        return bookmarkRepository.findByPostAndMember(post, currentMember)
+                .filter(bookmark -> !bookmark.getIsDeleted())
+                .isPresent();
     }
 
     private Boolean isNotOwner(Member member, Member OwnerMember) {

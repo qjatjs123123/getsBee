@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/posts")
@@ -67,5 +68,10 @@ public class PostController {
     public Slice<PostURLResponse> showURLPostList(@RequestBody URLPostListRequest request) {
         Pageable pageable = PageRequest.of(request.page(), request.size());
         return postService.showPostListByUrl(request.url(), request.cursor(), pageable);
+    }
+
+    @GetMapping("/hot")
+    public Slice<PostListResponse> showHotPostList(){
+        return postService.showHotPostList();
     }
 }
