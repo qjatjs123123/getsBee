@@ -21,6 +21,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.ssafy.getsbee.domain.interest.entity.QInterest.*;
@@ -150,11 +151,11 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
     }
 
     private BooleanExpression url(List<Category> categories) {
-        return categories == null | categories.isEmpty() ? null : post.url.in(JPAExpressions
-                                                                                .select(interest.url)
-                                                                                .from(interest)
-                                                                                .where(interest.url.isNotNull()
-                                                                                        .and(interest.category.in(categories))));
+        return post.url.in(JPAExpressions
+                            .select(interest.url)
+                            .from(interest)
+                            .where(interest.url.isNotNull()
+                                    .and(interest.category.in(categories))));
     }
 
     private List<OrderSpecifier> getOrderSpecifier(Sort sort) {
