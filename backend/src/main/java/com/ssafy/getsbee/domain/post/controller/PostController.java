@@ -65,7 +65,7 @@ public class PostController {
     }
 
     @PostMapping("")
-    public Slice<PostURLResponse> showURLPostList(@RequestBody URLPostListRequest request){
+    public Slice<PostURLResponse> showURLPostList(@RequestBody URLPostListRequest request) {
         Pageable pageable = PageRequest.of(request.page(), request.size());
         return postService.showPostListByUrl(request.url(), request.cursor(), pageable);
     }
