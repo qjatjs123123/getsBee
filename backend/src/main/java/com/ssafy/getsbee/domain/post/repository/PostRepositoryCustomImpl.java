@@ -76,7 +76,9 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .from(post)
                 .join(post.directory).fetchJoin()
                 .join(post.highlights).fetchJoin()
-                .where(url(categories))
+                .where(url(categories),
+                        isPublic(),
+                        postDirectoryName())
                 .limit(pageable.getPageSize() + 1)
                 .orderBy(getOrderSpecifier(pageable.getSort()).toArray(OrderSpecifier[]::new))
                 .fetch();
@@ -156,6 +158,14 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                             .from(interest)
                             .where(interest.url.isNotNull()
                                     .and(interest.category.in(categories))));
+    }
+
+    private BooleanExpression isPublic() {
+        return post.isPublic.eq(true);
+    }
+
+    private BooleanExpression postDirectoryName() {
+        return post.directory.name.ne("Temporary");
     }
 
     private List<OrderSpecifier> getOrderSpecifier(Sort sort) {

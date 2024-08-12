@@ -7,7 +7,6 @@ import com.ssafy.getsbee.domain.post.dto.response.LikePostResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostResponse;
 import com.ssafy.getsbee.domain.post.dto.response.PostURLResponse;
-import com.ssafy.getsbee.domain.post.service.PostElasticService;
 import com.ssafy.getsbee.domain.post.service.PostService;
 import com.ssafy.getsbee.global.util.SecurityUtil;
 import jakarta.validation.Valid;
@@ -65,7 +64,7 @@ public class PostController {
     }
 
     @PostMapping("")
-    public Slice<PostURLResponse> showURLPostList(@RequestBody URLPostListRequest request){
+    public Slice<PostURLResponse> showURLPostList(@RequestBody URLPostListRequest request) {
         Pageable pageable = PageRequest.of(request.page(), request.size());
         return postService.showPostListByUrl(request.url(), request.cursor(), pageable);
     }

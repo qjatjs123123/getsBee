@@ -52,6 +52,7 @@ cloud:
       directory:
         member: ${DIRECTORY_MEMBER}
         post: ${DIRECTORY_POST}
+        body: ${DIRECTORY_BODY}
 logging:
   level:
     com:
