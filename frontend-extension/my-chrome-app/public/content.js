@@ -7,13 +7,32 @@ let tooltip = "";
 let recommendSelection = "";
 let idx = -1;
 
+function getStoreHTML2() {
+  const s3Url =
+    "https://getsbee.s3.ap-northeast-2.amazonaws.com/develop/highlight/body.txt";
+
+  fetch(s3Url)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.text();
+    })
+    .then((data) => {
+      console.log(data);
+    })
+    .catch((error) => {
+      console.error("Error fetching text file:", error);
+    });
+}
+
 /* eslint-disable no-undef */
 window.addEventListener("load", () => {
   getStoreHTML();
   sendPageContent();
   originalHTML = document.body.innerHTML;
   // selectHighLightAPI();
-
+  getStoreHTML2();
   function getStoreHTML() {
     const URL = getURL();
     chrome.storage.local.get([URL], function (result) {
@@ -21,7 +40,7 @@ window.addEventListener("load", () => {
 
       if (data) {
         document.body.innerHTML = data;
-
+        console.log(data);
         // HTML이 적용된 후 스타일 및 스크립트 재적용
         requestAnimationFrame(() => {
           applyBeeStyles();

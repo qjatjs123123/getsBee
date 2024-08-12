@@ -13,32 +13,33 @@ const useQuery = () => {
 
 const SearchPost: React.FC = () => {
   const query = useQuery();
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [posts, setPosts] = useState<Array<any>>([]); // 상태 추가
-  const selectedPostID = useRef<null | number>(null);
+  const [searchQuery, setSearchQuery] = useState<string | null>('');
+  const [posts, setPosts] = useState<Array<any>>([]);
+  const [selectedPostID, setSelectedPostID] = useState<null | number>(null);
+  const initialLoad = useRef<boolean>(true);
 
   useEffect(() => {
     const queryParam = query.get('query');
-    if (queryParam) {
+    if (queryParam !== searchQuery) {
       setSearchQuery(queryParam);
+      initialLoad.current = true;
     }
   }, [query]);
 
   const postLoadable = useRecoilValueLoadable(
-    getPostsBySearchState({ query: searchQuery, cursor: selectedPostID.current, size: 20 }),
+    getPostsBySearchState({ query: searchQuery, cursor: selectedPostID, size: 20 }),
   );
 
   useEffect(() => {
-    if (postLoadable.state === 'hasValue') {
-      setPosts(postLoadable.contents.content || []); // 상태 업데이트
-      console.log(postLoadable.contents.content);
+    if (initialLoad.current && postLoadable.state === 'hasValue') {
+      setPosts(postLoadable.contents.content || []);
+      setSelectedPostID(postLoadable.contents.content[0].post.postId);
+      initialLoad.current = false;
     }
-  }, [postLoadable.state, postLoadable.contents.content]);
+  }, [postLoadable.state]);
 
-  const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>, postId: number) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      selectedPostID.current = postId;
-    }
+  const handleClick = (postId: number) => {
+    setSelectedPostID(postId);
   };
 
   return (
@@ -53,27 +54,39 @@ const SearchPost: React.FC = () => {
                 <div
                   key={postData.post.postId}
                   className="mt-4 cursor-pointer"
-                  onKeyPress={(event) => handleKeyPress(event, postData.post.postId)}
+                  onClick={() => handleClick(postData.post.postId)}
                   tabIndex={0} // This makes the div focusable
                   aria-label="button"
                   role="button" // This role indicates that the div is interactive
                 >
-                  <Post
-                    title={postData.post.title}
-                    url={postData.post.url}
-                    thumbnail={postData.post.thumbnail}
-                    viewCount={postData.post.viewCount}
-                    directoryName={postData.directory.directoryName}
-                    createdAt={postData.post.createdAt}
-                    highlightColors={postData.highlight.highlightColors}
-                    highlightNumber={postData.highlight.highlightNumber}
-                  />
+                  <div
+                    className={`w-[405px] ${
+                      selectedPostID === postData.post.postId
+                        ? 'border-[3px] border-[#FFC60A] border rounded-[16px]'
+                        : 'bg-white'
+                    }`}
+                    style={{
+                      boxShadow: selectedPostID === postData.post.postId ? '0 0 10px rgba(255, 198, 10, 0.5)' : 'none',
+                      transition: 'border-color 0.3s, border-width 0.3s, box-shadow 0.3s',
+                    }}
+                  >
+                    <Post
+                      title={postData.post.title}
+                      url={postData.post.url}
+                      thumbnail={postData.post.thumbnail}
+                      viewCount={postData.post.viewCount}
+                      directoryName={postData.directory.directoryName}
+                      createdAt={postData.post.createdAt}
+                      highlightColors={postData.highlight.highlightColors}
+                      highlightNumber={postData.highlight.highlightNumber}
+                    />
+                  </div>
                 </div>
               ))}
               {searchQuery}
             </div>
             <div className="flex flex-grow justify-center items-start overflow-y-auto scrollbar-hide transform scale-[110%] mt-8 mb-8">
-              {selectedPostID.current && <PostDetail postId={selectedPostID.current} />}
+              {selectedPostID && <PostDetail postId={selectedPostID} />}
             </div>
           </div>
         </div>

@@ -142,7 +142,7 @@ async function updateRangeDataAPI(UpdateIndexHighlight) {
 async function loginCheck(status, callback) {
   chrome.storage.sync.get(["GETSBEE_LOGIN"], async function (result) {
     if (result.GETSBEE_LOGIN === undefined) {
-      // window.location.href = "https://getsbee.kr/about";
+      window.location.href = "https://getsbee.kr/about";
       return;
     } else {
       if (status === 401) {
