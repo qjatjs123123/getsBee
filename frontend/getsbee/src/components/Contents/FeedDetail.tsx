@@ -22,7 +22,7 @@ const FeedDetail: React.FC<FeedDetailProps> = React.memo(({ detail }) => {
       className="mt-5 ml-3 mb-3 bg-white rounded-[12px]"
       style={{ boxShadow: 'none', width: '600px', height: 'auto' }}
     >
-      <div className="p-0 mt-4 ml-4 mr-2">
+      <div className="p-0 mt-4 mr-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Link to={`/myhive/${detail.memberEmail.split('@')[0]}`}>
