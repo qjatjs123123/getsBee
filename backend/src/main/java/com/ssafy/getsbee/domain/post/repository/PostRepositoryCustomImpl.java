@@ -150,9 +150,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         BooleanExpression condition = post.member.eq(member)
                 .and(post.directory.name.ne("Bookmark"));
         
-        if (member.getId().equals(currentMemberId)) {
-            condition = condition.or(post.directory.name.eq("Temporary"));
-        } else {
+        if (!member.getId().equals(currentMemberId)) {
             condition = condition.and(post.directory.name.ne("Temporary"));
         }
 
