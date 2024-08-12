@@ -3,10 +3,7 @@ package com.ssafy.getsbee.domain.highlight.service;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
-import com.ssafy.getsbee.domain.highlight.dto.request.CreateHighlightRequest;
-import com.ssafy.getsbee.domain.highlight.dto.request.HighlightsRequest;
-import com.ssafy.getsbee.domain.highlight.dto.request.UpdateHighlightRequest;
-import com.ssafy.getsbee.domain.highlight.dto.request.UpdateIndexHighlight;
+import com.ssafy.getsbee.domain.highlight.dto.request.*;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
 import com.ssafy.getsbee.domain.highlight.entity.Highlight;
 import com.ssafy.getsbee.domain.highlight.repository.HighlightRepository;
@@ -82,7 +79,7 @@ public class HighlightServiceImpl implements HighlightService {
 
     @Override
     @Transactional
-    public void deleteHighlight(Long highlightId, Long memberId) {
+    public void deleteHighlight(Long highlightId, DeleteHighlightRequest request, Long memberId) {
         Member member = memberService.findById(memberId);
         Highlight highlight = highlightRepository.findById(highlightId)
                 .orElseThrow(() -> new BadRequestException(HIGHLIGHT_NOT_FOUND));
@@ -103,6 +100,8 @@ public class HighlightServiceImpl implements HighlightService {
         String directoryPath = directoryBodyPath;
         String fileName = directoryPath + "/" + postId + ".txt";
         s3Service.deleteS3(fileName);
+
+        saveMessageToS3(request.message(), post);
     }
 
     @Override
@@ -111,7 +110,6 @@ public class HighlightServiceImpl implements HighlightService {
         Member member = memberService.findById(memberId);
         Highlight highlight = highlightRepository.findById(highlightId)
                 .orElseThrow(() -> new BadRequestException(HIGHLIGHT_NOT_FOUND));
-
         if(highlight.getPost().getMember() != member) {
             throw new ForbiddenException(_FORBIDDEN);
         }
@@ -123,7 +121,6 @@ public class HighlightServiceImpl implements HighlightService {
         String directoryPath = directoryBodyPath;
         String fileName = directoryPath + "/" + post.getId() + ".txt";
         s3Service.deleteS3(fileName);
-
         saveMessageToS3(request.message(), post);
     }
 
@@ -162,8 +159,10 @@ public class HighlightServiceImpl implements HighlightService {
     }
 
     @Override
+    @Transactional
     public String showBodyFromUrlAndMemberId(HighlightsRequest highlightsRequest) {
         Member member = memberService.findById(highlightsRequest.memberId());
+        System.out.println(member.getId() + " " + highlightsRequest.url());
         Post post = postRepository.findByMemberAndUrl(member, highlightsRequest.url())
                 .orElseThrow(() -> new BadRequestException(POST_NOT_FOUND));
 

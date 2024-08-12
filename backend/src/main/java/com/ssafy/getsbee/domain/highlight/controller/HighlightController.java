@@ -1,9 +1,6 @@
 package com.ssafy.getsbee.domain.highlight.controller;
 
-import com.ssafy.getsbee.domain.highlight.dto.request.CreateHighlightRequest;
-import com.ssafy.getsbee.domain.highlight.dto.request.HighlightsRequest;
-import com.ssafy.getsbee.domain.highlight.dto.request.UpdateHighlightRequest;
-import com.ssafy.getsbee.domain.highlight.dto.request.UpdateIndexHighlight;
+import com.ssafy.getsbee.domain.highlight.dto.request.*;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
 import com.ssafy.getsbee.domain.highlight.service.HighlightService;
 import com.ssafy.getsbee.domain.post.service.PostService;
@@ -19,7 +16,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HighlightController {
     private final HighlightService highlightService;
-    private final PostService postService;
 
     @PostMapping
     public HighlightResponse createHighlight(@RequestBody @Valid CreateHighlightRequest createHighlightRequest) {
@@ -27,8 +23,9 @@ public class HighlightController {
     }
 
     @PostMapping("/{highlight-id}/delete")
-    public void deleteHighlight(@PathVariable("highlight-id") Long highlightId) {
-        highlightService.deleteHighlight(highlightId, SecurityUtil.getCurrentMemberId());
+    public void deleteHighlight(@PathVariable("highlight-id") Long highlightId,
+                                @RequestBody @Valid DeleteHighlightRequest deleteHighlightRequest) {
+        highlightService.deleteHighlight(highlightId, deleteHighlightRequest, SecurityUtil.getCurrentMemberId());
     }
 
     @PatchMapping("/{highlight-id}")
