@@ -6,7 +6,7 @@ let userState = null;
 let tooltip = "";
 let recommendSelection = "";
 let idx = -1;
-
+let isEnabled = true;
 function getStoreHTML2() {
   const s3Url =
     "https://getsbee.s3.ap-northeast-2.amazonaws.com/develop/highlight/body.txt";
@@ -41,7 +41,6 @@ window.addEventListener("load", () => {
 
       if (data) {
         document.body.innerHTML = data;
-        console.log(data);
         // HTML이 적용된 후 스타일 및 스크립트 재적용
         requestAnimationFrame(() => {
           applyBeeStyles();
@@ -52,6 +51,7 @@ window.addEventListener("load", () => {
       }
     });
   }
+
   function applyBeeStyles() {
     const beeTags = document.querySelectorAll("bee");
     const beeData = Array.from(beeTags).map((tag) => {
@@ -144,6 +144,10 @@ window.addEventListener("load", () => {
       tooltip.appendChild(colorButton);
     });
     tooltip.appendChild(binButton);
+
+    chrome.storage.sync.get([getDomain()], (result) => {
+      isEnabled = result[getDomain()] || false;
+    });
   }
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -152,6 +156,10 @@ window.addEventListener("load", () => {
     } else if (message.type === "RECOMMEND_CLICKED") {
       highlightRecommend(message.resultArr);
       resultArr = message.resultArr;
+    }
+    if (message.type === "ENABLE_DATA") {
+      isEnabled = message.isEnabled;
+      console.log(isEnabled);
     }
   });
 
@@ -288,6 +296,7 @@ window.addEventListener("load", () => {
 });
 
 function displayTooltip(left, top) {
+  if (isEnabled) return;
   tooltip.style.left = `${left}px`;
   tooltip.style.top = `${top}px`;
   tooltip.style.visibility = "visible";

@@ -32,7 +32,11 @@
     margin-top: 10px;
     user-select: none; /* 텍스트 선택 방지 */
   }
+  .disabled {
+    background-color: gray;
+    user-select: all;
 
+  }
 .content-container::-webkit-scrollbar {
     width: 5px;
     

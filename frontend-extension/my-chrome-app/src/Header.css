@@ -5,13 +5,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 5px 0px;
+    padding: 10px 0px;
 }
 .header-container .getsbee-icon {
-    flex: 1;
-    height: 30px;
-    width: 30px;
-    object-fit: contain;
+
+    width: 140px;
+
 }
 .text{
     font-size: 23px;
@@ -25,8 +24,8 @@
     padding-left: 5px;
 }
 .profile {
-    width: 30px;   /* 프로필 이미지의 크기를 조정 */
-    height: 30px;  /* 프로필 이미지의 크기를 조정 */
-    border-radius: 50%;  /* 원형으로 만들기 */
+    width: 33px;   /* 프로필 이미지의 크기를 조정 */
+    /* height: 30px;  프로필 이미지의 크기를 조정 */
+ /* 원형으로 만들기 */
     margin-right: 10px;
   }
