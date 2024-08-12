@@ -16,7 +16,32 @@ const SearchPost: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string | null>('');
   const [posts, setPosts] = useState<Array<any>>([]);
   const [selectedPostID, setSelectedPostID] = useState<null | number>(null);
+  const [cursorID, setCursorID] = useState<null | number>(null);
   const initialLoad = useRef<boolean>(true);
+  const postsContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = () => {
+    if (postsContainerRef.current) {
+      const container = postsContainerRef.current;
+      const { scrollTop, scrollHeight, clientHeight } = container;
+
+      if (scrollTop + clientHeight === scrollHeight) {
+        setCursorID(posts[posts.length - 1]?.post.postId || null);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const container = postsContainerRef.current;
+    container?.addEventListener('scroll', handleScroll);
+    return () => {
+      container?.removeEventListener('scroll', handleScroll);
+    };
+  }, [posts]);
+
+  const postLoadable = useRecoilValueLoadable(
+    getPostsBySearchState({ query: searchQuery, cursor: cursorID, size: 20 }),
+  );
 
   useEffect(() => {
     const queryParam = query.get('query');
@@ -26,15 +51,14 @@ const SearchPost: React.FC = () => {
     }
   }, [query]);
 
-  const postLoadable = useRecoilValueLoadable(
-    getPostsBySearchState({ query: searchQuery, cursor: selectedPostID, size: 20 }),
-  );
-
   useEffect(() => {
     if (initialLoad.current && postLoadable.state === 'hasValue') {
       setPosts(postLoadable.contents.content || []);
       setSelectedPostID(postLoadable.contents.content[0].post.postId);
       initialLoad.current = false;
+    } else {
+      // Pagination: append new posts
+      setPosts((prevPosts) => [...prevPosts, ...(postLoadable.contents.content || [])]);
     }
   }, [postLoadable.state]);
 
@@ -49,7 +73,7 @@ const SearchPost: React.FC = () => {
         <div className="w-[80%] flex flex-col">
           <SearchTab />
           <div className="flex flex-grow overflow-hidden mt-4">
-            <div className="w-[460px] border-r overflow-y-auto scrollbar-hide">
+            <div ref={postsContainerRef} className="w-[460px] border-r overflow-y-auto scrollbar-hide">
               {posts.map((postData) => (
                 <div
                   key={postData.post.postId}
@@ -83,7 +107,6 @@ const SearchPost: React.FC = () => {
                   </div>
                 </div>
               ))}
-              {searchQuery}
             </div>
             <div className="flex flex-grow justify-center items-start overflow-y-auto scrollbar-hide transform scale-[110%] mt-8 mb-8">
               {selectedPostID && <PostDetail postId={selectedPostID} />}
