@@ -1,9 +1,14 @@
 package com.ssafy.getsbee.domain.post.repository;
 
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.PathBuilder;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
+import com.ssafy.getsbee.domain.interest.entity.Category;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.util.SecurityUtil;
@@ -11,11 +16,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.ssafy.getsbee.domain.interest.entity.QInterest.*;
 import static com.ssafy.getsbee.domain.post.entity.QPost.post;
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
 
@@ -25,6 +33,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
     private final DirectoryRepository directoryRepository;
+    private final JPAQueryFactory jpaQueryFactory;
 
     @Override
     public Slice<Post> findAllByMemberId(Long memberId, Long cursor, Pageable pageable) {
@@ -58,6 +67,25 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .and(cursorCondition(cursor));
 
         return executeCursorQuery(condition, pageable);
+    }
+
+    @Override
+    public Slice<Post> findAllByCategory(List<Category> categories, Pageable pageable) {
+        List<Post> content = jpaQueryFactory.select(post)
+                .from(post)
+                .join(post.directory).fetchJoin()
+                .join(post.highlights).fetchJoin()
+                .where(url(categories))
+                .limit(pageable.getPageSize() + 1)
+                .orderBy(getOrderSpecifier(pageable.getSort()).toArray(OrderSpecifier[]::new))
+                .fetch();
+
+        boolean hasNext = false;
+        if (content.size() > pageable.getPageSize()) {
+            content.remove(pageable.getPageSize());
+            hasNext = true;
+        }
+        return new SliceImpl<>(content, pageable, hasNext);
     }
 
     private BooleanExpression createCondition(Long memberId, Long currentMemberId) {
@@ -121,4 +149,23 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         return new SliceImpl<>(posts, pageable, hasNext);
     }
 
+    private BooleanExpression url(List<Category> categories) {
+        return categories == null | categories.isEmpty() ? null : post.url.in(JPAExpressions
+                                                                                .select(interest.url)
+                                                                                .from(interest)
+                                                                                .where(interest.url.isNotNull()
+                                                                                        .and(interest.category.in(categories))));
+    }
+
+    private List<OrderSpecifier> getOrderSpecifier(Sort sort) {
+        List<OrderSpecifier> orders = new ArrayList<>();
+
+        sort.stream().forEach(order -> {
+            Order direction = order.isAscending() ? Order.ASC : Order.DESC;
+            PathBuilder pathBuilder = new PathBuilder(post.getType(), post.getMetadata());
+            orders.add(new OrderSpecifier(direction, pathBuilder.get(order.getProperty())));
+        });
+        orders.add(new OrderSpecifier(Order.DESC, post.id));
+        return orders;
+    }
 }
