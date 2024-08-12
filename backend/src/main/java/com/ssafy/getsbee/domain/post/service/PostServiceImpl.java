@@ -141,10 +141,8 @@ public class PostServiceImpl implements PostService {
                 .orElseGet(() -> bookmarkRepository.save(new Bookmark(member, post,
                         directoryRepository.findBookmarkDirectoryByMember(member))));
 
-        if (bookmark.getIsDeleted()) {
-            bookmark.addBookmark();
-            LogUtil.loggingInteraction(BOOKMARK, post.getId());
-        }
+        bookmark.addBookmark();
+        LogUtil.loggingInteraction(BOOKMARK, post.getId());
     }
 
     @Override
@@ -155,6 +153,7 @@ public class PostServiceImpl implements PostService {
 
         Bookmark bookmark = bookmarkRepository.findByPostAndMember(post, member)
                 .orElseThrow(() -> new BadRequestException(BOOKMARK_NOT_FOUND));
+
         bookmark.removeBookmark();
     }
 
@@ -287,7 +286,15 @@ public class PostServiceImpl implements PostService {
     }
 
     private Slice<PostListResponse> showPostListByDirectoryId(Long directoryId, Long cursor, Pageable pageable) {
-        Slice<Post> posts = postRepository.findAllByDirectoryId(directoryId, cursor, pageable);
+        Directory directory = directoryRepository.findDirectoryById(directoryId)
+                .orElseThrow(() -> new BadRequestException(DIRECTORY_NOT_FOUND));
+
+        Slice<Post> posts = null;
+        if(directory.getName().equals("Bookmark")){
+            posts = bookmarkRepository.findAllPostByMember(directory.getMember(), cursor, pageable);
+        } else {
+            posts = postRepository.findAllByDirectoryId(directoryId, cursor, pageable);
+        }
         return makePostListResponseWithPosts(posts);
     }
 
