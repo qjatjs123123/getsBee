@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useRecoilValueLoadable } from 'recoil';
 import { getPostDetailState } from '../recoil/PostDetailState';
-import { getRelatedPosts, RelatedPostItem } from '../api/PostApi';
+import { getRelatedPosts, RelatedPostItem } from '../api/RecommendAPI';
 
 import Header from '../components/Common/Header';
 import Post from '../components/Contents/Post';
