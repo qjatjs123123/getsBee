@@ -65,7 +65,7 @@ public enum ErrorCode {
 
     /** Bookmark */
     DUPLICATE_BOOKMARK(BAD_REQUEST, "BOOKMARK000", "이미 존재하는 북마크 입니다."),
-    BOOKMARK_NOT_FOUND(BAD_REQUEST, "BOOKMARK001", "해당 하이라이트는 존재하지 않습니다."),
+    BOOKMARK_NOT_FOUND(BAD_REQUEST, "BOOKMARK001", "해당 북마크는 존재하지 않습니다."),
 
     /** Interest */
     DUPLICATE_INTEREST(BAD_REQUEST, "INTEREST000", "이미 관심사를 입력했습니다."),
