@@ -26,7 +26,7 @@ public class HighlightController {
         return highlightService.addHighlight(createHighlightRequest, SecurityUtil.getCurrentMemberId());
     }
 
-    @DeleteMapping("/{highlight-id}")
+    @PostMapping("/{highlight-id}/delete")
     public void deleteHighlight(@PathVariable("highlight-id") Long highlightId) {
         highlightService.deleteHighlight(highlightId, SecurityUtil.getCurrentMemberId());
     }

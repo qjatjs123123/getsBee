@@ -1,5 +1,6 @@
 package com.ssafy.getsbee.domain.highlight.service;
 
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.highlight.dto.request.CreateHighlightRequest;
@@ -18,12 +19,17 @@ import com.ssafy.getsbee.domain.post.service.PostElasticService;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.error.exception.ForbiddenException;
 import com.ssafy.getsbee.global.util.LogUtil;
+import com.ssafy.getsbee.infra.s3.S3Service;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static com.ssafy.getsbee.global.common.model.Interaction.*;
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
@@ -39,6 +45,10 @@ public class HighlightServiceImpl implements HighlightService {
     private final PostElasticService postElasticService;
     private final ExtractCategoryService extractCategoryService;
     private final InterestRepository interestRepository;
+    private final S3Service s3Service;
+
+    @Value("${cloud.aws.s3.directory.body}")
+    private String directoryBodyPath;
 
     @Override
     @Transactional
@@ -59,14 +69,41 @@ public class HighlightServiceImpl implements HighlightService {
                             interestRepository.save(Interest.of(post.getUrl(), category)));
         }
 
-        //[추가기능] Type image면 s3 로직 추가 필요
-
         Highlight highlight = request.toHighlightEntity(post);
         highlightRepository.save(highlight);
 
+        String message = request.message();
+        String s3Url = saveMessageToS3(message);
+
+        post.changeBodyUrl(s3Url);
+        postRepository.save(post);
+        
         postElasticService.savePostDocument(highlight);
         return HighlightResponse.of(highlight.getId());
     }
+
+    private String saveMessageToS3(String message) {
+        String directoryPath = directoryBodyPath;
+
+        String fileName = UUID.randomUUID() + ".txt";
+        File tempFile = null;
+
+        try {
+            tempFile = new File(System.getProperty("java.io.tmpdir"), fileName);
+            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+                fos.write(message.getBytes(StandardCharsets.UTF_8));
+            }
+            return s3Service.uploadFile(tempFile, directoryPath);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to convert message to file", e);
+        } finally {
+            if (tempFile != null && tempFile.exists()) {
+                tempFile.delete();
+            }
+        }
+    }
+
+
 
     @Override
     @Transactional
