@@ -113,6 +113,11 @@ const Feed = forwardRef<HTMLDivElement, FeedProps>(
       );
     };
 
+    const truncateText = (text: string, maxLength: number) => {
+      if (text.length <= maxLength) return text;
+      return text.slice(0, maxLength) + '...';
+    };
+
     return (
       <div
         ref={ref}
@@ -126,7 +131,7 @@ const Feed = forwardRef<HTMLDivElement, FeedProps>(
         onClick={() => {
           console.log('Clicked URL in Feed:', url);
           onClick(url);
-        }} // url을 onClick 핸들러에 전달
+        }}
       >
         <div className="p-0 mt-4 ml-4 mr-2">
           {headerTemplate()}
@@ -154,12 +159,22 @@ const Feed = forwardRef<HTMLDivElement, FeedProps>(
                   />
                 )}
               </div>
-              <div className="flex-1">
-                <a href={post.url} className="font-bold text-primary" target="_blank" rel="noopener noreferrer">
-                  {post.title}
+              <div className="flex-1 overflow-hidden">
+                <a
+                  href={post.url}
+                  className="font-bold mr-2 text-primary block whitespace-nowrap overflow-hidden text-ellipsis"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={post.title}
+                >
+                  {truncateText(post.title, 150)}
                 </a>
-                <p className="m-0 text-[14px]" style={{ color: '#8D8D8D' }}>
-                  {new URL(post.url).hostname}
+                <p
+                  className="m-0 text-[14px] whitespace-nowrap overflow-hidden text-ellipsis"
+                  style={{ color: '#8D8D8D' }}
+                  title={new URL(post.url).hostname}
+                >
+                  {truncateText(new URL(post.url).hostname, 30)}
                 </p>
               </div>
             </div>
