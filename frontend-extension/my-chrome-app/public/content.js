@@ -19,6 +19,7 @@ function getStoreHTML2() {
       return response.text();
     })
     .then((data) => {
+      document.body.innerHTML = data;
       console.log(data);
     })
     .catch((error) => {
@@ -32,7 +33,7 @@ window.addEventListener("load", () => {
   sendPageContent();
   originalHTML = document.body.innerHTML;
   // selectHighLightAPI();
-  getStoreHTML2();
+  // getStoreHTML2();
   function getStoreHTML() {
     const URL = getURL();
     chrome.storage.local.get([URL], function (result) {
