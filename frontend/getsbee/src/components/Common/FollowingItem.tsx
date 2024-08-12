@@ -1,12 +1,15 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import starIcon from '../../assets/starIcon.png';
 import stargIcon from '../../assets/stargIcon.png';
 import { deleteFollow, createFollow } from '../../api/FollowingListApi';
 
 const FollowingItem = ({ item, showStarIcon }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const memberEmail = item.member.memberEmail.split('@')[0];
+
+  const isFollowerPage = location.pathname.includes('follower');
 
   const handleStarClick = async (event) => {
     event.stopPropagation(); // 부모의 클릭 이벤트가 발생하지 않도록 함
@@ -38,7 +41,7 @@ const FollowingItem = ({ item, showStarIcon }) => {
     <div
       className="relative border rounded-[6px] m-3 p-2 md:w-54 w-64"
       style={{
-        height: '7rem',
+        height: '6.5rem',
         borderColor: '#EFEFEF',
         borderWidth: '2px',
       }}
@@ -46,22 +49,34 @@ const FollowingItem = ({ item, showStarIcon }) => {
       role="button"
       tabIndex={0}
     >
-      <div className="absolute top-2 left-4 text-[12px] text-blue-600">
-        {item.follow.followCount}
-        <span className="text-[10px]">명이 구독합니다.</span>
-      </div>
-      <div className="flex justify-between items-center">
-        <div className="flex items-center">
-          <p className="ml-2 mt-4 text-[16px] text-[#5C5C5C] font-bold hover:text-blue-700">
-            {item.directory.directoryName}
-          </p>
+      {!isFollowerPage && (
+        <div className="absolute top-2 left-4 text-[12px] text-blue-600">
+          {item.follow.followCount}
+          <span className="text-[10px]">명이 구독합니다.</span>
         </div>
-      </div>
+      )}
+      {!isFollowerPage ? (
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            <p className="ml-2 mt-4 text-[16px] text-[#5C5C5C] font-bold hover:text-blue-700">
+              {item.directory.directoryName}
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            <p className="ml-2 mt-1 text-[16px] text-[#5C5C5C] font-bold hover:text-blue-700">
+              {item.directory.directoryName}
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="absolute bottom-2 left-4 flex items-center">
         <div className="flex">
           <img src={item.member.picture} alt={item.member.memberName} className="w-[22px] h-[22px] rounded-full" />
-          <p className="ml-1 text-[#5C5C5C] text-[12px]">{memberEmail}</p>
+          <p className="ml-1 text-[#5C5C5C] text-[14px]">{memberEmail}</p>
         </div>
       </div>
 

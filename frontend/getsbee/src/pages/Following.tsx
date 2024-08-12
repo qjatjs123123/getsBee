@@ -56,10 +56,7 @@ const Following: React.FC = () => {
             <Menu />
           </div>
         </div>
-        <div className="flex justify-end mt-2 mr-5">
-          <FollowSearchBar />
-        </div>
-        <div className="">
+        <div className="mt-5 ml-4">
           <div className="grid lg:grid-cols-4 lg:gap-2 md:grid-cols-2 md:gap-1 justify-items-center">{followItems}</div>
         </div>
       </div>

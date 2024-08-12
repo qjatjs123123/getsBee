@@ -6,7 +6,6 @@ import SideBar from '../components/Common/SideBar';
 import Menu from '../components/Common/Menu';
 import FollowingItem from '../components/Common/FollowingItem';
 import userIcon2 from '../assets/userIcon2.png';
-import FollowSearchBar from '../components/Common/FollowSearchBar';
 import { getFollowerMemberListState } from '../recoil/FollowingState';
 
 const Follower: React.FC = () => {
@@ -55,10 +54,7 @@ const Follower: React.FC = () => {
             <Menu />
           </div>
         </div>
-        <div className="flex justify-end mt-2 mr-5">
-          <FollowSearchBar />
-        </div>
-        <div className="">
+        <div className="mt-5 ml-4">
           <div className="grid lg:grid-cols-4 lg:gap-2 md:grid-cols-2 md:gap-1 justify-items-center">{followItems}</div>
         </div>
       </div>

@@ -195,7 +195,9 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
       <div className="flex justify-between mt-3">
         {postDetail.isMyPost && (
           <div className="flex items-center">
-            <span className={`flex items-center text-[12px] font-semibold px-2 py-1 rounded-full ${publicClass}`}>
+            <span
+              className={`flex items-center text-[12px] opacity-50 font-semibold px-2 py-1 rounded-full ${publicClass}`}
+            >
               <img className="flex w-[20px] h-[20px] mr-1" src={iconSrc} alt="statusIcon" />
               {publicText}
             </span>
@@ -212,62 +214,44 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
         </div>
       </div>
       <div className="flex mt-3">
-        <Avatar image={postDetail.memberImage} size="large" shape="circle" className="w-[60px] h-[60px] mt-1" />
-        <div className="ml-4 flex-1">
+        <div className="w-[60px] h-[60px]">
+          <Avatar image={postDetail.memberImage} size="large" shape="circle" className="w-[60px] h-[60px] mt-2" />
+        </div>
+        <div className="w-[440px] ml-4 flex-1">
           <p className="text-[14px] font-semibold" style={{ color: '#8D8D8D' }}>
             {postDetail.directoryName}
           </p>
-          <h2 className="text-[18px] font-bold mr-1">{postDetail.title}</h2>
+          <h2 className="text-[18px] font-bold mr-2">{postDetail.title}</h2>
           <a
             href={postDetail.url}
             className="text-[12px] font-semibold hover:underline block"
-            style={{ color: '#8D8D8D' }}
+            style={{
+              color: '#8D8D8D',
+              display: '-webkit-box',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 2,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'normal',
+            }}
           >
             {postDetail.url}
           </a>
-          <div className="flex justify-end text-[12px] font-semibold mt-3" style={{ color: '#8D8D8D' }}>
-            <div className="flex items-center mr-4">
-              <i className="pi pi-heart mr-1" />
-              <span>{postDetail.likeCount}</span>
-            </div>
-            <div className="flex items-center">
-              <i className="pi pi-eye mr-1" />
-              <span className="mr-3">{postDetail.viewCount}</span>
-            </div>
-          </div>
         </div>
       </div>
-      <div className="px-2">
-        <Divider className="mt-1 mb-2 border-gray-300" style={{ borderBottomWidth: '1px' }} />
-      </div>
-      <div className="flex justify-between items-center mt-3 ml-3">
-        <h2 className="text-[18px] font-bold">Highlights</h2>
+      <div className="flex justify-between items-center mt-3 mb-2">
+        <div className="flex text-[12px] font-semibold" style={{ color: '#8D8D8D' }}>
+          <div className="flex items-center mr-2">
+            <i className="pi pi-heart mr-1" />
+            <span>{postDetail.likeCount}</span>
+          </div>
+          <div className="flex items-center">
+            <i className="pi pi-eye mr-1" />
+            <span className="mr-3">{postDetail.viewCount}</span>
+          </div>
+        </div>
+
         <div className="flex">
-          {postDetail.isMyPost && (
-            <span className="flex">
-              <i
-                className="pi pi-trash mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer"
-                title="Delete"
-                onClick={confirmDelete}
-                onKeyPress={handleDeleteKeyPress}
-                role="button"
-                tabIndex={0}
-                aria-label="Delete"
-              />
-              <i
-                className="pi pi-file-edit mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer"
-                title="Edit"
-                onClick={() => {
-                  setIsEditing(true);
-                  onStartEditing();
-                }}
-                onKeyPress={handleKeyPress}
-                tabIndex={0}
-                role="button"
-                aria-label="Edit"
-              />
-            </span>
-          )}
           <i
             className={`pi ${postDetail.isLike ? 'pi-heart-fill text-red-500' : 'pi-heart text-[#8D8D8D]'} mr-2 hover:text-red-500 cursor-pointer`}
             title={postDetail.isLike ? 'Unlike' : 'Like'}
@@ -278,9 +262,42 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
             title={postDetail.isBookmark ? 'Remove Bookmark' : 'Bookmark'}
             onClick={handleBookmarkToggle}
           />
-          <i className="pi pi-share-alt mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer" title="Share" />
         </div>
       </div>
+      <Divider className="mt-1 mb-2 border-gray-300" style={{ borderBottomWidth: '1px' }} />
+      <div className="flex justify-between items-center mb-2">
+        <h2 className="text-[18px] font-bold">Highlights</h2>
+        <div className="flex">
+          <div className="flex justify-end text-[12px] font-semibold mt-3" style={{ color: '#8D8D8D' }}>
+            {postDetail.isMyPost && (
+              <span className="flex mb-3">
+                <i
+                  className="pi pi-trash mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer"
+                  title="Delete"
+                  onClick={confirmDelete}
+                  onKeyPress={handleDeleteKeyPress}
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Delete"
+                />
+                <i
+                  className="pi pi-file-edit mr-2 text-[#8D8D8D] hover:text-[#07294D] cursor-pointer"
+                  title="Edit"
+                  onClick={() => {
+                    setIsEditing(true);
+                    onStartEditing();
+                  }}
+                  onKeyPress={handleKeyPress}
+                  tabIndex={0}
+                  role="button"
+                  aria-label="Edit"
+                />
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
       <div className="mt-4 ml-6">
         {postDetail.highlights &&
           postDetail.highlights.map((highlight: HighlightType) => (
@@ -292,7 +309,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
       <div className="flex mt-3 ml-3">
         <h2 className="text-[18px] font-bold">Notes</h2>
       </div>
-      <div className="mt-1 ml-6">{postDetail.note}</div>
+      <div className="mt-1 ml-3 p-3 border border-gray-300 rounded-[3px] ">{postDetail.note}</div>
       <div className="flex mt-3 ml-3">
         <h2 className="text-[18px] font-bold">Comments</h2>
       </div>
@@ -328,10 +345,10 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
         {postDetail.comments &&
           postDetail.comments.map((comment: CommentType) => (
             <div key={comment.commentId} className="flex items-start mt-3">
-              <img src={comment.avatar} alt="avatar" className="w-[30px] h-[30px] rounded-full mt-2" />
+              <img src={comment.memberImage} alt="avatar" className="w-[30px] h-[30px] rounded-full mt-2" />
               <div className="ml-3 flex-1">
                 <div className="flex items-center">
-                  <p className="font-semibold mr-2">{comment.memberName}</p>
+                  <p className="font-semibold mr-2">{comment.memberEmail.split('@')[0]}</p>
                   <p className="text-[12px]" style={{ color: '#8D8D8D' }}>
                     {formatDate(comment.createdAt)}
                   </p>
