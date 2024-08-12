@@ -1,18 +1,69 @@
 let resultArr = [];
 let originalHTML = "";
-let html = "";
 let accessToken = "";
 let refreshToken = "";
 let userState = null;
 let tooltip = "";
+let recommendSelection = "";
+let idx = -1;
+
+function getStoreHTML2() {
+  const s3Url =
+    "https://getsbee.s3.ap-northeast-2.amazonaws.com/develop/highlight/body.txt";
+
+  fetch(s3Url)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.text();
+    })
+    .then((data) => {
+      console.log(data);
+    })
+    .catch((error) => {
+      console.error("Error fetching text file:", error);
+    });
+}
 
 /* eslint-disable no-undef */
 window.addEventListener("load", () => {
-  originalHTML = document.body.innerHTML;
+  getStoreHTML();
   sendPageContent();
+  originalHTML = document.body.innerHTML;
+  // selectHighLightAPI();
+  getStoreHTML2();
+  function getStoreHTML() {
+    const URL = getURL();
+    chrome.storage.local.get([URL], function (result) {
+      const data = result[URL];
 
-  init();
+      if (data) {
+        document.body.innerHTML = data;
+        console.log(data);
+        // HTML이 적용된 후 스타일 및 스크립트 재적용
+        requestAnimationFrame(() => {
+          applyBeeStyles();
+          init();
+        });
+      } else {
+        init();
+      }
+    });
+  }
+  function applyBeeStyles() {
+    const beeTags = document.querySelectorAll("bee");
+    const beeData = Array.from(beeTags).map((tag) => {
+      return {
+        dataId: tag.getAttribute("data-id"),
+        backgroundColor: window.getComputedStyle(tag).backgroundColor,
+      };
+    });
 
+    beeData.forEach(({ dataId, backgroundColor }) => {
+      highLightHover(dataId, backgroundColor, getHoverColor(backgroundColor));
+    });
+  }
   setTimeout(() => {
     if (getDomain() === "n.news.naver.com") {
       document.body.innerHTML = originalHTML;
@@ -55,7 +106,18 @@ window.addEventListener("load", () => {
             range.setStart(currentNode, startIndex);
             range.setEnd(currentNode, startIndex + target.length);
 
-            dragHighlight(range, YELLOW_COLOR);
+            const rangeData = createRangeData({
+              content: range.toString(),
+              startIndex: JSON.stringify(getTrack(range.startContainer)),
+              startOffset: range.startOffset,
+              lastIndex: JSON.stringify(getTrack(range.endContainer)),
+              lastOffset: range.endOffset,
+              color: GRAY_COLOR,
+            });
+            rangeData.id = idx--;
+            processHighlight(rangeData, GRAY_COLOR_H);
+            RECOMMEND_DATA_ARR.push(rangeData);
+            // dragHighlight(range, YELLOW_COLOR);
           }
         }
       }
@@ -66,26 +128,6 @@ window.addEventListener("load", () => {
     }
 
     traverse(node);
-  }
-
-  function sendPageContent() {
-    chrome.storage.sync.get(["GETSBEE_LOGIN"], function (result) {
-      accessToken = result.GETSBEE_LOGIN.accessToken;
-      refreshToken = result.GETSBEE_LOGIN.refreshToken;
-      userState = result.GETSBEE_LOGIN.userState;
-      chrome.runtime.sendMessage({
-        type: "SEND_BROWSER_INFO",
-        hostName: getDomain(),
-        resultArr: resultArr,
-        HTMLContent: document.documentElement.outerHTML,
-        accessToken: result.GETSBEE_LOGIN.accessToken,
-        refreshToken: result.GETSBEE_LOGIN.refreshToken,
-        userState: result.GETSBEE_LOGIN.userState,
-      });
-      setTimeout(() => {
-        selectHighLightAPI();
-      }, 500);
-    });
   }
 
   function init() {
@@ -230,9 +272,15 @@ window.addEventListener("load", () => {
   });
   window.addEventListener("message", (event) => {
     if (event.data.type === "TOKEN_UPDATE") {
-      console.log("!23");
       chrome.storage.sync.set({ GETSBEE_LOGIN: event.data }, function () {
         sendPageContent();
+      });
+    }
+    if (event.data.type === "TOKEN_DELETE") {
+      chrome.storage.sync.remove("GETSBEE_LOGIN", function () {
+        sendPageContent();
+        accessToken = "";
+        refreshToken = "";
       });
     }
   });
@@ -243,4 +291,21 @@ function displayTooltip(left, top) {
   tooltip.style.top = `${top}px`;
   tooltip.style.visibility = "visible";
   tooltip.style.opacity = "1";
+}
+function sendPageContent() {
+  chrome.storage.sync.get(["GETSBEE_LOGIN"], function (result) {
+    accessToken = result.GETSBEE_LOGIN.accessToken;
+    refreshToken = result.GETSBEE_LOGIN.refreshToken;
+    userState = result.GETSBEE_LOGIN.userState;
+
+    chrome.runtime.sendMessage({
+      type: "SEND_BROWSER_INFO",
+      hostName: getDomain(),
+      resultArr: resultArr,
+      HTMLContent: document.documentElement.outerHTML,
+      accessToken: result.GETSBEE_LOGIN.accessToken,
+      refreshToken: result.GETSBEE_LOGIN.refreshToken,
+      userState: result.GETSBEE_LOGIN.userState,
+    });
+  });
 }

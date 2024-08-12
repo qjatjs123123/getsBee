@@ -25,7 +25,7 @@ function Content() {
     function traverse(currentNode) {
       if (currentNode.nodeType === Node.TEXT_NODE) {
         const parentElement = currentNode.parentNode;
-        const sentencePattern = /(?<=[.!?])\s+(?=[A-Z])/g;
+        const sentencePattern = /(?<=[.!?])\s+/g;
         const textContent = currentNode.textContent.trim();
 
         const tagName = parentElement.tagName.toLowerCase();
@@ -101,23 +101,19 @@ function Content() {
       type: "GET_DATA",
     });
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      if (message.type === "SEND_DATA") {
-        const tmp = message.data.resultArr;
+      const tmp = message.data.resultArr;
 
-        if (tmp.length !== 0) {
-          setResult(tmp);
-          return;
-        }
-
-        // 사용 예시
-        extractMainContent(message.data.HTMLContent)
-          .then((result) => {
-            extractTextNodes(result.node);
-          })
-          .catch((err) => {
-            console.error(err);
-          });
+      if (tmp.length !== 0) {
+        setResult(tmp);
+        return;
       }
+
+      // 사용 예시
+      extractMainContent(message.data.HTMLContent)
+        .then((result) => {
+          extractTextNodes(result.node);
+        })
+        .catch((err) => {});
     });
   }, []);
 
@@ -168,8 +164,7 @@ function Content() {
 
       // 정렬된 키를 사용하여 textContents 배열에서 문장을 추출
       const sortedTextContents = sortedKeys.map((key) => textContents[key]);
-      console.log(result1);
-      console.log(sortedTextContents);
+
       setResult(sortedTextContents);
       // console.log(textContents, sortedValues);
       chrome.runtime.sendMessage({

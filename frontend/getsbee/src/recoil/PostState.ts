@@ -1,5 +1,5 @@
 import { atom, selectorFamily } from 'recoil';
-import { getPostsByDirectory, getPostsByMember } from '../api/PostApi';
+import { getPostsByDirectory, getPostsByMember, getPostsBySearch } from '../api/PostApi';
 
 interface Post {
   postId: number;
@@ -97,6 +97,16 @@ export const getPostsByMemberState = selectorFamily<PostsData, { memberId: numbe
     ({ memberId, cursor, size }) =>
     async () => {
       const data = await getPostsByMember(memberId, cursor, size);
+      return data;
+    },
+});
+
+export const getPostsBySearchState = selectorFamily<PostsData, { query: string; cursor?: number; size?: number }>({
+  key: 'getPostsBySearchState',
+  get:
+    ({ query, cursor, size }) =>
+    async () => {
+      const data = await getPostsBySearch(query, cursor, size);
       return data;
     },
 });

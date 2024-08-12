@@ -21,3 +21,14 @@ export const getPostsByMember = async (memberId: number, cursor?: number, size: 
   });
   return response.data.data;
 };
+
+export const getPostsBySearch = async (query: string, cursor?: number, size: number = 20) => {
+  const response = await axios.get('/posts', {
+    params: {
+      query,
+      cursor,
+      size,
+    },
+  });
+  return response.data.data;
+};
