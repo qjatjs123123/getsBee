@@ -46,17 +46,19 @@ const Feed = forwardRef<HTMLDivElement, FeedProps>(
     };
 
     const handleBookmarkToggle = async () => {
-      const updatedInfo = {
-        ...info,
-        isBookmarkedByCurrentUser: !info.isBookmarkedByCurrentUser,
-      };
-      onUpdateFeed({ post, member, directory, highlight, info: updatedInfo });
+      const newBookmarkState = info.isBookmarkedByCurrentUser;
 
       try {
-        await toggleBookmarkAPI(post.postId, info.isBookmarkedByCurrentUser);
+        await toggleBookmarkAPI(post.postId, newBookmarkState);
+
+        const updatedInfo = {
+          ...info,
+          isBookmarkedByCurrentUser: !newBookmarkState,
+        };
+        onUpdateFeed({ post, member, directory, highlight, info: updatedInfo });
       } catch (error) {
         console.error('Failed to toggle bookmark:', error);
-        onUpdateFeed({ post, member, directory, highlight, info });
+        // API 호출이 실패하면 상태를 업데이트하지 않습니다.
       }
     };
 

@@ -82,7 +82,7 @@ const Home: React.FC = () => {
                   {...item}
                   url={item.post.url}
                   ref={index === feedPosts.length - 1 ? lastPostElementRef : undefined}
-                  className={`${index > 0 ? 'mt-4' : ''} ${index === feedPosts.length - 1 ? 'mb-12' : ''} w-full max-w-[500px]`}
+                  className={`${index > 0 ? 'mt-4' : ''} ${index === feedPosts.length - 1 ? 'mb-12' : ''} w-full mr-4 max-w-[500px] scale-103`}
                   onClick={() => handleFeedClick(item.post.url)}
                   isSelected={item.post.url === selectedUrl}
                   onUpdateFeed={updateFeedItem}
