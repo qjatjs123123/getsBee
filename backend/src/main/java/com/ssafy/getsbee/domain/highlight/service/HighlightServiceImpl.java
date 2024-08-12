@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.highlight.dto.request.CreateHighlightRequest;
+import com.ssafy.getsbee.domain.highlight.dto.request.HighlightsRequest;
 import com.ssafy.getsbee.domain.highlight.dto.request.UpdateHighlightRequest;
 import com.ssafy.getsbee.domain.highlight.dto.request.UpdateIndexHighlight;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
@@ -73,37 +74,11 @@ public class HighlightServiceImpl implements HighlightService {
         highlightRepository.save(highlight);
 
         String message = request.message();
-        String s3Url = saveMessageToS3(message);
-
-        post.changeBodyUrl(s3Url);
-        postRepository.save(post);
+        saveMessageToS3(message, post);
         
         postElasticService.savePostDocument(highlight);
         return HighlightResponse.of(highlight.getId());
     }
-
-    private String saveMessageToS3(String message) {
-        String directoryPath = directoryBodyPath;
-
-        String fileName = UUID.randomUUID() + ".txt";
-        File tempFile = null;
-
-        try {
-            tempFile = new File(System.getProperty("java.io.tmpdir"), fileName);
-            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
-                fos.write(message.getBytes(StandardCharsets.UTF_8));
-            }
-            return s3Service.uploadFile(tempFile, directoryPath);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to convert message to file", e);
-        } finally {
-            if (tempFile != null && tempFile.exists()) {
-                tempFile.delete();
-            }
-        }
-    }
-
-
 
     @Override
     @Transactional
@@ -120,9 +95,14 @@ public class HighlightServiceImpl implements HighlightService {
         postElasticService.deleteHighlightDocument(highlight);
         highlightRepository.delete(highlight);
 
-        if(post.getHighlights() == null && post.getNote()== null){
+        if(post.getHighlights().isEmpty() && post.getNote()== null){
             postRepository.delete(post);
         }
+        Long postId = post.getId();
+
+        String directoryPath = directoryBodyPath;
+        String fileName = directoryPath + "/" + postId + ".txt";
+        s3Service.deleteS3(fileName);
     }
 
     @Override
@@ -137,6 +117,14 @@ public class HighlightServiceImpl implements HighlightService {
         }
         highlight.changeColor(request.color());
         highlightRepository.save(highlight);
+
+        Post post = highlight.getPost();
+
+        String directoryPath = directoryBodyPath;
+        String fileName = directoryPath + "/" + post.getId() + ".txt";
+        s3Service.deleteS3(fileName);
+
+        saveMessageToS3(request.message(), post);
     }
 
     @Override
@@ -171,5 +159,34 @@ public class HighlightServiceImpl implements HighlightService {
                     , updateIndexHighlight.lastIndex(), updateIndexHighlight.lastOffset());
             highlights.add(highlight);
         });
+    }
+
+    @Override
+    public String showBodyFromUrlAndMemberId(HighlightsRequest highlightsRequest) {
+        Member member = memberService.findById(highlightsRequest.memberId());
+        Post post = postRepository.findByMemberAndUrl(member, highlightsRequest.url())
+                .orElseThrow(() -> new BadRequestException(POST_NOT_FOUND));
+
+        return post.getBodyUrl();
+    }
+
+
+    private String saveMessageToS3(String message, Post post) {
+        Long postId = post.getId();
+        String directoryPath = directoryBodyPath;
+        String fileName = postId + ".txt";
+
+        try {
+            File tempFile = new File(System.getProperty("java.io.tmpdir"), fileName);
+            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+                fos.write(message.getBytes(StandardCharsets.UTF_8));
+            }
+            String s3Url = s3Service.uploadFile(tempFile, directoryPath);
+            post.changeBodyUrl(s3Url);
+            return s3Url;
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to convert message to file", e);
+        }
     }
 }

@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotNull;
 
 public record HighlightsRequest(
         @NotNull
-        String url
+        String url,
+
+        Long memberId
 ) {
 }

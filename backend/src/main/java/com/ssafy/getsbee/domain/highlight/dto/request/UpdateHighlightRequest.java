@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotNull;
 
 public record UpdateHighlightRequest(
         @NotNull
-        String color
+        String color,
+
+        String message
 ) {
 }
