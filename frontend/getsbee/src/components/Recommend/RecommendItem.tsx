@@ -2,47 +2,18 @@ import React from 'react';
 import { Card } from 'primereact/card';
 import defaultThumbnail from '../../assets/defaultThumbnail.png';
 import { formatDate } from '../util/util';
+import { RelatedPostItem } from '../../api/RecommendAPI'; // 경로는 실제 파일 위치에 맞게 조정해야 합니다
 
-const RecommendItem = () => {
-  const data = {
-    post: {
-      postId: 1,
-      title: 'Post Title 1',
-      url: 'https://example.com/post1',
-      thumbnail: defaultThumbnail,
-      note: 'This is a note for Post 1',
-      isPublic: true,
-      viewCount: 123,
-      likeCount: 45,
-      bookmarkCount: 10,
-      createdAt: '2023-01-01T00:00:00Z',
-    },
-    member: {
-      memberId: 123,
-      memberName: 'Dayhun',
-      memberPicture: 'https://s3.example.com/thumbnail1.jpg',
-    },
-    directory: {
-      directoryId: 123,
-      directoryName: 'example directory',
-    },
-    highlight: {
-      highlightColors: ['yellow', 'green'],
-      highlightNumber: 4,
-      firstHighlightColor: 'yellow',
-      firstHighlightContent: 'first hightlight content example',
-    },
-    info: {
-      isLikedByCurrentUser: true,
-      isBookmarkedByCurrentUser: false,
-      relatedFeedNumber: 100,
-    },
-  };
+interface RecommendItemProps {
+  data: RelatedPostItem;
+}
+
+const RecommendItem: React.FC<RecommendItemProps> = ({ data }) => {
   const formattedCreatedAt = formatDate(data.post.createdAt);
 
   const header = (
     <div className="w-full h-48 overflow-hidden rounded-t-lg">
-      <img alt="Card" src={data.post.thumbnail} className="w-full h-full object-cover" />
+      <img alt="Card" src={data.post.thumbnail || defaultThumbnail} className="w-full h-full object-cover" />
     </div>
   );
   const footer = (
