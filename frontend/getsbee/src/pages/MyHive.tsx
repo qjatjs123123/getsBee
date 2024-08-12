@@ -7,7 +7,6 @@ import SideBar from '../components/Common/SideBar';
 import Menu from '../components/Common/Menu';
 import Post from '../components/Contents/Post';
 import PostDetail from '../components/Contents/PostDetail';
-import SubSearchBar from '../components/Common/SubSearchBar';
 import DirectoryNav from '../components/Directory/DirectoryNav';
 import { getPostsByMemberState } from '../recoil/PostState';
 
@@ -90,7 +89,6 @@ const MyHive: React.FC = () => {
         </div>
         <div className="flex flex-grow overflow-hidden">
           <div className="flex flex-col items-center w-[465px] p-4 border-r overflow-y-auto scrollbar-hide">
-            <SubSearchBar />
             {posts.map((postData) => (
               <div
                 key={postData.post.postId}

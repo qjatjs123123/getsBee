@@ -30,7 +30,7 @@ const DirectoryUpdate: React.FC = () => {
         <div className="flex justify-between items-center border-b ml-6">
           <div className="flex items-center space-x-2 mt-[75px] mb-[5px]">
             <img src={folderIcon} alt="Folder" className="w-6 h-5" />
-            <p className="text-[#CC9C00] text-[24px] ml-2 font-bold">디렉토리 수정하기</p>
+            <p className="text-[#CC9C00] text-[24px] ml-2 font-bold">디렉토리 수정</p>
           </div>
           <div className="mb-[33px] mr-[12px]">
             <Menu />

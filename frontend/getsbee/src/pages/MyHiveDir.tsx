@@ -7,7 +7,6 @@ import SideBar from '../components/Common/SideBar';
 import Menu from '../components/Common/Menu';
 import Post from '../components/Contents/Post';
 import PostDetail from '../components/Contents/PostDetail';
-import SubSearchBar from '../components/Common/SubSearchBar';
 import DirectoryNav from '../components/Directory/DirectoryNav';
 import { getPostsByDirectoryState } from '../recoil/PostState';
 import { DirectoryInfo, getDirectoryInfo } from '../api/DirectoryApi';
@@ -38,6 +37,12 @@ const MyHiveDir: React.FC = () => {
 
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    if (postLoadable.state === 'hasValue') {
+      console.log('Left side contents (posts):', postLoadable.contents.content);
+    }
+  }, [postLoadable.state, postLoadable.contents]);
 
   useEffect(() => {
     if (postLoadable.state === 'hasValue' && postLoadable.contents.content.length > 0) {
@@ -171,7 +176,6 @@ const MyHiveDir: React.FC = () => {
         </div>
         <div className="flex flex-grow overflow-hidden">
           <div className="flex flex-col items-center w-[465px] p-4 border-r overflow-y-auto scrollbar-hide">
-            <SubSearchBar />
             {posts.map((postData) => (
               <div
                 key={postData.post.postId}

@@ -72,6 +72,7 @@ const DirectoryNav: React.FC<DirectoryNavProps> = ({
     } finally {
       setIsProcessing(false);
       setDialogKey((prevKey) => prevKey + 1);
+      window.location.reload();
     }
   };
 
@@ -103,7 +104,11 @@ const DirectoryNav: React.FC<DirectoryNavProps> = ({
         <Button
           label={isFollowing ? '팔로잉' : '팔로우'}
           icon={isFollowing ? 'pi pi-check' : 'pi pi-plus'}
-          className={`ml-4 ${isFollowing ? 'font-bold bg-gray-300 text-gray-700 border-2 border-gray-300 hover:bg-gray-400' : 'font-bold bg-[#FFBF09] border-2 border-[#FFBF09] shadow-none hover:bg-[#E5AB08]'}`}
+          className={`px-3 py-1 rounded-md text-sm ${
+            isFollowing
+              ? 'font-bold bg-gray-300 text-gray-700 border-2 border-gray-300 hover:bg-gray-400'
+              : 'font-bold bg-[#FFBF09] border-2 border-[#FFBF09] shadow-none hover:bg-[#E5AB08]'
+          }`}
           onClick={handleFollowClick}
           disabled={isProcessing}
         />

@@ -210,9 +210,29 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
     });
   };
 
+  const headerTemplate = (
+    <div className="flex justify-end items-center w-full">
+      <Button icon="pi pi-plus" className="p-button-rounded text-black p-button-text" onClick={() => addNode(null)} />
+    </div>
+  );
+
+  const nameTemplate = (node: NodeData) => {
+    if (isSpecialDirectory(node.name)) {
+      return <span>{node.name}</span>;
+    }
+
+    return (
+      <InputText
+        value={node.name}
+        onChange={(e) => updateNode(node.directoryId, e.target.value)}
+        className="w-3/4 p-inputtext-sm"
+      />
+    );
+  };
+
   const actionTemplate = (node: NodeData) => {
     if (isSpecialDirectory(node.name)) {
-      return null; // 특별한 디렉토리에 대해서는 액션 버튼을 표시하지 않음
+      return null;
     }
 
     return (
@@ -233,20 +253,6 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
     );
   };
 
-  const nameTemplate = (node: NodeData) => {
-    if (isSpecialDirectory(node.name)) {
-      return <span>{node.name}</span>; // 특별한 디렉토리의 이름은 편집 불가능한 텍스트로 표시
-    }
-
-    return (
-      <InputText
-        value={node.name}
-        onChange={(e) => updateNode(node.directoryId, e.target.value)}
-        className="w-3/4 p-inputtext-sm"
-      />
-    );
-  };
-
   if (loading) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;
   }
@@ -256,18 +262,15 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
       <Toast ref={toast} />
       <div className="p-4 w-2/3 max-w-3xl">
         <ConfirmDialog />
-        <div className="mb-4 flex justify-end items-center space-x-4">
-          <Button
-            label="Add Root Directory"
-            icon="pi pi-plus"
-            className="font-bold text-black"
-            text
-            onClick={() => addNode(null)}
-          />
-        </div>
         <TreeTable value={nodes} className="p-treetable-sm">
-          <Column field="name" header={`${username}'s directory`} body={nameTemplate} expander />
-          <Column body={actionTemplate} style={{ width: '150px' }} />
+          <Column
+            field="name"
+            header={() => <div className="pl-3 font-bold text-lg">{`${username}'s directory`}</div>}
+            body={nameTemplate}
+            expander
+            style={{ width: '70%' }}
+          />
+          <Column header={headerTemplate} body={actionTemplate} style={{ width: '30%' }} />
         </TreeTable>
         <div className="mt-4 flex justify-end">
           <Button
