@@ -24,4 +24,6 @@ public interface PostRepositoryCustom {
     List<Post> showHotPostList();
 
     Long countPostsByMember(Member member);
+
+    List<Post> findAllNotInInterest();
 }

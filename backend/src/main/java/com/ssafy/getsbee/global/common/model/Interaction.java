@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Interaction {
 
-    VIEW("VIEW", 2),
+    VIEW("VIEW", 1),
     LIKE("LIKE", 2),
     CREATE("CREATE", 3),
     COMMENT("COMMENT", 1),

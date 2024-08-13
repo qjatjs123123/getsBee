@@ -53,6 +53,8 @@ cloud:
         member: ${DIRECTORY_MEMBER}
         post: ${DIRECTORY_POST}
         body: ${DIRECTORY_BODY}
+    lambda:
+      url: ${LAMBDA_URL}
 logging:
   level:
     com:
@@ -89,7 +91,7 @@ spring:
 logging:
   level:
     root: warn
-    com.ssafy.getsbee.global.util: info
+    com.ssafy.getsbee.global.util.LogUtil: info
   file:
     path: ./logs
   logback:
