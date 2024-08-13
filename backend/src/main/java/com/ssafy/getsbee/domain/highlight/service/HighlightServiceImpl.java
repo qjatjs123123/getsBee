@@ -70,9 +70,6 @@ public class HighlightServiceImpl implements HighlightService {
 
         Highlight highlight = request.toHighlightEntity(post);
         highlightRepository.save(highlight);
-
-        String message = request.message();
-        saveMessageToS3(message, post);
         
         postElasticService.savePostDocument(highlight);
         return HighlightResponse.of(highlight.getId());
@@ -96,7 +93,6 @@ public class HighlightServiceImpl implements HighlightService {
         if(post.getHighlights().isEmpty() && post.getNote()== null){
             postRepository.delete(post);
         }
-        saveMessageToS3(request.message(), post);
     }
 
     @Override
@@ -111,8 +107,6 @@ public class HighlightServiceImpl implements HighlightService {
         highlight.changeColor(request.color());
         highlightRepository.save(highlight);
 
-        Post post = highlight.getPost();
-        saveMessageToS3(request.message(), post);
     }
 
     @Override
@@ -156,6 +150,15 @@ public class HighlightServiceImpl implements HighlightService {
         return S3UrlResponse.from(postRepository.findByMemberAndUrl(member, highlightsRequest.url())
                 .map(Post::getBodyUrl)
                 .orElse(null));
+    }
+
+    @Override
+    public S3UrlResponse modifyHighlightBody(modifyHighlightBodyResponse modifyHighlightBodyResponse) {
+        Highlight highlight = highlightRepository.findById(modifyHighlightBodyResponse.highlightId())
+                .orElseThrow(() -> new BadRequestException(HIGHLIGHT_NOT_FOUND));
+        Post post = highlight.getPost();
+        saveMessageToS3(modifyHighlightBodyResponse.message(), post);
+        return S3UrlResponse.from(post.getBodyUrl());
     }
 
     private void saveMessageToS3(String message, Post post) {
