@@ -19,7 +19,7 @@ public interface PostRepositoryCustom {
 
     Slice<Post> findAllByUrlAndIdLessThan(String url, Long cursor, Pageable pageable);
 
-    Slice<Post> findAllByCategory(List<Category> categories, Pageable pageable);
+    Slice<Post> findAllByCategory(List<Category> categories, Long postId, Pageable pageable);
 
     List<Post> showHotPostList();
 
