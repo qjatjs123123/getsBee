@@ -1,12 +1,18 @@
 import axios from './axiosConfig';
 
 export const getFollowingMemberList = async (memberId: number) => {
+  if (memberId === 0) {
+    return;
+  }
   const response = await axios.get(`/follows/following/members/${memberId}`);
 
   return response.data;
 };
 
 export const getFollowerMemberList = async (memberId: number) => {
+  if (memberId === 0) {
+    return;
+  }
   const response = await axios.get(`/follows/follower/members/${memberId}`);
 
   return response.data;

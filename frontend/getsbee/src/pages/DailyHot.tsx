@@ -95,7 +95,7 @@ const DailyHot: React.FC = () => {
               className="flex flex-col flex-grow p-4 items-start overflow-y-auto scrollbar-hide"
               style={{ height: 'calc(100vh - 100px)', paddingBottom: '2rem' }}
             >
-              <div className="flex items-center mb-4">
+              <div className="flex items-center">
                 <img src={honeyComb} alt="honeyComb" className="w-9" />
                 <p className="ml-1 text-[#CC9C00] font-semibold text-[22px]">Others&apos; Highlights</p>
               </div>

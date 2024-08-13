@@ -1,19 +1,18 @@
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import starIcon from '../../assets/starIcon.png';
 import stargIcon from '../../assets/stargIcon.png';
 import { deleteFollow, createFollow } from '../../api/FollowingListApi';
 
 const FollowingItem = ({ item, showStarIcon }) => {
+  const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
   const location = useLocation();
   const memberEmail = item.member.memberEmail.split('@')[0];
 
   const isFollowerPage = location.pathname.includes('follower');
 
-  const handleStarClick = async (event) => {
-    event.stopPropagation(); // 부모의 클릭 이벤트가 발생하지 않도록 함
-
+  const handleStarClick = async () => {
     if (showStarIcon) {
       const confirmed = window.confirm('정말로 팔로우를 취소하시겠습니까?');
       if (!confirmed) {
@@ -23,13 +22,11 @@ const FollowingItem = ({ item, showStarIcon }) => {
     } else {
       await createFollow(item.directory.directoryId); // 팔로우 생성
     }
-
-    // Since we don't manage internal state anymore, the parent component should re-render to reflect changes.
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLImageElement>) => {
     if (event.key === 'Enter' || event.key === ' ') {
-      handleStarClick(event);
+      handleStarClick();
     }
   };
 
@@ -37,17 +34,22 @@ const FollowingItem = ({ item, showStarIcon }) => {
     navigate(`/myhive/${memberEmail}/${item.directory.directoryId}`);
   };
 
+  const moveToMember1 = () => {
+    navigate(`/myhive/${username}/${item.directory.directoryId}`);
+  };
+
+  const moveToMemberProfile = () => {
+    navigate(`/myhive/${memberEmail}`);
+  };
+
   return (
     <div
       className="relative border rounded-[6px] m-3 p-2 md:w-54 w-64"
       style={{
-        height: '6.5rem',
+        height: '7rem',
         borderColor: '#EFEFEF',
         borderWidth: '2px',
       }}
-      onClick={moveToMember}
-      role="button"
-      tabIndex={0}
     >
       {!isFollowerPage && (
         <div className="absolute top-2 left-4 text-[12px] text-blue-600">
@@ -58,23 +60,45 @@ const FollowingItem = ({ item, showStarIcon }) => {
       {!isFollowerPage ? (
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <p className="ml-2 mt-4 text-[16px] text-[#5C5C5C] font-bold hover:text-blue-700">
-              {item.directory.directoryName}
+            <p
+              className="ml-2 mt-4 text-[16px] text-[#5C5C5C] font-bold hover:text-blue-700"
+              onClick={moveToMember}
+              role="button"
+              tabIndex={0}
+            >
+              {item.directory.directoryName.split(' / ').map((name, index) => (
+                <React.Fragment key={index}>
+                  {index > 0 && '/ '}
+                  {name}
+                  <br />
+                </React.Fragment>
+              ))}
             </p>
           </div>
         </div>
       ) : (
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <p className="ml-2 mt-1 text-[16px] text-[#5C5C5C] font-bold hover:text-blue-700">
-              {item.directory.directoryName}
+            <p
+              className="ml-2 mt-1 text-[16px] text-[#5C5C5C] font-bold hover:text-blue-700"
+              onClick={moveToMember1}
+              role="button"
+              tabIndex={0}
+            >
+              {item.directory.directoryName.split(' / ').map((name, index) => (
+                <React.Fragment key={index}>
+                  {index > 0 && '/ '}
+                  {name}
+                  <br />
+                </React.Fragment>
+              ))}
             </p>
           </div>
         </div>
       )}
 
       <div className="absolute bottom-2 left-4 flex items-center">
-        <div className="flex">
+        <div className="flex" onClick={moveToMemberProfile} role="button" tabIndex={0}>
           <img src={item.member.picture} alt={item.member.memberName} className="w-[22px] h-[22px] rounded-full" />
           <p className="ml-1 text-[#5C5C5C] text-[14px]">{memberEmail}</p>
         </div>
