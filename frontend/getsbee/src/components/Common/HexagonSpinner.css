@@ -1,0 +1,42 @@
+.spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hexagon {
+  width: 100px;
+  height: 57.74px;
+  background-color: #ffcc00;
+  position: relative;
+  margin: 2px;
+  transform: rotate(30deg);
+  animation: spin 1s linear infinite;
+}
+
+.hexagon:before,
+.hexagon:after {
+  content: '';
+  position: absolute;
+  width: 100px;
+  height: 57.74px;
+  background-color: inherit;
+  transform: rotate(60deg);
+}
+
+.hexagon:before {
+  top: -28.87px;
+}
+
+.hexagon:after {
+  bottom: -28.87px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(30deg);
+  }
+  100% {
+    transform: rotate(390deg);
+  }
+}

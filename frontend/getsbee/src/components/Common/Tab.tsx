@@ -5,7 +5,8 @@ const Tab: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
   const items = [
-    { label: 'Following', url: '/' },
+    { label: 'HOT', url: '/' },
+    { label: 'Following', url: '/home' },
     {
       label: 'For you',
       url: '/recommend',
@@ -15,6 +16,8 @@ const Tab: React.FC = () => {
   useEffect(() => {
     const path = window.location.pathname;
     if (path === '/recommend') {
+      setActiveIndex(2);
+    } else if (path === '/home') {
       setActiveIndex(1);
     } else {
       setActiveIndex(0);

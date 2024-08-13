@@ -1,5 +1,5 @@
 import React, { useState, useEffect, KeyboardEvent, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 // eslint-disable-next-line camelcase
 import { useRecoilValueLoadable, useRecoilValue, useRecoilRefresher_UNSTABLE } from 'recoil';
 import { userState, userInfoByEmailPrefixSelector } from '../recoil/userState';
@@ -21,6 +21,7 @@ const MyHiveDir: React.FC = () => {
   const [followId, setFollowId] = useState<number | null>(null);
   const [postCount, setPostCount] = useState<number | null>(null);
   const [directoryInfo, setDirectoryInfo] = useState<DirectoryInfo | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (userInfoLoadable.state === 'hasValue' && userInfoLoadable.contents) {
@@ -101,6 +102,9 @@ const MyHiveDir: React.FC = () => {
       try {
         if (directoryId) {
           const data = await getDirectoryInfo(parseInt(directoryId, 10));
+          if (data.data.memberEmail?.split('@')[0] !== username) {
+            navigate('/error');
+          }
           setDirectoryInfo(data.data);
           updateDirectories(data.data);
           setIsFollowing(data.data.isFollow);
@@ -151,6 +155,8 @@ const MyHiveDir: React.FC = () => {
 
   const posts = postLoadable.contents.content;
 
+  const displayedPostCount = directoryInfo?.directoryName === 'Bookmark' ? posts.length : postCount;
+
   return (
     <div className="flex h-screen">
       <div className="w-56">
@@ -162,7 +168,7 @@ const MyHiveDir: React.FC = () => {
             <DirectoryNav
               userName={username || ''}
               directories={directories}
-              postCount={postCount}
+              postCount={displayedPostCount}
               directoryId={parseInt(directoryId || '0', 10)}
               isFollowing={isFollowing}
               followId={followId}

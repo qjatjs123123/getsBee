@@ -56,3 +56,8 @@ export const fetchPosts = async (cursor: number | null, size: number) => {
   console.log(response.data);
   return response.data;
 };
+
+export const HotPosts = async () => {
+  const response = await axios.get('/posts/hot');
+  return response.data;
+};

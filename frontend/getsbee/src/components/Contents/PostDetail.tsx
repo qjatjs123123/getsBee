@@ -309,7 +309,9 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
       <div className="flex mt-3 ml-3">
         <h2 className="text-[18px] font-bold">Notes</h2>
       </div>
-      <div className="mt-1 ml-3 p-3 border border-gray-300 rounded-[3px] ">{postDetail.note}</div>
+      <div className="mt-1 ml-3 p-3 border border-gray-300 rounded-[3px]" style={{ fontSize: '14px' }}>
+        {postDetail.note}
+      </div>
       <div className="flex mt-3 ml-3">
         <h2 className="text-[18px] font-bold">Comments</h2>
       </div>
@@ -348,8 +350,8 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
               <img src={comment.memberImage} alt="avatar" className="w-[30px] h-[30px] rounded-full mt-2" />
               <div className="ml-3 flex-1">
                 <div className="flex items-center">
-                  <p className="font-semibold mr-2">{comment.memberEmail.split('@')[0]}</p>
-                  <p className="text-[12px]" style={{ color: '#8D8D8D' }}>
+                  <p className="font-semibold mr-2 text-[14px]">{comment.memberEmail.split('@')[0]}</p>
+                  <p className="text-[11px]" style={{ color: '#8D8D8D' }}>
                     {formatDate(comment.createdAt)}
                   </p>
                   {postDetail.isMyPost && comment.isMyComment && (
@@ -360,7 +362,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
                     />
                   )}
                 </div>
-                <p className="text-[14px]">{comment.content}</p>
+                <p className="text-[13px]">{comment.content}</p>
               </div>
             </div>
           ))}

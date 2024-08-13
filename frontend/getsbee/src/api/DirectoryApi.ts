@@ -13,6 +13,10 @@ export interface DirectoryInfo {
 }
 
 export const getDirectories = async (memberId: number) => {
+  if (memberId === 0) {
+    return;
+  }
+
   const response = await axios.get(`/directories`, {
     params: { memberId },
   });

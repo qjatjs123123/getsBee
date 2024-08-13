@@ -1,50 +1,24 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Card } from 'primereact/card';
 import defaultThumbnail from '../../assets/defaultThumbnail.png';
 import { formatDate } from '../util/util';
+import { RelatedPostItem } from '../../api/RecommendAPI';
+import './RecommendItem.css';
 
-const RecommendItem = () => {
-  const data = {
-    post: {
-      postId: 1,
-      title: 'Post Title 1',
-      url: 'https://example.com/post1',
-      thumbnail: defaultThumbnail,
-      note: 'This is a note for Post 1',
-      isPublic: true,
-      viewCount: 123,
-      likeCount: 45,
-      bookmarkCount: 10,
-      createdAt: '2023-01-01T00:00:00Z',
-    },
-    member: {
-      memberId: 123,
-      memberName: 'Dayhun',
-      memberPicture: 'https://s3.example.com/thumbnail1.jpg',
-    },
-    directory: {
-      directoryId: 123,
-      directoryName: 'example directory',
-    },
-    highlight: {
-      highlightColors: ['yellow', 'green'],
-      highlightNumber: 4,
-      firstHighlightColor: 'yellow',
-      firstHighlightContent: 'first hightlight content example',
-    },
-    info: {
-      isLikedByCurrentUser: true,
-      isBookmarkedByCurrentUser: false,
-      relatedFeedNumber: 100,
-    },
-  };
+interface RecommendItemProps {
+  data: RelatedPostItem;
+}
+
+const RecommendItem: React.FC<RecommendItemProps> = ({ data }) => {
   const formattedCreatedAt = formatDate(data.post.createdAt);
 
   const header = (
     <div className="w-full h-48 overflow-hidden rounded-t-lg">
-      <img alt="Card" src={data.post.thumbnail} className="w-full h-full object-cover" />
+      <img alt="Card" src={data.post.thumbnail || defaultThumbnail} className="w-full h-full object-cover" />
     </div>
   );
+
   const footer = (
     <div className="flex justify-between items-center w-full">
       <p>{formattedCreatedAt}</p>
@@ -59,13 +33,19 @@ const RecommendItem = () => {
 
   return (
     <div className="card flex justify-content-center transform scale-90">
-      <Card
-        title={data.post.title}
-        subTitle={`${data.member.memberName}/${data.directory.directoryName}`}
-        footer={footer}
-        header={header}
-        className="w-full max-w-sm"
-      />
+      <Link to={`/posts/${data.post.postId}`} className="flex items-center font-bold">
+        <Card footer={footer} header={header} className="w-full max-w-sm shadow h-[360px] overflow-hidden">
+          <h2 className="text-xl font-bold mb-2 line-clamp-2 min-h-[3.5rem]">{data.post.title}</h2>
+          <Link
+            to={`/myhive/${data.member.memberEmail.split('@')[0]}/${data.directory.directoryId}`}
+            className="flex items-center font-bold"
+          >
+            <p className="ml-1 text-base text-[#8D8D8D] truncate">
+              {`${data.member.memberEmail.split('@')[0]} / ${data.directory.directoryName}`}
+            </p>
+          </Link>
+        </Card>
+      </Link>
     </div>
   );
 };

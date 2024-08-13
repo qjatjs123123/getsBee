@@ -9,6 +9,7 @@ import Post from '../components/Contents/Post';
 import PostDetail from '../components/Contents/PostDetail';
 import DirectoryNav from '../components/Directory/DirectoryNav';
 import { getPostsByMemberState } from '../recoil/PostState';
+import { userHiveInfoByIdSelector } from '../recoil/userState';
 
 const MyHive: React.FC = () => {
   const { username } = useParams<{ username: string }>();
@@ -16,12 +17,21 @@ const MyHive: React.FC = () => {
   const isOwnHive = currentUser?.email.split('@')[0] === username;
   const userInfoLoadable = useRecoilValueLoadable(userInfoByEmailPrefixSelector(username || ''));
   const [memberId, setMemberId] = useState<number | null>(null);
+  const [hiveInfo, setHiveInfo] = useState<any | null>(null);
 
   useEffect(() => {
     if (userInfoLoadable.state === 'hasValue' && userInfoLoadable.contents) {
       setMemberId(userInfoLoadable.contents.memberId);
     }
   }, [userInfoLoadable.state, userInfoLoadable.contents]);
+
+  const hiveInfoLoadable = useRecoilValueLoadable(userHiveInfoByIdSelector(memberId || 0));
+
+  useEffect(() => {
+    if (memberId !== null && hiveInfoLoadable.state === 'hasValue') {
+      setHiveInfo(hiveInfoLoadable.contents);
+    }
+  }, [memberId, hiveInfoLoadable.state, hiveInfoLoadable.contents]);
 
   const userName = username;
   const directories = [];
@@ -75,13 +85,15 @@ const MyHive: React.FC = () => {
       <div className="flex flex-col w-5/6 ml-2">
         <div className="flex justify-between items-center border-b ml-6">
           <div className="mt-[75px] mb-[5px]">
-            <DirectoryNav
-              userName={userName}
-              directories={directories}
-              postCount={posts.length}
-              isOwnHive={true}
-              directoryId={0}
-            />
+            {hiveInfo && (
+              <DirectoryNav
+                userName={userName}
+                directories={directories}
+                postCount={hiveInfo?.postNumber ?? 0}
+                isOwnHive={true}
+                directoryId={0}
+              />
+            )}
           </div>
           <div className="mb-[33px] mr-3">
             <Menu />
