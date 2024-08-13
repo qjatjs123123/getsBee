@@ -173,6 +173,7 @@ public class DirectoryServiceImpl implements DirectoryService {
                 .memberId(member.getId())
                 .memberName(member.getName())
                 .memberPicture(member.getPicture())
+                .memberEmail(member.getEmail())
                 .build();
 
         Follow follow = followRepository.findByFollowingMemberAndFollowedDirectory(member, directory)

@@ -4,6 +4,7 @@ import com.ssafy.getsbee.domain.bookmark.entity.Bookmark;
 import com.ssafy.getsbee.domain.comment.entity.Comment;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.highlight.entity.Highlight;
+import com.ssafy.getsbee.domain.like.entity.Like;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -72,8 +73,8 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post", cascade = REMOVE)
     private List<Bookmark> bookmarks = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "post", cascade = REMOVE)
-//    private List<Like>
+    @OneToMany(mappedBy = "post", cascade = REMOVE)
+    private List<Like> likes = new ArrayList<>();
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "directory_id")
