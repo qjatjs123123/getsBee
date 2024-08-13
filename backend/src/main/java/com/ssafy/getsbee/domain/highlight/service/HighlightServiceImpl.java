@@ -1,6 +1,5 @@
 package com.ssafy.getsbee.domain.highlight.service;
 
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.highlight.dto.request.*;
@@ -17,6 +16,7 @@ import com.ssafy.getsbee.domain.post.service.PostElasticService;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.error.exception.ForbiddenException;
 import com.ssafy.getsbee.global.util.LogUtil;
+import com.ssafy.getsbee.global.util.SecurityUtil;
 import com.ssafy.getsbee.infra.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -158,7 +158,7 @@ public class HighlightServiceImpl implements HighlightService {
     @Override
     @Transactional
     public String showBodyFromUrlAndMemberId(HighlightsRequest highlightsRequest) {
-        Member member = memberService.findById(highlightsRequest.memberId());
+        Member member = memberService.findById(SecurityUtil.getCurrentMemberId());
         Post post = postRepository.findByMemberAndUrl(member, highlightsRequest.url())
                 .orElseThrow(() -> new BadRequestException(POST_NOT_FOUND));
 
