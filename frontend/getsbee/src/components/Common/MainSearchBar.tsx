@@ -8,6 +8,7 @@ const MainSearchBar: React.FC = () => {
   const [value, setValue] = useState<string>('');
   const navigate = useNavigate();
   const location = useLocation();
+  const isDirectorySearch = location.pathname.includes('directory');
 
   useEffect(() => {
     const query = new URLSearchParams(location.search);
@@ -19,7 +20,12 @@ const MainSearchBar: React.FC = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    navigate(`/search/post?query=${encodeURIComponent(value)}`);
+    const searchPath = isDirectorySearch
+      ? `/search/directory?query=${encodeURIComponent(value)}`
+      : `/search/post?query=${encodeURIComponent(value)}`;
+
+    navigate(searchPath);
+    window.location.reload();
     // // submit 로직 추가 필요
     // console.log('Submitted value:', value);
     // // 제출 후 입력 필드를 초기화

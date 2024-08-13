@@ -58,8 +58,14 @@ const SearchPost: React.FC = () => {
 
   useEffect(() => {
     if (initialLoad.current && postLoadable.state === 'hasValue') {
-      setPosts(postLoadable.contents.content || []);
-      setSelectedPostID(postLoadable.contents.content[0].post.postId);
+      const newPosts = postLoadable.contents.content || [];
+      setPosts(newPosts);
+
+      // posts 배열이 비어있지 않으면 첫 번째 post의 ID를 선택
+      if (newPosts.length > 0) {
+        setSelectedPostID(newPosts[0].post.postId);
+      }
+
       initialLoad.current = false;
     } else {
       // Pagination: append new posts

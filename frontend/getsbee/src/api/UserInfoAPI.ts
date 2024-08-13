@@ -30,6 +30,9 @@ export const getUserInfoByEmailPrefix = async (emailPrefix: string) => {
 
 export const getUserInfoById = async (memberId: number) => {
   try {
+    if (memberId === 0) {
+      return;
+    }
     const response = await axios.get(`/members/${memberId}`);
     console.log(response);
     return response;
@@ -41,6 +44,9 @@ export const getUserInfoById = async (memberId: number) => {
 
 export const getUserHiveInfoById = async (memberId: number) => {
   try {
+    if (memberId === 0) {
+      return;
+    }
     const response = await axios.get(`/follows/hiveInfo/members/${memberId}`);
     console.log(response);
     return response;
