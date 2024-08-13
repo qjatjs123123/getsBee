@@ -75,12 +75,13 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
     }
 
     @Override
-    public Slice<Post> findAllByCategory(List<Category> categories, Pageable pageable) {
+    public Slice<Post> findAllByCategory(List<Category> categories, Long postId, Pageable pageable) {
         List<Post> content = jpaQueryFactory.select(post)
                 .from(post)
                 .join(post.directory).fetchJoin()
                 .join(post.highlights).fetchJoin()
-                .where(url(categories),
+                .where(id(postId),
+                        url(categories),
                         isPublic(),
                         postDirectoryName())
                 .limit(pageable.getPageSize() + 1)
@@ -162,6 +163,10 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         }
 
         return new SliceImpl<>(posts, pageable, hasNext);
+    }
+
+    private BooleanExpression id(Long postId) {
+        return postId == null ? null : post.id.ne(postId);
     }
 
     private BooleanExpression url(List<Category> categories) {
