@@ -1,38 +1,46 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import AboutHeader from '../components/Common/AboutHeader';
 import scrap1 from '../assets/scrap1.png';
 import scrap2 from '../assets/scrap2.png';
-import highlightWebSite from '../assets/highlightWebSite.mp4';
-import highlightRecommend from '../assets/highlightRecommend.mp4';
-import aboutmain from '../assets/aboutmain6.png';
+import scrap3 from '../assets/directoryfollow.png';
+import scrap4 from '../assets/othersHighlight.png';
+import highlighting from '../assets/highlighting.mp4';
+import aboutmain from '../assets/aboutmain7.png';
+import { ScrollTop } from 'primereact/scrolltop';
+import './about.css'; // CSS 파일을 import 합니다.
 
 const ScrollComponent: React.FC = () => {
   const [scrollY, setScrollY] = useState<number>(0);
   const videoRef = useRef<HTMLVideoElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
-  const [textSize, setTextSize] = useState<number>(3); // 초기 텍스트 크기
-  const [isFixed, setIsFixed] = useState<boolean>(true); // 텍스트의 고정 상태
-  const [isScrollingEnabled, setIsScrollingEnabled] = useState<boolean>(false); // 스크롤 가능 여부
+  const [textSize, setTextSize] = useState<number>(3);
+  const [isFixed, setIsFixed] = useState<boolean>(true);
+  const [isScrollingEnabled, setIsScrollingEnabled] = useState<boolean>(false);
+  const [showScrollDown, setShowScrollDown] = useState<boolean>(true);
 
   useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.playbackRate = 0.5; // 비디오 속도 조절
+      videoRef.current.playbackRate = 0.5;
     }
 
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
       const sectionTop = sectionRef.current?.offsetTop ?? 0;
-      console.log("scrollPosition: " + scrollPosition);
-      console.log("sectionTop: " + sectionTop);
 
       if (scrollPosition < sectionTop + 200) {
-        const scale = Math.max(0.115, 3 - scrollPosition / 5); // 텍스트 크기 조절
+        const scale = Math.max(0.115, 3 - scrollPosition / 5);
         setTextSize(scale);
-        setIsFixed(true); // 텍스트 고정
-        setIsScrollingEnabled(false); // 스크롤 비활성화
-      } else if (textSize === 1) { // 글자가 완전히 줄어들었을 때만
-        setIsScrollingEnabled(true); // 스크롤 활성화
-        setIsFixed(false); // 텍스트 고정 해제
+        setIsFixed(true);
+        setIsScrollingEnabled(false);
+      } else if (textSize === 1) {
+        setIsScrollingEnabled(true);
+        setIsFixed(false);
+      }
+
+      if (scrollPosition > 100) {
+        setShowScrollDown(false);
+      } else {
+        setShowScrollDown(true);
       }
     };
 
@@ -47,21 +55,44 @@ const ScrollComponent: React.FC = () => {
       setScrollY(window.scrollY);
     };
 
-    // 스크롤 이벤트 리스너 추가
     window.addEventListener('scroll', handleScroll);
-
-    // 컴포넌트 언마운트 시 이벤트 리스너 제거
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
-  // 스크롤 Y 위치에 따라 h1 요소의 top 값을 계산
   const h1Top = scrollY > 600 ? `${50 - (scrollY - 400)}px` : '0px';
+
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = cardRefs.current.indexOf(entry.target as HTMLDivElement);
+            const directionClass = index % 2 === 0 ? 'card-left' : 'card-right';
+            entry.target.classList.add('visible', directionClass);
+            observer.unobserve(entry.target); // 한 번만 애니메이션 실행
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    cardRefs.current.forEach((ref) => {
+      if (ref) {
+        observer.observe(ref);
+      }
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   return (
     <div>
-      {/* 비디오 배경과 텍스트 */}
       <div
         style={{
           position: 'fixed',
@@ -72,56 +103,76 @@ const ScrollComponent: React.FC = () => {
           width: '100%',
           zIndex: 5,
         }}>
-        <AboutHeader />
+        <div className="z-30 relative" style={{ pointerEvents: 'auto' }}>
+          <AboutHeader />
+        </div>
+
+        {showScrollDown && (
+          <div className="flex flex-col items-center absolute opacity-80 bottom-10 bg-[#d9d9d9] left-[45%] py-3 px-8 rounded-[40px] z-10 text-gray-800 justify-center item-center">
+            <i className="pi pi-arrow-circle-down animate-bounce text-4xl"></i>
+            <p className="text-xl">Scroll down</p>
+            <ScrollTop />
+          </div>
+        )}
+
         <div
           ref={sectionRef}
-          className="relative flex flex-col justify-center items-center w-full h-[38rem] bg-[#FDFCE8] mt-[-1rem]"
-          style={{ overflowY: isScrollingEnabled ? 'scroll' : 'hidden' }} // 스크롤 제어
+          className="relative flex flex-col justify-center items-center w-full h-[38rem] bg-[#FDFCE8] mt-[1rem]"
+          style={{ overflowY: isScrollingEnabled ? 'scroll' : 'hidden' }}
         >
-          {/* 배경 비디오 */}
           <video
             ref={videoRef}
             autoPlay
             loop
             muted
-            src={highlightWebSite}
-            className="absolute top- left-0 w-full h-full object-cover"
+            src={highlighting}
+            className="absolute left-0 w-full h-full object-cover"
             style={{ objectPosition: 'bottom' }}
           />
-          {/* 연한 회색 오버레이 */}
-           {/* <div className="absolute top-0 left-0 w-full h-full bg-[#FDFCE8] opacity-50" /> */}
-          {/* 비디오 위에 위치한 콘텐츠 */}
           <div
             style={{
-              transform: `scale(${textSize * 9})`,
+              transform: `scale(${textSize * 9 })`,
               transition: 'transform 0.2s ease-out',
-              position: isFixed ? 'fixed' : 'relative', // 스크롤에 따라 텍스트 위치 조정
-              top: isFixed ? '10%' : 'auto', // 텍스트가 화면 가운데에 고정되도록 설정
+              position: isFixed ? 'fixed' : 'relative',
+              top: isFixed ? '10%' : 'auto',
               zIndex: 10,
             }}
-            className="flex flex-col justify-center items-center text-[#000000] text-5xl">
-            <img src={aboutmain} alt="" />
-            <img src="" alt="" />
+            className="flex flex-col justify-center items-center text-[#000000] text-5xl z-10  w-full">
+            <img 
+              src={aboutmain} 
+              alt="" 
+              className="mt-[2rem]" 
+              style={{ 
+                width: '100%', 
+                height: 'auto', 
+                maxWidth: '100%', 
+                objectFit: 'contain' 
+              }} 
+            />
           </div>
         </div>
       </div>
-      {/* 페이지를 스크롤할 수 있도록 충분히 긴 콘텐츠 */}
+
       <div style={{ height: '1200px' }}></div>
       <div className="flex flex-col justify-center items-center z-10">
-        {/* section 2 */}
-        <div className="flex flex-col w-5/6 mt-10">
-          {/* card 1 */}
-          <div className="flex my-10 justify-around items-center">
+        <div className="flex flex-col w-5/6 mt-16">
+          <div
+            className="card flex my-10 justify-around items-center"
+            ref={(el) => cardRefs.current[0] = el}
+          >
             <img src={scrap1} alt="scrap page" className="w-[35rem] mr-10" />
             <div>
               <div className="w-8 h-8 rounded-full text-[#ffffff] font-semibold text-xl bg-amber-400 flex justify-center items-center">1</div>
               <p className="text-[#5C5C5C] text-2xl pl-5">
-                원하는 Web 사이트에서 <br /> 바로바로 <span className="font-semibold">스크랩</span> 을 진행해보세요.
+                원하는 Web 사이트에서 <br /> 바로바로 <span className="font-semibold">스크랩</span>을 진행해보세요.
               </p>
             </div>
           </div>
-          {/* card 2 */}
-          <div className="flex my-10 justify-around items-center">
+
+          <div
+            className="card flex my-10 justify-around items-center"
+            ref={(el) => cardRefs.current[1] = el}
+          >
             <div className="ml-20">
               <div className="w-8 h-8 rounded-full text-[#ffffff] font-semibold text-xl bg-amber-400 flex justify-center items-center">2</div>
               <p className="text-[#5C5C5C] text-2xl pl-5">
@@ -131,19 +182,8 @@ const ScrollComponent: React.FC = () => {
             </div>
             <img src={scrap2} alt="scrap gemini" className="w-[35rem] ml-10" />
           </div>
-          {/* card 3 */}
-          <div className="flex my-10 justify-around items-center">
-            <img src={scrap2} alt="scrap gemini" className="w-[35rem] ml-10" />
-            <div className="ml-20">
-              <div className="w-8 h-8 rounded-full text-[#ffffff] font-semibold text-xl bg-amber-400 flex justify-center items-center">3</div>
-              <p className="text-[#5C5C5C] text-2xl pl-5">
-                원하는 정보만 보고 싶다!<br />
-                <span className="font-semibold">디렉토리 팔로우</span> 해보세요.
-              </p>
-            </div>
-          </div>
         </div>
-        {/* section 3 */}
+
         <div className="relative flex flex-col justify-center items-center w-full h-[30rem] bg-[#FDFCE8]">
           <div className="relative flex flex-col justify-center items-center text-gray-500">
             <p className="text-3xl font-semibold mb-3">Highlight Extension :</p>
@@ -159,8 +199,54 @@ const ScrollComponent: React.FC = () => {
             />
           </div>
         </div>
+
+        <div className="flex flex-col w-5/6 mt-10">
+          <div
+            className="card flex my-10 justify-around items-center"
+            ref={(el) => cardRefs.current[2] = el}
+          >
+            <img src={scrap3} alt="scrap gemini" className="w-[35rem]" />
+            <div className="ml-4">
+              <div className="w-8 h-8 rounded-full text-[#ffffff] font-semibold text-xl bg-amber-400 flex justify-center items-center">3</div>
+              <p className="text-[#5C5C5C] text-2xl pl-5">
+                Directory의 Follow 기능을 통해 <br />
+                <span className="font-semibold">하이라이트</span>를<br />
+                관리하고 발전시켜보세요.
+              </p>
+            </div>
+          </div>
+
+          <div
+            className="card flex my-10 justify-around items-center px-[5rem]"
+            ref={(el) => cardRefs.current[3] = el}
+          >
+            <div className="ml-10 ">
+              <div className="w-8 h-8 rounded-full text-[#ffffff] font-semibold text-xl bg-amber-400 flex justify-center items-center">4</div>
+              <p className="text-[#5C5C5C] text-2xl pl-4 mr-16">
+                getsBee와 함께 여러분의 <br />
+                <span className="font-semibold">하이라이트</span>를 <br />
+                함께 제공합니다.
+              </p>
+            </div>
+            <img src={scrap4} alt="scrap gemini" className="w-[35rem] ml-[10rem]" />
+          </div>
+
+          <div
+            className="card flex my-10 justify-around items-center"
+            ref={(el) => cardRefs.current[4] = el}
+          >
+            <img src={scrap1} alt="scrap page" className="w-[35rem] mr-10" />
+            <div>
+              <div className="w-8 h-8 rounded-full text-[#ffffff] font-semibold text-xl bg-amber-400 flex justify-center items-center">5</div>
+              <p className="text-[#5C5C5C] text-2xl pl-5">
+                AWS Personalize에게 <br />
+                <span className="font-semibold">관련 포스트 추천</span>을 받아보세요.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
-      {/* footer */}
+
       <div className="flex justify-center items-center pt-10">
         <p className="text-xl text-[#5C5C5C]">© 2024 getsBee. All rights reserved.</p>
       </div>

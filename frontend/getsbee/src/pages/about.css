@@ -1,0 +1,43 @@
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.card-left {
+  opacity: 0;
+  transform: translateX(-100%);
+  animation: slideInLeft 1.5s ease-out forwards;
+}
+
+.card-right {
+  opacity: 0;
+  transform: translateX(100%);
+  animation: slideInRight 1.5s ease-out forwards;
+}
+
+.card.visible-left {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.card.visible-right {
+  opacity: 1;
+  transform: translateX(0);
+}
