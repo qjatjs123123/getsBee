@@ -29,21 +29,23 @@ const SearchDirectory: React.FC = () => {
 
   useEffect(() => {
     if (postLoadable.state === 'hasValue' && postLoadable.contents && postLoadable.contents.data.content) {
-      console.log("content.data.content: ", postLoadable.contents.data.content);
-      
-      const newItems = postLoadable.contents.data.content.map((item) => <DirectorySearchItem key={item.id} item={item} />);
-      
+      console.log('content.data.content: ', postLoadable.contents.data.content);
+
+      const newItems = postLoadable.contents.data.content.map((item) => (
+        <DirectorySearchItem key={item.id} item={item} />
+      ));
+
       if (isMounted) {
         setFollowItems((prevItems) => [...prevItems, ...newItems]);
-        
+
         if (postLoadable.contents.data.content.length > 0) {
           const lastItem = postLoadable.contents.data.content[postLoadable.contents.data.content.length - 1];
           const newCursor = lastItem.directory.directoryId;
           setCursor(newCursor); // 마지막 아이템 ID를 커서로 설정
-          
-          console.log("lastItemId: ", newCursor);
+
+          console.log('lastItemId: ', newCursor);
         } else {
-          console.log("No items in content.data.content.");
+          console.log('No items in content.data.content.');
           setHasMore(false); // 데이터가 없으므로 더 이상 로드할 필요 없음
         }
 
@@ -55,7 +57,7 @@ const SearchDirectory: React.FC = () => {
 
   // `cursor` 값의 변화를 감지하여 로그를 찍는 useEffect
   useEffect(() => {
-    console.log("cursor updated: ", cursor);
+    console.log('cursor updated: ', cursor);
   }, [cursor]);
 
   // 스크롤 이벤트 핸들러
@@ -64,10 +66,11 @@ const SearchDirectory: React.FC = () => {
     const windowHeight = window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;
 
-    if (windowHeight + scrollTop >= documentHeight - 1 && hasMore) {//has more
+    if (windowHeight + scrollTop >= documentHeight - 1 && hasMore) {
+      //has more
       // 페이지 끝에 도달했을 때 새로운 데이터 로드
-      console.log("바닥에 닿음 -> 데이터 로드!");
-      postLoadable; 
+      console.log('바닥에 닿음 -> 데이터 로드!');
+      postLoadable;
     }
   }, [hasMore, postLoadable]);
 

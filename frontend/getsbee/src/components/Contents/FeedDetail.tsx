@@ -22,7 +22,7 @@ const FeedDetail: React.FC<FeedDetailProps> = React.memo(({ detail }) => {
       className="mt-5 ml-3 mb-3 bg-white rounded-[12px]"
       style={{ boxShadow: 'none', width: '600px', height: 'auto' }}
     >
-      <div className="p-0 mt-4 ml-4 mr-2">
+      <div className="p-0 mt-4 mr-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Link to={`/myhive/${detail.memberEmail.split('@')[0]}`}>
@@ -55,9 +55,9 @@ const FeedDetail: React.FC<FeedDetailProps> = React.memo(({ detail }) => {
           <p className="mt-2 ml-4" style={{ color: '#72736A' }}>
             {detail.highlights.length} Highlights & Notes
           </p>
-          {detail.highlights.slice(0, isExpanded ? detail.highlights.length : 1).map((highlight) => (
-            <HighlightItem key={highlight.highlightId} text={highlight.content} color={`#${highlight.color}`} />
-          ))}
+          {detail.highlights.slice(0, isExpanded ? detail.highlights.length : 1).map((highlight) => {
+            return <HighlightItem key={highlight.highlightId} text={highlight.content} color={highlight.color} />;
+          })}
           <div className="mt-2 mb-2 mr-2 text-right">
             <Button
               label={isExpanded ? 'Show less' : 'Show more'}

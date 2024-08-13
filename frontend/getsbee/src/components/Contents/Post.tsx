@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { formatDate } from '../util/util';
+import defaultThumbnail from '../../assets/defaultThumbnail.png';
 
 interface PostProps {
   title: string;
   url: string;
-  thumbnail: string;
+  thumbnail?: string;
   viewCount: number;
   directoryName: string;
   createdAt: string;
@@ -24,11 +25,24 @@ const Post: React.FC<PostProps> = ({
 }) => {
   const formattedCreatedAt = formatDate(createdAt);
 
+  const [thumbnailError, setThumbnailError] = useState(false);
+
+  const handleThumbnailError = () => {
+    setThumbnailError(true);
+  };
+
+  const thumbnailSrc = thumbnail && !thumbnailError ? thumbnail : defaultThumbnail;
+
   return (
     <div className="border border-gray-300 rounded-[12px]" style={{ width: '400px', height: '150px' }}>
       <div className="flex">
         <div className="mt-3 ml-3 w-[100px] h-[100px] overflow-hidden rounded-lg border border-gray-300">
-          <img src={thumbnail} alt={`썸네일`} className="w-full h-full" style={{ objectFit: 'cover' }} />
+          <img
+            src={thumbnailSrc}
+            alt={thumbnail ? '썸네일' : '기본 이미지'}
+            className="w-full h-full object-cover object-center"
+            onError={handleThumbnailError}
+          />
         </div>
         <div className="ml-2.5 flex-1 w-[250px]">
           <h2

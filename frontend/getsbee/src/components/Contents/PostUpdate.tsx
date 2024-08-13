@@ -83,7 +83,9 @@ const PostUpdate: React.FC<PostUpdateProps> = ({ post, onSave, onCancel }) => {
         </div>
       </div>
       <div className="flex mt-3">
-        <Avatar image={post.memberImage} size="large" shape="circle" className="w-[60px] h-[60px] mt-1" />
+        <div className="w-[60px] h-[60px]">
+          <Avatar image={post.memberImage} size="large" shape="circle" className="w-[60px] h-[60px] mt-1" />
+        </div>
         <div className="ml-4 flex-1">
           <p className="text-[14px] font-semibold" style={{ color: '#8D8D8D' }}>
             {post.directoryName}
@@ -94,22 +96,10 @@ const PostUpdate: React.FC<PostUpdateProps> = ({ post, onSave, onCancel }) => {
               {post.url}
             </a>
           </p>
-          <div className="flex justify-end text-[12px] font-semibold mt-3" style={{ color: '#8D8D8D' }}>
-            <div className="flex items-center mr-4">
-              <i className={`pi pi-heart mr-1`} />
-              <span>{post.likeCount}</span>
-            </div>
-            <div className="flex items-center">
-              <i className={`pi pi-eye mr-1`} />
-              <span className="mr-3">{post.viewCount}</span>
-            </div>
-          </div>
         </div>
       </div>
-      <div className="px-2">
-        <Divider className="mt-1 mb-2 border-gray-300" style={{ borderBottomWidth: '1px' }} />
-      </div>
-      <div className="flex justify-between items-center mt-3 ml-3">
+      <Divider className="mt-1 mb-2 border-gray-300" style={{ borderBottomWidth: '1px' }} />
+      <div className="flex justify-between items-center">
         <h2 className="text-[18px] font-bold">Highlights</h2>
       </div>
       <div className="mt-4 ml-6">

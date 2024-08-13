@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import folderIcon2 from '../../assets/folderIcon2.png';
+import folderIcon3 from '../../assets/folderIcon5.png';
 
 interface Directory {
   directoryId: number;
@@ -15,9 +17,10 @@ interface Directory {
 interface DirectoryProps {
   directory: Directory;
   username: string;
+  tempCount: number;
 }
 
-const Directory: React.FC<DirectoryProps> = ({ directory, username }) => {
+const Directory: React.FC<DirectoryProps> = ({ directory, username, tempCount }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const navigate = useNavigate();
   const { directoryId } = useParams<{ directoryId: string }>();
@@ -39,14 +42,14 @@ const Directory: React.FC<DirectoryProps> = ({ directory, username }) => {
 
   const fontSize = directory.depth === 1 ? 'text-[16px]' : 'text-[14px]';
 
-  const badge = directory.name === 'Temporary' ? '' : '';
+  const badge = directory.name === 'Temporary' ? `${tempCount}` : '';
   const isActive = directory.directoryId.toString() === directoryId;
 
   const textColorClass = isActive ? 'text-[#07294D]' : 'text-[#8D8D8D]';
   const hoverClass = isActive ? '' : 'hover:text-[#07294D]';
   return (
     <div className={`pl-${directory.depth * 1} my-1`}>
-      <div className="flex items-center">
+      <div className="flex items-center mt-2">
         {directory.children.length > 0 && (
           <i
             className={`pi ${isExpanded ? 'pi-chevron-up' : 'pi-chevron-down'} text-[#BDBDBD] text-[12px] hover:text-[#07294D] cursor-pointer mr-1`}
@@ -57,9 +60,17 @@ const Directory: React.FC<DirectoryProps> = ({ directory, username }) => {
             tabIndex={0}
           />
         )}
+
+        {directory.depth > 1 ? (
+          <img src={folderIcon3} alt="avatar" className="w-[15px] h-[11px] mr-1  flex-shrink-0" />
+        ) : (
+          <img src={folderIcon2} alt="avatar" className="w-[15px] h-[11px] mr-1  flex-shrink-0" />
+        )}
+
         <span
-          className={`font-bold ${fontSize} ${textColorClass} ${hoverClass} cursor-pointer`}
+          className={`font-bold ${fontSize} ${textColorClass} ${hoverClass} cursor-pointer truncate`}
           onClick={handleDirectoryClick}
+          style={{ maxWidth: '150px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
         >
           {directory.name}
         </span>

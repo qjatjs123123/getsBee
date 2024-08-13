@@ -27,6 +27,7 @@
 
 body {
   font-family: 'Roboto', sans-serif;
+  /* overflow: hidden; */
 }
 
 .p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-link {
@@ -65,4 +66,14 @@ body {
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari, and Opera */
+}
+
+.p-tooltip {
+  max-width: 'auto';
+}
+
+.p-tooltip .p-tooltip-text {
+  font-size: 11px;
+  line-height: 1.2;
+  text-align: center;
 }

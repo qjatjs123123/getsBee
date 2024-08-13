@@ -7,9 +7,9 @@ import SideBar from '../components/Common/SideBar';
 import Menu from '../components/Common/Menu';
 import Post from '../components/Contents/Post';
 import PostDetail from '../components/Contents/PostDetail';
-import SubSearchBar from '../components/Common/SubSearchBar';
 import DirectoryNav from '../components/Directory/DirectoryNav';
 import { getPostsByDirectoryState } from '../recoil/PostState';
+import { DirectoryInfo, getDirectoryInfo } from '../api/DirectoryApi';
 
 const MyHiveDir: React.FC = () => {
   const { username, directoryId } = useParams<{ username: string; directoryId: string }>();
@@ -17,25 +17,16 @@ const MyHiveDir: React.FC = () => {
   const isOwnHive = currentUser?.email.split('@')[0] === username;
   const userInfoLoadable = useRecoilValueLoadable(userInfoByEmailPrefixSelector(username || ''));
   const [memberId, setMemberId] = useState<number | null>(null);
+  const [isFollowing, setIsFollowing] = useState<boolean>(false);
+  const [followId, setFollowId] = useState<number | null>(null);
+  const [postCount, setPostCount] = useState<number | null>(null);
+  const [directoryInfo, setDirectoryInfo] = useState<DirectoryInfo | null>(null);
 
   useEffect(() => {
     if (userInfoLoadable.state === 'hasValue' && userInfoLoadable.contents) {
       setMemberId(userInfoLoadable.contents.memberId);
-      console.log(memberId);
     }
   }, [userInfoLoadable.state, userInfoLoadable.contents]);
-
-  const userName = username; // 예시 사용자 이름
-  // const directories = [
-  //   { id: '1', name: 'IT' },
-  //   { id: '2', name: 'Cloud' },
-  // ]; // 예시 디렉토리 경로
-  // const postCount = 30;
-  const directories = [
-    { id: '1', name: '' },
-    { id: '2', name: '' },
-  ]; // 예시 디렉토리 경로
-  const postCount = 0;
 
   const postLoadable = useRecoilValueLoadable(
     getPostsByDirectoryState({ directoryId: parseInt(directoryId || '0', 10), size: 10 }),
@@ -48,10 +39,81 @@ const MyHiveDir: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
+    if (postLoadable.state === 'hasValue') {
+      console.log('Left side contents (posts):', postLoadable.contents.content);
+    }
+  }, [postLoadable.state, postLoadable.contents]);
+
+  useEffect(() => {
     if (postLoadable.state === 'hasValue' && postLoadable.contents.content.length > 0) {
       setSelectedPostId(postLoadable.contents.content[0].post.postId);
     }
-  }, [postLoadable.state]);
+  }, [postLoadable.state, postLoadable.contents]);
+
+  interface Directory {
+    id: string;
+    name: string;
+    directoryId: string;
+  }
+
+  const [directories, setDirectories] = useState<Directory[]>([]);
+
+  const updateDirectories = (info: DirectoryInfo) => {
+    let newDirectories: Directory[];
+
+    if (info.depth === 1) {
+      newDirectories = [
+        {
+          id: '1',
+          name: info.directoryName,
+          directoryId: directoryId || '0',
+        },
+      ];
+    } else if (info.depth === 2) {
+      newDirectories = [
+        {
+          id: '1',
+          name: info.parentDirectoryName || 'Parent Directory',
+          directoryId: info.parentDirectoryId?.toString() || '0',
+        },
+        {
+          id: '2',
+          name: info.directoryName,
+          directoryId: directoryId || '0',
+        },
+      ];
+    } else {
+      console.warn(`Unexpected depth: ${info.depth}`);
+      newDirectories = [
+        {
+          id: '1',
+          name: info.directoryName,
+          directoryId: directoryId || '0',
+        },
+      ];
+    }
+
+    setDirectories(newDirectories);
+  };
+
+  useEffect(() => {
+    const fetchDirectoryInfo = async () => {
+      try {
+        if (directoryId) {
+          const data = await getDirectoryInfo(parseInt(directoryId, 10));
+          setDirectoryInfo(data.data);
+          updateDirectories(data.data);
+          setIsFollowing(data.data.isFollow);
+          setFollowId(data.data.followId);
+          setPostCount(data.data.postCount);
+        }
+      } catch (error) {
+        console.error('Failed to get directory info:', error);
+      }
+    };
+
+    fetchDirectoryInfo();
+  }, [directoryId]);
 
   const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>, postId: number) => {
     if (!isEditing && (event.key === 'Enter' || event.key === ' ')) {
@@ -61,7 +123,7 @@ const MyHiveDir: React.FC = () => {
 
   const handlePostDeleted = useCallback(() => {
     refreshPosts();
-    setSelectedPostId(null); // Optionally reset the selected post ID
+    setSelectedPostId(null);
   }, [refreshPosts]);
 
   const handleStartEditing = () => {
@@ -70,6 +132,13 @@ const MyHiveDir: React.FC = () => {
 
   const handleStopEditing = () => {
     setIsEditing(false);
+  };
+
+  const handleFollowChange = (newFollowState: boolean, newFollowId?: number) => {
+    setIsFollowing(newFollowState);
+    if (newFollowId !== undefined) {
+      setFollowId(newFollowId);
+    }
   };
 
   if (postLoadable.state === 'loading') {
@@ -84,35 +153,46 @@ const MyHiveDir: React.FC = () => {
 
   return (
     <div className="flex h-screen">
-      <div className="w-[224px]">
-        <SideBar memberId={memberId} />
+      <div className="w-56">
+        <SideBar memberId={memberId} isOwnHive={isOwnHive} />
       </div>
       <div className="flex flex-col w-5/6 ml-2">
         <div className="flex justify-between items-center border-b ml-6">
           <div className="mt-[75px] mb-[5px]">
-            <DirectoryNav userName={userName} directories={directories} postCount={postCount} />
+            <DirectoryNav
+              userName={username || ''}
+              directories={directories}
+              postCount={postCount}
+              directoryId={parseInt(directoryId || '0', 10)}
+              isFollowing={isFollowing}
+              followId={followId}
+              isOwnHive={isOwnHive}
+              onFollowChange={handleFollowChange}
+            />
           </div>
-          <div className="mb-[33px] mr-[12px]">
+          <div className="mb-[33px] mr-3">
             <Menu />
           </div>
         </div>
         <div className="flex flex-grow overflow-hidden">
           <div className="flex flex-col items-center w-[465px] p-4 border-r overflow-y-auto scrollbar-hide">
-            <div>
-              <h1>{isOwnHive ? 'My Hive' : `${username}'s Hive`}</h1>
-              {isOwnHive ? <p>Welcome to your hive!</p> : <p>You&apos;re viewing {username}&apos;s hive.</p>}
-              {/* 여기에 Hive의 내용을 표시하는 컴포넌트들을 추가하세요 */}
-            </div>
-            <SubSearchBar />
             {posts.map((postData) => (
               <div
                 key={postData.post.postId}
-                className={`mt-4 cursor-pointer ${isEditing ? 'pointer-events-none opacity-50' : ''}`}
+                className={`mt-4 cursor-pointer ${
+                  selectedPostId === postData.post.postId
+                    ? 'border-[3px] border-[#FFC60A] border rounded-[16px]'
+                    : 'bg-white'
+                } ${isEditing ? 'pointer-events-none opacity-50' : ''}`}
+                style={{
+                  boxShadow: selectedPostId === postData.post.postId ? '0 0 10px rgba(255, 198, 10, 0.5)' : 'none',
+                  transition: 'border-color 0.3s, border-width 0.3s, box-shadow 0.3s',
+                }}
                 onClick={() => !isEditing && setSelectedPostId(postData.post.postId)}
                 onKeyPress={(event) => handleKeyPress(event, postData.post.postId)}
-                tabIndex={0} // This makes the div focusable
+                tabIndex={0}
                 aria-label="button"
-                role="button" // This role indicates that the div is interactive
+                role="button"
               >
                 <Post
                   title={postData.post.title}
@@ -127,7 +207,7 @@ const MyHiveDir: React.FC = () => {
               </div>
             ))}
           </div>
-          <div className="flex flex-grow justify-center items-start overflow-y-auto scrollbar-hide transform scale-[110%] mt-8 mb-8">
+          <div className="flex flex-grow justify-center items-start overflow-y-auto scrollbar-hide transform scale-110 mt-8 mb-8">
             {selectedPostId && (
               <PostDetail
                 postId={selectedPostId}

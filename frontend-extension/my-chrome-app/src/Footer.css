@@ -38,8 +38,9 @@ label {
   }
   
   [type="checkbox"]:checked {
-    background-color: tomato;
-    border-color: tomato;
+    border-color: lightgray;
+    background-color: #FFC60A;
+    border-color: #FFC60A;
   }
   
   [type="checkbox"]:checked::before {
