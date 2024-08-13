@@ -1,5 +1,6 @@
 package com.ssafy.getsbee.domain.post.entity;
 
+import com.ssafy.getsbee.domain.bookmark.entity.Bookmark;
 import com.ssafy.getsbee.domain.comment.entity.Comment;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.highlight.entity.Highlight;
@@ -66,6 +67,9 @@ public class Post extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Highlight> highlights = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<Bookmark> bookmarks = new ArrayList<>();
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "directory_id")

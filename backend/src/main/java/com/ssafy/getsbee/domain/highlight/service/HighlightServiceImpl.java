@@ -96,10 +96,6 @@ public class HighlightServiceImpl implements HighlightService {
         if(post.getHighlights().isEmpty() && post.getNote()== null){
             postRepository.delete(post);
         }
-
-        String fileName = post.getBodyUrl();
-        s3Service.deleteS3(fileName);
-
         saveMessageToS3(request.message(), post);
     }
 
@@ -116,9 +112,6 @@ public class HighlightServiceImpl implements HighlightService {
         highlightRepository.save(highlight);
 
         Post post = highlight.getPost();
-
-        String fileName = post.getBodyUrl();
-        s3Service.deleteS3(fileName);
         saveMessageToS3(request.message(), post);
     }
 
