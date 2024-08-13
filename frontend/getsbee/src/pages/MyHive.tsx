@@ -85,13 +85,15 @@ const MyHive: React.FC = () => {
       <div className="flex flex-col w-5/6 ml-2">
         <div className="flex justify-between items-center border-b ml-6">
           <div className="mt-[75px] mb-[5px]">
-            <DirectoryNav
-              userName={userName}
-              directories={directories}
-              postCount={hiveInfo.postNumber}
-              isOwnHive={true}
-              directoryId={0}
-            />
+            {hiveInfo && (
+              <DirectoryNav
+                userName={userName}
+                directories={directories}
+                postCount={hiveInfo?.postNumber ?? 0}
+                isOwnHive={true}
+                directoryId={0}
+              />
+            )}
           </div>
           <div className="mb-[33px] mr-3">
             <Menu />
