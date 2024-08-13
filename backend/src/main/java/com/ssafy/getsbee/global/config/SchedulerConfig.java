@@ -1,6 +1,9 @@
 package com.ssafy.getsbee.global.config;
 
+import com.ssafy.getsbee.domain.highlight.service.ExtractCategoryService;
+import com.ssafy.getsbee.domain.interest.entity.Interest;
 import com.ssafy.getsbee.domain.interest.repository.InterestRepository;
+import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.domain.post.repository.PostRepository;
 import com.ssafy.getsbee.global.error.ErrorCode;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
@@ -14,17 +17,21 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
+import static com.ssafy.getsbee.domain.post.entity.QPost.post;
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
 
 @Component
 @RequiredArgsConstructor
 public class SchedulerConfig {
 
-    private final PostRepository postRepository;
-    private final InterestRepository interestRepository;
-    private final CsvUtil csvUtil;
+    private final ExtractCategoryService extractCategoryService;
     private final S3Service s3Service;
     private final WebClient webClient;
+    private final CsvUtil csvUtil;
+    private final PostRepository postRepository;
+    private final InterestRepository interestRepository;
 
     @Value("${cloud.aws.s3.directory.member}")
     private String memberDirectory;
@@ -60,6 +67,11 @@ public class SchedulerConfig {
 
     @Scheduled(fixedRate = 1000 * 60 * 7)
     public void extractCategory() {
-
+        postRepository.findAllNotInInterest().forEach(post ->
+                extractCategoryService.extractCategoryFromPost(post)
+                        .ifPresent(category ->
+                                interestRepository.save(Interest.of(post.getUrl(), category))
+                        )
+        );
     }
 }

@@ -61,12 +61,6 @@ public class HighlightServiceImpl implements HighlightService {
                             return newPost;
                         });
 
-        if (!interestRepository.existsByUrl(post.getUrl())) {
-            extractCategoryService.extractCategoryFromPost(post)
-                    .ifPresent(category ->
-                            interestRepository.save(Interest.of(post.getUrl(), category)));
-        }
-
         Highlight highlight = request.toHighlightEntity(post);
         highlightRepository.save(highlight);
 

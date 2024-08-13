@@ -94,6 +94,14 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         return new SliceImpl<>(content, pageable, hasNext);
     }
 
+    @Override
+    public List<Post> findAllNotInInterest() {
+        return jpaQueryFactory
+                .selectFrom(post)
+                .where(url())
+                .fetch();
+    }
+
     private BooleanExpression createCondition(Long memberId, Long currentMemberId) {
         BooleanExpression condition = post.member.id.eq(memberId);
         if (!memberId.equals(currentMemberId)) {
@@ -169,6 +177,13 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 
     private BooleanExpression postDirectoryName() {
         return post.directory.name.ne("Temporary");
+    }
+
+    private BooleanExpression url() {
+        return post.url.notIn(JPAExpressions
+                .select(interest.url).distinct()
+                .from(interest)
+                .where(interest.url.isNotNull()));
     }
 
     private List<OrderSpecifier> getOrderSpecifier(Sort sort) {
