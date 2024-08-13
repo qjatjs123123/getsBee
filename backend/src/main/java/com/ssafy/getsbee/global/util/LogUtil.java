@@ -10,7 +10,7 @@ public class LogUtil {
 
     public static void loggingInteraction(Interaction interaction, Long postId) {
         log.info("memberId:{}, postId:{}, eventType:{}, eventValue:{} timestamp:{}",
-                SecurityUtil.getCurrentMemberId(), postId, interaction.getEventType(), interaction.getEventValue()
-                , (new Date()).getTime());
+                SecurityUtil.getCurrentMemberId(), postId, interaction.getEventType(), interaction.getEventValue(),
+                (new Date()).getTime());
     }
 }

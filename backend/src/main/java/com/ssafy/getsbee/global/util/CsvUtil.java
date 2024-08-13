@@ -15,10 +15,8 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.StringJoiner;
 
 import static com.ssafy.getsbee.global.consts.StaticConst.*;
