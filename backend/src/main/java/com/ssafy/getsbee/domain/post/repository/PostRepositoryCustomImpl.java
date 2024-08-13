@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import static com.ssafy.getsbee.domain.interest.entity.QInterest.*;
 import static com.ssafy.getsbee.domain.post.entity.QPost.post;
+import static com.ssafy.getsbee.global.consts.StaticConst.HOT_POST_LIMIT;
 import static com.ssafy.getsbee.global.consts.StaticConst.HOT_POST_WEEK_OFFSET;
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
 
@@ -206,7 +207,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .where(post.createdAt.after(hotPostOffset)
                         .and(post.isDeleted.isFalse()))
                 .orderBy(post.viewCount.desc())
-                .limit(99)
+                .limit(HOT_POST_LIMIT)
                 .fetch();
     }
 
