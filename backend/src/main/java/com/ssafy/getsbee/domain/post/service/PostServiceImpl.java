@@ -280,8 +280,17 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new BadRequestException(DIRECTORY_NOT_FOUND));
 
         Slice<Post> posts = null;
+        System.out.println("in0");
         if(directory.getName().equals("Bookmark")){
-            posts = bookmarkRepository.findAllPostByMember(directory.getMember(), cursor, pageable);
+            System.out.println("in");
+            Slice<Bookmark> bookmarks = bookmarkRepository.findAllByMember(directory.getMember(), cursor, pageable);
+            System.out.println("in2");
+            List<Post> postList = bookmarks.getContent().stream()
+                    .map(Bookmark::getPost)
+                    .collect(Collectors.toList());
+
+            posts = new SliceImpl<>(postList, bookmarks.getPageable(), posts.hasNext());
+
         } else {
             posts = postRepository.findAllByDirectoryId(directoryId, cursor, pageable);
         }
