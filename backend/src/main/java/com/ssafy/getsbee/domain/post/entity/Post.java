@@ -17,6 +17,7 @@ import org.hibernate.annotations.SQLRestriction;
 import java.util.ArrayList;
 import java.util.List;
 
+import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.FetchType.*;
 
 @Entity
@@ -65,17 +66,20 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "post", cascade = REMOVE)
     private List<Highlight> highlights = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "post", cascade = REMOVE)
     private List<Bookmark> bookmarks = new ArrayList<>();
+
+//    @OneToMany(mappedBy = "post", cascade = REMOVE)
+//    private List<Like>
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "directory_id")
     private Directory directory;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", cascade = ALL)
     private List<Comment> comments;
 
     @Builder

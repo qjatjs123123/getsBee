@@ -19,4 +19,6 @@ public interface HighlightService {
     void updateHighlightsIndex(List<UpdateIndexHighlight> updateIndexHighlights, Long memberId);
 
     S3UrlResponse showBodyFromUrlAndMemberId(HighlightsRequest highlightsRequest);
+
+    S3UrlResponse modifyHighlightBody(modifyHighlightBodyResponse modifyHighlightBodyResponse);
 }

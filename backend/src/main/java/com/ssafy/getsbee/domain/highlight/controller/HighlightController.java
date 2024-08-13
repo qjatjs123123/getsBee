@@ -49,4 +49,9 @@ public class HighlightController {
     public S3UrlResponse showBodyFromUrlAndMemberId(@RequestBody @Valid HighlightsRequest highlightsRequest){
         return highlightService.showBodyFromUrlAndMemberId(highlightsRequest);
     }
+
+    @PatchMapping("/body")
+    public S3UrlResponse modifyBodyContent(@RequestBody @Valid modifyHighlightBodyResponse modifyHighlightBodyResponse){
+        return highlightService.modifyHighlightBody(modifyHighlightBodyResponse);
+    }
 }
