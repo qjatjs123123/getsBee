@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.ssafy.getsbee.domain.directory.entity.QDirectory.directory;
 import static com.ssafy.getsbee.domain.interest.entity.QInterest.*;
 import static com.ssafy.getsbee.domain.post.entity.QPost.post;
 import static com.ssafy.getsbee.global.consts.StaticConst.HOT_POST_LIMIT;
@@ -201,8 +202,6 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 
     @Override
     public List<Post> showHotPostList() {
-        QPost post = QPost.post;
-
         LocalDateTime hotPostOffset = LocalDateTime.now().minusWeeks(HOT_POST_WEEK_OFFSET);
 
 //        return queryFactory
@@ -217,13 +216,30 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 //                .fetch();
 
         // Fetching the posts based on the criteria
+//        return queryFactory
+//                .selectFrom(post)
+//                .where(post.createdAt.after(hotPostOffset)
+//                        .and(post.isDeleted.isFalse())
+//                        .and(post.directory.name.ne("Temporary"))
+//                        .and(post.directory.name.ne("Bookmark"))
+//                )
+//
+//                .orderBy(post.viewCount.desc())
+//                .limit(HOT_POST_LIMIT)
+//                .fetch();
+
         return queryFactory
                 .selectFrom(post)
+                .join(post.directory, directory) // Explicit join
                 .where(post.createdAt.after(hotPostOffset)
-                        .and(post.isDeleted.isFalse()))
+                        .and(post.isDeleted.isFalse())
+                        .and(directory.name.ne("Temporary"))
+                        .and(directory.name.ne("Bookmark"))
+                )
                 .orderBy(post.viewCount.desc())
                 .limit(HOT_POST_LIMIT)
                 .fetch();
+
     }
 
     @Override
