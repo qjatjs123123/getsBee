@@ -6,7 +6,6 @@ import SideBar from '../components/Common/SideBar';
 import Menu from '../components/Common/Menu';
 import FollowingItem from '../components/Common/FollowingItem';
 import userIcon2 from '../assets/userIcon2.png';
-import FollowSearchBar from '../components/Common/FollowSearchBar';
 import { getFollowingMemberListState } from '../recoil/FollowingState';
 
 const Following: React.FC = () => {
