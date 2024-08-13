@@ -5,7 +5,7 @@ const Tab: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
   const items = [
-    { label: 'Weekly HOT', url: '/' },
+    { label: 'HOT', url: '/' },
     { label: 'Following', url: '/home' },
     {
       label: 'For you',
