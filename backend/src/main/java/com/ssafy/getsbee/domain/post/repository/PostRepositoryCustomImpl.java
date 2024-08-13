@@ -189,27 +189,25 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 
         LocalDateTime hotPostOffset = LocalDateTime.now().minusWeeks(HOT_POST_WEEK_OFFSET);
 
-        return queryFactory
-                .selectFrom(post)
-                .join(post.highlights).fetchJoin()
-                .join(post.bookmarks).fetchJoin()
-                .join(post.likes).fetchJoin()
-                .where(post.createdAt.after(hotPostOffset)
-                        .and(post.isDeleted.isFalse()))
-                .orderBy(post.viewCount.desc())
-                .limit(99)
-                .fetch();
-
-        // Fetching the posts based on the criteria
-//        List<Post> hotPosts = queryFactory
+//        return queryFactory
 //                .selectFrom(post)
+//                .join(post.highlights).fetchJoin()
+//                .join(post.bookmarks).fetchJoin()
+//                .join(post.likes).fetchJoin()
 //                .where(post.createdAt.after(hotPostOffset)
 //                        .and(post.isDeleted.isFalse()))
 //                .orderBy(post.viewCount.desc())
 //                .limit(99)
 //                .fetch();
-//
-//        return hotPosts;
+
+        // Fetching the posts based on the criteria
+        return queryFactory
+                .selectFrom(post)
+                .where(post.createdAt.after(hotPostOffset)
+                        .and(post.isDeleted.isFalse()))
+                .orderBy(post.viewCount.desc())
+                .limit(99)
+                .fetch();
     }
 
     @Override
