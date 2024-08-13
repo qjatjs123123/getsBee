@@ -89,7 +89,15 @@ const Home: React.FC = () => {
                 />
               ))}
               {feedLoading && <div className="text-center py-4">Loading...</div>}
-              {!feedLoading && feedPosts.length === 0 && <div className="text-center py-4">포스트가 없습니다.</div>}
+              {!feedLoading && feedPosts.length === 0 && (
+                <div className="text-center font-bold text-[24px] mt-[220px]">
+                  <p className="flex justify-center">
+                    <span className="ml-2">다른 유저들을</span>
+                    <span className="ml-2 text-[#FFBF09]">팔로우</span>
+                  </p>
+                  <p>하고 피드를 받아보세요!</p>
+                </div>
+              )}
             </div>
             <div
               className="flex flex-col flex-grow p-4 items-start overflow-y-auto scrollbar-hide"
