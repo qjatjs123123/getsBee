@@ -2,6 +2,7 @@ package com.ssafy.getsbee.domain.highlight.service;
 
 import com.ssafy.getsbee.domain.highlight.dto.request.*;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
+import com.ssafy.getsbee.domain.highlight.dto.response.S3UrlResponse;
 
 import java.util.List;
 
@@ -17,5 +18,5 @@ public interface HighlightService {
 
     void updateHighlightsIndex(List<UpdateIndexHighlight> updateIndexHighlights, Long memberId);
 
-    String showBodyFromUrlAndMemberId(HighlightsRequest highlightsRequest);
+    S3UrlResponse showBodyFromUrlAndMemberId(HighlightsRequest highlightsRequest);
 }
