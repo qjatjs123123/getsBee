@@ -92,8 +92,8 @@ public class HighlightServiceImpl implements HighlightService {
 
         if(post.getHighlights().isEmpty() && post.getNote()== null){
             postRepository.delete(post);
+            return;
         }
-
         saveMessageToS3(request.message(), post);
     }
 
