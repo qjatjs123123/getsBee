@@ -131,22 +131,31 @@ const ScrollComponent: React.FC = () => {
           />
           <div
             style={{
-              transform: `scale(${textSize * 9})`,
+              transform: `scale(${textSize * 9 })`,
               transition: 'transform 0.2s ease-out',
               position: isFixed ? 'fixed' : 'relative',
               top: isFixed ? '10%' : 'auto',
               zIndex: 10,
             }}
-            className="flex flex-col justify-center items-center text-[#000000] text-5xl z-10">
-            <img src={aboutmain} alt="" className="mt-[2rem]" />
-            <img src="" alt="" />
+            className="flex flex-col justify-center items-center text-[#000000] text-5xl z-10  w-full">
+            <img 
+              src={aboutmain} 
+              alt="" 
+              className="mt-[2rem]" 
+              style={{ 
+                width: '100%', 
+                height: 'auto', 
+                maxWidth: '100%', 
+                objectFit: 'contain' 
+              }} 
+            />
           </div>
         </div>
       </div>
 
       <div style={{ height: '1200px' }}></div>
       <div className="flex flex-col justify-center items-center z-10">
-        <div className="flex flex-col w-5/6 mt-10">
+        <div className="flex flex-col w-5/6 mt-16">
           <div
             className="card flex my-10 justify-around items-center"
             ref={(el) => cardRefs.current[0] = el}
