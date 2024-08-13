@@ -189,6 +189,15 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 
         LocalDateTime hotPostOffset = LocalDateTime.now().minusWeeks(HOT_POST_WEEK_OFFSET);
 
+//        queryFactory
+//                .selectFrom(post)
+//                .join(post.highlights).fetchJoin()
+//                .join(post.bookmarks).fetchJoin()
+//                .join(post.)
+//                .where(post.createdAt.after(hotPostOffset)
+//                        .and(post.isDeleted.isFalse()))
+//                .
+
         // Fetching the posts based on the criteria
         List<Post> hotPosts = queryFactory
                 .selectFrom(post)
