@@ -25,7 +25,7 @@ const Recommend = () => {
           setTimeout(() => {
             setRecommendItems(response.data.content);
             setIsLoading(false);
-          }, 3000);
+          }, 1200);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
