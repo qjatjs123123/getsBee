@@ -5,6 +5,7 @@ import { userState } from './recoil/userState';
 import { userRouteSelector } from './recoil/userState';
 
 import PrivateRoute from './pages/PrivateRoute';
+import DailyHot from './pages/DailyHot';
 import Home from './pages/Home';
 import Recommend from './pages/Recommend';
 import MyHive from './pages/MyHive';
@@ -41,7 +42,8 @@ function App() {
     <Routes>
       <Route path="/about" element={<About />} />
       <Route element={<PrivateRoute />}>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<DailyHot />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/recommend" element={<Recommend />} />
         <Route path="/myhive" element={<Navigate to={userRoute || '/about'} replace />} />
         <Route path="/myhive/:username/:directoryId" element={<MyHiveDir />} />

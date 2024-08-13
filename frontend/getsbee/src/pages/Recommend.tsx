@@ -41,7 +41,7 @@ const Recommend = () => {
   }
 
   return (
-    <div>
+    <div className="flex flex-col h-screen">
       <Header />
       <div className="flex justify-center">
         <div className="w-[80%]">

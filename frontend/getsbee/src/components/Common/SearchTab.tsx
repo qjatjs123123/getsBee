@@ -13,7 +13,7 @@ const SearchTab: React.FC = () => {
   const items = [
     { label: 'Post', url: `/search/post?query=${searchQuery}` },
     { label: 'Directory', url: `/search/directory?query=${searchQuery}` },
-    { label: 'URL', url: `/search/url?query=${searchQuery}` },
+    // { label: 'URL', url: `/search/url?query=${searchQuery}` },
   ];
 
   useEffect(() => {
