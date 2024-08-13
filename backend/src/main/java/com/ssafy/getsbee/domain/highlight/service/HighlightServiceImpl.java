@@ -159,12 +159,10 @@ public class HighlightServiceImpl implements HighlightService {
     @Transactional
     public String showBodyFromUrlAndMemberId(HighlightsRequest highlightsRequest) {
         Member member = memberService.findById(SecurityUtil.getCurrentMemberId());
-        Post post = postRepository.findByMemberAndUrl(member, highlightsRequest.url())
-                .orElseThrow(() -> new BadRequestException(POST_NOT_FOUND));
-
-        return post.getBodyUrl();
+        return postRepository.findByMemberAndUrl(member, highlightsRequest.url())
+                .map(Post::getBodyUrl)
+                .orElse(null);
     }
-
 
     private void saveMessageToS3(String message, Post post) {
         String directoryPath = directoryBodyPath;
