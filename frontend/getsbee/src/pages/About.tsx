@@ -1,5 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { ScrollTop } from 'primereact/scrolltop';
+import { useRecoilValue } from 'recoil';
+import { userState } from '../recoil/userState';
 import AboutHeader from '../components/Common/AboutHeader';
 import scrap1 from '../assets/scrap1.png';
 import scrap2 from '../assets/scrap2.png';
@@ -7,7 +10,6 @@ import scrap3 from '../assets/directoryfollow.png';
 import scrap4 from '../assets/othersHighlight.png';
 import highlighting from '../assets/highlighting.mp4';
 import aboutmain from '../assets/aboutmain7.png';
-import { ScrollTop } from 'primereact/scrolltop';
 import './about.css';
 
 const ScrollComponent: React.FC = () => {
@@ -21,9 +23,11 @@ const ScrollComponent: React.FC = () => {
   const { pathname } = useLocation();
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const underlineRef = useRef<HTMLSpanElement>(null);
+  const currentUser = useRecoilValue(userState);
 
   const goToChromeWebStore = () => {
-    window.location.href = 'https://chromewebstore.google.com/detail/getsbee/mkloamglbhkpbaefjpmfggbfbfobeima?utm_source=ext_app_menu';
+    window.location.href =
+      'https://chromewebstore.google.com/detail/getsbee/mkloamglbhkpbaefjpmfggbfbfobeima?utm_source=ext_app_menu';
   };
 
   useEffect(() => {
@@ -77,7 +81,7 @@ const ScrollComponent: React.FC = () => {
   const h1Top = scrollY > 600 ? `${50 - (scrollY - 400)}px` : '0px';
 
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-  
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -91,7 +95,7 @@ const ScrollComponent: React.FC = () => {
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     cardRefs.current.forEach((ref) => {
@@ -130,19 +134,23 @@ const ScrollComponent: React.FC = () => {
           transition: 'top',
           width: '100%',
           zIndex: 5,
-        }}>
+        }}
+      >
         <div className="z-30 relative" style={{ pointerEvents: 'auto' }}>
           <div className="flex items-center absolute opacity-80 top-[40%]  right-[6%] py-1 px-4 rounded-[10px] z-10 justify-center item-center animate-bounce">
-            <p className="text-sm text-gray-700 font-bold">로그인 할 수 있어요
-              <i className="text-sm pi-chevron-right pi"></i>  
-            </p>
+            {!currentUser && (
+              <p className="text-sm text-gray-700 font-bold">
+                로그인 할 수 있어요
+                <i className="text-sm pi-chevron-right pi" />
+              </p>
+            )}
           </div>
           <AboutHeader />
         </div>
 
         {showScrollDown && (
           <div className="flex flex-col items-center absolute opacity-80 bottom-10 bg-[#d9d9d9] left-[45%] py-3 px-8 rounded-[40px] z-10 text-gray-800 justify-center item-center">
-            <i className="pi pi-arrow-circle-down animate-bounce text-4xl"></i>
+            <i className="pi pi-arrow-circle-down animate-bounce text-4xl" />
             <p className="text-xl">Scroll down</p>
             <ScrollTop />
           </div>
@@ -164,38 +172,46 @@ const ScrollComponent: React.FC = () => {
           />
           <div
             style={{
-              transform: `scale(${textSize * 9 })`,
+              transform: `scale(${textSize * 9})`,
               transition: 'transform 0.2s ease-out',
               position: isFixed ? 'fixed' : 'relative',
               top: isFixed ? '10%' : 'auto',
               zIndex: 10,
             }}
-            className="flex flex-col justify-center items-center text-[#000000] text-5xl z-10  w-full">
-            <img 
-              src={aboutmain} 
-              alt="" 
-              className="mt-[2rem]" 
-              style={{ 
-                width: '100%', 
-                height: 'auto', 
-                maxWidth: '100%', 
-                objectFit: 'contain' 
-              }} 
+            className="flex flex-col justify-center items-center text-[#000000] text-5xl z-10  w-full"
+          >
+            <img
+              src={aboutmain}
+              alt=""
+              className="mt-[2rem]"
+              style={{
+                width: '100%',
+                height: 'auto',
+                maxWidth: '100%',
+                objectFit: 'contain',
+              }}
             />
           </div>
         </div>
       </div>
 
-      <div style={{ height: '1200px' }}></div>
+      <div style={{ height: '1200px' }} />
       <div className="flex flex-col justify-center items-center z-10">
         <div className="flex flex-col w-5/6 mt-16">
           <div
             className="flex my-10 justify-around items-center"
             // ref={(el) => cardRefs.current[0] = el}
           >
-            <img src={scrap1} alt="scrap page" className="w-[35rem] mr-10 card" ref={(el) => cardRefs.current[0] = el} />
+            <img
+              src={scrap1}
+              alt="scrap page"
+              className="w-[35rem] mr-10 card"
+              ref={(el) => (cardRefs.current[0] = el)}
+            />
             <div>
-              <div className="w-8 h-8 rounded-full text-[#ffffff] font-semibold text-xl bg-amber-400 flex justify-center items-center">1</div>
+              <div className="w-8 h-8 rounded-full text-[#ffffff] font-semibold text-xl bg-amber-400 flex justify-center items-center">
+                1
+              </div>
               <p className="text-[#5C5C5C] text-2xl pl-5">
                 원하는 Web 사이트에서 <br /> 바로바로 <span className="font-semibold">스크랩</span>을 진행해보세요.
               </p>
@@ -204,7 +220,9 @@ const ScrollComponent: React.FC = () => {
 
           <div className="card flex my-10 justify-around items-center">
             <div className="ml-20">
-              <div className="w-8 h-8 rounded-full text-[#ffffff] font-semibold text-xl bg-amber-400 flex justify-center items-center">2</div>
+              <div className="w-8 h-8 rounded-full text-[#ffffff] font-semibold text-xl bg-amber-400 flex justify-center items-center">
+                2
+              </div>
               <p className="text-[#5C5C5C] text-2xl pl-5">
                 Google Gemini에게 <br />
                 <span className="font-semibold">핵심 문장 추천</span> 을 받아보세요.
@@ -223,7 +241,11 @@ const ScrollComponent: React.FC = () => {
           <div className="relative flex flex-col justify-center items-center text-gray-500">
             <p className="text-3xl font-semibold mb-3">Highlight Extension :</p>
             <p className="text-4xl">
-              당신의 인사이트를 <span ref={underlineRef} className={`underline-effect ${isVisible ? 'visible' : ''}`}>스크랩</span> 하세요
+              당신의 인사이트를{' '}
+              <span ref={underlineRef} className={`underline-effect ${isVisible ? 'visible' : ''}`}>
+                스크랩
+              </span>{' '}
+              하세요
             </p>
           </div>
           <div className="relative mt-6">
@@ -238,9 +260,11 @@ const ScrollComponent: React.FC = () => {
 
         <div className="flex flex-col w-5/6 mt-10">
           <div className="flex my-10 justify-around items-center">
-            <img src={scrap3} alt="scrap gemini" className="card w-[35rem]" ref={(el) => cardRefs.current[2] = el}/>
+            <img src={scrap3} alt="scrap gemini" className="card w-[35rem]" ref={(el) => (cardRefs.current[2] = el)} />
             <div className="ml-4">
-              <div className="w-8 h-8 rounded-full text-[#ffffff] font-semibold text-xl bg-amber-400 flex justify-center items-center">3</div>
+              <div className="w-8 h-8 rounded-full text-[#ffffff] font-semibold text-xl bg-amber-400 flex justify-center items-center">
+                3
+              </div>
               <p className="text-[#5C5C5C] text-2xl pl-5">
                 Directory의 Follow 기능을 통해 <br />
                 <span className="font-semibold">하이라이트</span>를<br />
@@ -251,7 +275,9 @@ const ScrollComponent: React.FC = () => {
 
           <div className="flex my-10 justify-around items-center px-[5rem]">
             <div className="ml-10 ">
-              <div className="w-8 h-8 rounded-full text-[#ffffff] font-semibold text-xl bg-amber-400 flex justify-center items-center">4</div>
+              <div className="w-8 h-8 rounded-full text-[#ffffff] font-semibold text-xl bg-amber-400 flex justify-center items-center">
+                4
+              </div>
               <p className="text-[#5C5C5C] text-2xl pl-4 mr-10">
                 getsBee와 함께 여러분의 <br />
                 <span className="font-semibold">하이라이트</span>를 <br />

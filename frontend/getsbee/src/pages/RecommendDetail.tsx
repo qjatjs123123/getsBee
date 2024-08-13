@@ -42,7 +42,7 @@ const RecommendDetail = () => {
       <Header />
       <div className="flex flex-grow overflow-hidden mt-4">
         <div className="flex justify-center pl-10 items-start w-3/5 overflow-y-auto scrollbar-hide">
-          <div className="transform scale-[130%] mt-[100px]">
+          <div className="transform scale-[120%] mt-[80px]">
             {postDetailLoadable.state === 'loading' && <div>Loading...</div>}
             {postDetailLoadable.state === 'hasError' && <div>Error loading post details</div>}
             {postDetailLoadable.state === 'hasValue' && (
