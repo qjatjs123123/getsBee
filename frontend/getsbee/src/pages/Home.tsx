@@ -6,6 +6,7 @@ import FeedDetail from '../components/Contents/FeedDetail';
 import honeyComb from '../assets/honeyComb.png';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 import { useFeedDetail } from '../hooks/useFeedDetail';
+import ClipLoaderComponent from '../components/Common/ClipLoaderComponent';
 
 const Home: React.FC = () => {
   const { feedPosts, feedLoading, hasMoreFeed, loadMoreFeedPosts, updateFeedItem } = useInfiniteScroll(10);
@@ -88,7 +89,9 @@ const Home: React.FC = () => {
                   onUpdateFeed={updateFeedItem}
                 />
               ))}
-              {feedLoading && <div className="text-center py-4">Loading...</div>}
+              {/* {feedLoading && <div className="text-center py-4">Loading...</div>} */}
+              {feedLoading && <ClipLoaderComponent />}
+
               {!feedLoading && feedPosts.length === 0 && <div className="text-center py-4">포스트가 없습니다.</div>}
             </div>
             <div
@@ -99,7 +102,9 @@ const Home: React.FC = () => {
                 <img src={honeyComb} alt="honeyComb" className="w-9" />
                 <p className="ml-1 text-[#CC9C00] font-semibold text-[22px]">Others&apos; Highlights</p>
               </div>
+              {/* {detailInitialLoading && <ClipLoaderComponent />} */}
               {detailInitialLoading && <div className="text-center py-4">초기 데이터를 불러오는 중...</div>}
+
               {memoizedDetailItems.map((detail, index) => (
                 <div
                   key={`${detail.postId}-${index}`}

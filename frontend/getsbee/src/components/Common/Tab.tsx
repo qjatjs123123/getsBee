@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TabMenu, TabMenuTabChangeEvent } from 'primereact/tabmenu';
+import geminiIcon from '../../assets/geminiIcon.png';
 
 const Tab: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
@@ -8,7 +9,22 @@ const Tab: React.FC = () => {
     { label: 'HOT', url: '/' },
     { label: 'Following', url: '/home' },
     {
-      label: 'For you',
+      label: (
+        <span style={{ position: 'relative' }}>
+          Recommend
+          <img
+            src={geminiIcon}
+            alt="Gemini Icon"
+            style={{
+              width: '11px',
+              height: '11px',
+              position: 'absolute',
+              top: '-4px',
+              right: '22px',
+            }}
+          />
+        </span>
+      ),
       url: '/recommend',
     },
   ];
