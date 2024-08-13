@@ -63,7 +63,7 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onClose, onSave }) => {
         await patchUserInfo(data);
         onSave(data);
         onClose();
-        navigate('/about');
+        window.location.reload();
       } catch (error) {
         console.error('Failed to save user info:', error);
         // Handle error (e.g., show error message to user)
