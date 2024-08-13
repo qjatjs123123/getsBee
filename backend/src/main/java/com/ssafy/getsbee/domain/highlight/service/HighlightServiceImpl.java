@@ -155,6 +155,7 @@ public class HighlightServiceImpl implements HighlightService {
     }
 
     @Override
+    @Transactional
     public S3UrlResponse modifyHighlightBody(modifyHighlightBodyResponse modifyHighlightBodyResponse) {
         Highlight highlight = highlightRepository.findById(modifyHighlightBodyResponse.highlightId())
                 .orElseThrow(() -> new BadRequestException(HIGHLIGHT_NOT_FOUND));
