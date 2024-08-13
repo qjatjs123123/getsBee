@@ -2,6 +2,7 @@ package com.ssafy.getsbee.domain.highlight.controller;
 
 import com.ssafy.getsbee.domain.highlight.dto.request.*;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
+import com.ssafy.getsbee.domain.highlight.dto.response.S3UrlResponse;
 import com.ssafy.getsbee.domain.highlight.service.HighlightService;
 import com.ssafy.getsbee.domain.post.service.PostService;
 import com.ssafy.getsbee.global.util.SecurityUtil;
@@ -45,7 +46,7 @@ public class HighlightController {
     }
 
     @PostMapping("/body")
-    public String showBodyFromUrlAndMemberId(@RequestBody @Valid HighlightsRequest highlightsRequest){
+    public S3UrlResponse showBodyFromUrlAndMemberId(@RequestBody @Valid HighlightsRequest highlightsRequest){
         return highlightService.showBodyFromUrlAndMemberId(highlightsRequest);
     }
 }

@@ -4,6 +4,7 @@ import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.highlight.dto.request.*;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
+import com.ssafy.getsbee.domain.highlight.dto.response.S3UrlResponse;
 import com.ssafy.getsbee.domain.highlight.entity.Highlight;
 import com.ssafy.getsbee.domain.highlight.repository.HighlightRepository;
 import com.ssafy.getsbee.domain.interest.entity.Interest;
@@ -157,11 +158,11 @@ public class HighlightServiceImpl implements HighlightService {
 
     @Override
     @Transactional
-    public String showBodyFromUrlAndMemberId(HighlightsRequest highlightsRequest) {
+    public S3UrlResponse showBodyFromUrlAndMemberId(HighlightsRequest highlightsRequest) {
         Member member = memberService.findById(SecurityUtil.getCurrentMemberId());
-        return postRepository.findByMemberAndUrl(member, highlightsRequest.url())
+        return S3UrlResponse.from(postRepository.findByMemberAndUrl(member, highlightsRequest.url())
                 .map(Post::getBodyUrl)
-                .orElse(null);
+                .orElse(null));
     }
 
     private void saveMessageToS3(String message, Post post) {
