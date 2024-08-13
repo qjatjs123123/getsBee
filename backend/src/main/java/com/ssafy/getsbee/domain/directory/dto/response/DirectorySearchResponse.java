@@ -24,7 +24,8 @@ public record DirectorySearchResponse(
     public record Member(
             Long memberId,
             String memberName,
-            String memberPicture
+            String memberPicture,
+            String memberEmail
     ){
         @Builder
         public Member{
