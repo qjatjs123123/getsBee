@@ -2,10 +2,9 @@ package com.ssafy.getsbee.domain.highlight.service;
 
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
-import com.ssafy.getsbee.domain.highlight.dto.request.CreateHighlightRequest;
-import com.ssafy.getsbee.domain.highlight.dto.request.UpdateHighlightRequest;
-import com.ssafy.getsbee.domain.highlight.dto.request.UpdateIndexHighlight;
+import com.ssafy.getsbee.domain.highlight.dto.request.*;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
+import com.ssafy.getsbee.domain.highlight.dto.response.S3UrlResponse;
 import com.ssafy.getsbee.domain.highlight.entity.Highlight;
 import com.ssafy.getsbee.domain.highlight.repository.HighlightRepository;
 import com.ssafy.getsbee.domain.interest.entity.Interest;
@@ -18,12 +17,18 @@ import com.ssafy.getsbee.domain.post.service.PostElasticService;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.error.exception.ForbiddenException;
 import com.ssafy.getsbee.global.util.LogUtil;
+import com.ssafy.getsbee.global.util.SecurityUtil;
+import com.ssafy.getsbee.infra.s3.S3Service;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static com.ssafy.getsbee.global.common.model.Interaction.*;
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
@@ -39,6 +44,10 @@ public class HighlightServiceImpl implements HighlightService {
     private final PostElasticService postElasticService;
     private final ExtractCategoryService extractCategoryService;
     private final InterestRepository interestRepository;
+    private final S3Service s3Service;
+
+    @Value("${cloud.aws.s3.directory.body}")
+    private String directoryBodyPath;
 
     @Override
     @Transactional
@@ -59,18 +68,19 @@ public class HighlightServiceImpl implements HighlightService {
                             interestRepository.save(Interest.of(post.getUrl(), category)));
         }
 
-        //[추가기능] Type image면 s3 로직 추가 필요
-
         Highlight highlight = request.toHighlightEntity(post);
         highlightRepository.save(highlight);
 
+        String message = request.message();
+        saveMessageToS3(message, post);
+        
         postElasticService.savePostDocument(highlight);
         return HighlightResponse.of(highlight.getId());
     }
 
     @Override
     @Transactional
-    public void deleteHighlight(Long highlightId, Long memberId) {
+    public void deleteHighlight(Long highlightId, DeleteHighlightRequest request, Long memberId) {
         Member member = memberService.findById(memberId);
         Highlight highlight = highlightRepository.findById(highlightId)
                 .orElseThrow(() -> new BadRequestException(HIGHLIGHT_NOT_FOUND));
@@ -83,9 +93,14 @@ public class HighlightServiceImpl implements HighlightService {
         postElasticService.deleteHighlightDocument(highlight);
         highlightRepository.delete(highlight);
 
-        if(post.getHighlights() == null && post.getNote()== null){
+        if(post.getHighlights().isEmpty() && post.getNote()== null){
             postRepository.delete(post);
         }
+
+        String fileName = post.getBodyUrl();
+        s3Service.deleteS3(fileName);
+
+        saveMessageToS3(request.message(), post);
     }
 
     @Override
@@ -94,12 +109,17 @@ public class HighlightServiceImpl implements HighlightService {
         Member member = memberService.findById(memberId);
         Highlight highlight = highlightRepository.findById(highlightId)
                 .orElseThrow(() -> new BadRequestException(HIGHLIGHT_NOT_FOUND));
-
         if(highlight.getPost().getMember() != member) {
             throw new ForbiddenException(_FORBIDDEN);
         }
         highlight.changeColor(request.color());
         highlightRepository.save(highlight);
+
+        Post post = highlight.getPost();
+
+        String fileName = post.getBodyUrl();
+        s3Service.deleteS3(fileName);
+        saveMessageToS3(request.message(), post);
     }
 
     @Override
@@ -134,5 +154,28 @@ public class HighlightServiceImpl implements HighlightService {
                     , updateIndexHighlight.lastIndex(), updateIndexHighlight.lastOffset());
             highlights.add(highlight);
         });
+    }
+
+    @Override
+    @Transactional
+    public S3UrlResponse showBodyFromUrlAndMemberId(HighlightsRequest highlightsRequest) {
+        Member member = memberService.findById(SecurityUtil.getCurrentMemberId());
+        return S3UrlResponse.from(postRepository.findByMemberAndUrl(member, highlightsRequest.url())
+                .map(Post::getBodyUrl)
+                .orElse(null));
+    }
+
+    private void saveMessageToS3(String message, Post post) {
+        String directoryPath = directoryBodyPath;
+        String fileName = UUID.randomUUID() + ".txt";
+
+        File tempFile = new File(System.getProperty("java.io.tmpdir"), fileName);
+        try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+            fos.write(message.getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e){
+            throw new BadRequestException(TXT_ERROR);
+        }
+        String s3Url = s3Service.uploadFile(tempFile, directoryPath);
+        post.changeBodyUrl(s3Url);
     }
 }

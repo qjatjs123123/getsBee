@@ -52,9 +52,9 @@ public class FollowRepositoryCustomImpl implements FollowRepositoryCustom{
 
 
     @Override
-    public Long countMemberFollowers(Member member) { //맴버의 디렉토리를 팔로우하는 사람들의 수
+    public Long countMemberFollowers(Member member) { //멤버의 디렉토리를 팔로우하는 팔로우의 수
         return queryFactory
-                .select(follow.followingMember.countDistinct())
+                .select(follow.followingMember.count())
                 .from(follow)
                 .where(follow.followedMember.eq(member))
                 .fetchOne();

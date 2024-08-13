@@ -1,8 +1,9 @@
 package com.ssafy.getsbee.domain.post.repository;
 
 import com.ssafy.getsbee.domain.directory.entity.Directory;
+import com.ssafy.getsbee.domain.interest.entity.Category;
+import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.post.entity.Post;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
@@ -17,4 +18,10 @@ public interface PostRepositoryCustom {
     Slice<Post> findAllByDirectoryId(Long directoryId, Long cursor, Pageable pageable);
 
     Slice<Post> findAllByUrlAndIdLessThan(String url, Long cursor, Pageable pageable);
+
+    Slice<Post> findAllByCategory(List<Category> categories, Pageable pageable);
+
+    List<Post> showHotPostList();
+
+    Long countPostsByMember(Member member);
 }

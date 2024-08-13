@@ -78,6 +78,9 @@ public enum ErrorCode {
     /** CSV */
     CSV_ERROR(BAD_REQUEST, "CSV000", "CSV 생성에 실패했습니다."),
 
+    /**TXT**/
+    TXT_ERROR(BAD_REQUEST, "TXT000", "TXT 생성에 실패했습니다."),
+
     /** PostDocument */
     DUPLICATE_POSTDOCUMENT(BAD_REQUEST, "POSTDOCUMENT000", "이미 존재하는 포스트 도큐먼트 입니다."),
     POSTDOCUMENT_NOT_FOUND(BAD_REQUEST, "POSTDOCUMENT001", "해당 포스트 도큐먼트는 존재하지 않습니다."),

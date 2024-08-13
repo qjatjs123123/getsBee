@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface InterestRepository extends JpaRepository<Interest, Long> {
 
     List<Interest> findAllByMember(Member member);
-    Optional<Interest> findByUrl(String url);
+    List<Interest> findByUrl(String url);
     Boolean existsByUrl(String url);
 }

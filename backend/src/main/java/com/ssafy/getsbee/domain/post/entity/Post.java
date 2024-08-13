@@ -42,6 +42,9 @@ public class Post extends BaseTimeEntity {
     @Column(name = "thumbnail_url", length = 2083)
     private String thumbnailUrl;
 
+    @Column(name = "body_url", length = 2083)
+    private String bodyUrl;
+
     @Column(name = "is_public", columnDefinition = "tinyint(1) not null default 0")
     private Boolean isPublic;
 
@@ -117,5 +120,9 @@ public class Post extends BaseTimeEntity {
 
     public void updateHighlights(List<Highlight> highlights) {
         this.highlights = highlights;
+    }
+
+    public void changeBodyUrl(String bodyUrl) {
+        this.bodyUrl = bodyUrl;
     }
 }

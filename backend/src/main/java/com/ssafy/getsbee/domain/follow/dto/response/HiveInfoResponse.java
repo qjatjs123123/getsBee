@@ -8,9 +8,6 @@ public record HiveInfoResponse(
         Long postNumber
 ) {
     @Builder
-    public HiveInfoResponse(Long following, Long follower, Long postNumber) {
-        this.following = following;
-        this.follower = follower;
-        this.postNumber = postNumber;
+    public HiveInfoResponse {
     }
 }

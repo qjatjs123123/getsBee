@@ -1,10 +1,8 @@
 package com.ssafy.getsbee.domain.highlight.controller;
 
-import com.ssafy.getsbee.domain.highlight.dto.request.CreateHighlightRequest;
-import com.ssafy.getsbee.domain.highlight.dto.request.HighlightsRequest;
-import com.ssafy.getsbee.domain.highlight.dto.request.UpdateHighlightRequest;
-import com.ssafy.getsbee.domain.highlight.dto.request.UpdateIndexHighlight;
+import com.ssafy.getsbee.domain.highlight.dto.request.*;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
+import com.ssafy.getsbee.domain.highlight.dto.response.S3UrlResponse;
 import com.ssafy.getsbee.domain.highlight.service.HighlightService;
 import com.ssafy.getsbee.domain.post.service.PostService;
 import com.ssafy.getsbee.global.util.SecurityUtil;
@@ -19,16 +17,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HighlightController {
     private final HighlightService highlightService;
-    private final PostService postService;
 
     @PostMapping
     public HighlightResponse createHighlight(@RequestBody @Valid CreateHighlightRequest createHighlightRequest) {
         return highlightService.addHighlight(createHighlightRequest, SecurityUtil.getCurrentMemberId());
     }
 
-    @DeleteMapping("/{highlight-id}")
-    public void deleteHighlight(@PathVariable("highlight-id") Long highlightId) {
-        highlightService.deleteHighlight(highlightId, SecurityUtil.getCurrentMemberId());
+    @PostMapping("/{highlight-id}/delete")
+    public void deleteHighlight(@PathVariable("highlight-id") Long highlightId,
+                                @RequestBody @Valid DeleteHighlightRequest deleteHighlightRequest) {
+        highlightService.deleteHighlight(highlightId, deleteHighlightRequest, SecurityUtil.getCurrentMemberId());
     }
 
     @PatchMapping("/{highlight-id}")
@@ -45,5 +43,10 @@ public class HighlightController {
     @PatchMapping("/update")
     public void updateHighlightsIndex(@RequestBody @Valid List<UpdateIndexHighlight> updateIndexHighlights){
         highlightService.updateHighlightsIndex(updateIndexHighlights, SecurityUtil.getCurrentMemberId());
+    }
+
+    @PostMapping("/body")
+    public S3UrlResponse showBodyFromUrlAndMemberId(@RequestBody @Valid HighlightsRequest highlightsRequest){
+        return highlightService.showBodyFromUrlAndMemberId(highlightsRequest);
     }
 }
