@@ -7,41 +7,63 @@ let tooltip = "";
 let recommendSelection = "";
 let idx = -1;
 let isEnabled = true;
-function getStoreHTML2() {
-  const s3Url =
-    "https://getsbee.s3.ap-northeast-2.amazonaws.com/develop/highlight/body.txt";
 
-  fetch(s3Url)
-    .then((response) => {
+/* eslint-disable no-undef */
+window.addEventListener("load", async () => {
+  sendPageContent();
+  originalHTML = document.body.innerHTML;
+
+  async function getStoreHTML(url) {
+    try {
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      return response.text();
-    })
-    .then((data) => {
+      const data = await response.text();
       document.body.innerHTML = data;
-      console.log(data);
-    })
-    .catch((error) => {
+    } catch (error) {
       console.error("Error fetching text file:", error);
-    });
-}
+    }
+  }
 
-/* eslint-disable no-undef */
-window.addEventListener("load", () => {
-  getStoreHTML();
-  sendPageContent();
-  originalHTML = document.body.innerHTML;
-  // selectHighLightAPI();
-  // getStoreHTML2();
-  function getStoreHTML() {
-    const URL = getURL();
-    chrome.storage.local.get([URL], function (result) {
-      const data = result[URL];
+  async function getAwsURLAPI() {
+    try {
+      const response = await fetch(
+        "https://getsbee.kr/api/v1/highlights/body",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ url: getURL() }),
+        }
+      );
 
-      if (data) {
-        document.body.innerHTML = data;
-        // HTML이 적용된 후 스타일 및 스크립트 재적용
+      if (response.status === 401) {
+        throw new Error("Unauthorized: Please log in again.");
+      }
+
+      if (!response.ok) {
+        throw new Error(`Network response was not ok: ${response.statusText}`);
+      }
+
+      const responseData = await response.json();
+      return responseData.data.url;
+    } catch (error) {
+      console.error("Error in getAwsURLAPI:", error);
+      throw error;
+    }
+  }
+
+  async function getAwsURL() {
+    try {
+      if (getDomain() === "getsbee.kr" || getDomain() === "accounts.google.com")
+        return;
+
+      const awsURL = await getAwsURLAPI();
+      if (awsURL) {
+        await getStoreHTML(awsURL);
         requestAnimationFrame(() => {
           applyBeeStyles();
           init();
@@ -49,6 +71,26 @@ window.addEventListener("load", () => {
       } else {
         init();
       }
+    } catch (error) {
+      init();
+      console.log(error);
+    }
+  }
+  function sendPageContent() {
+    chrome.storage.sync.get(["GETSBEE_LOGIN"], function (result) {
+      accessToken = result.GETSBEE_LOGIN.accessToken;
+      refreshToken = result.GETSBEE_LOGIN.refreshToken;
+      userState = result.GETSBEE_LOGIN.userState;
+      getAwsURL();
+      chrome.runtime.sendMessage({
+        type: "SEND_BROWSER_INFO",
+        hostName: getDomain(),
+        resultArr: resultArr,
+        HTMLContent: document.documentElement.outerHTML,
+        accessToken: result.GETSBEE_LOGIN.accessToken,
+        refreshToken: result.GETSBEE_LOGIN.refreshToken,
+        userState: result.GETSBEE_LOGIN.userState,
+      });
     });
   }
 
@@ -65,12 +107,12 @@ window.addEventListener("load", () => {
       highLightHover(dataId, backgroundColor, getHoverColor(backgroundColor));
     });
   }
-  setTimeout(() => {
-    if (getDomain() === "n.news.naver.com") {
-      document.body.innerHTML = originalHTML;
-      init();
-    }
-  }, 500);
+  // setTimeout(() => {
+  //   if (getDomain() === "n.news.naver.com") {
+  //     document.body.innerHTML = originalHTML;
+  //     init();
+  //   }
+  // }, 500);
 
   function highlightRecommend(resultArr) {
     for (let i = 0; i < resultArr.length; i++) {
@@ -136,8 +178,8 @@ window.addEventListener("load", () => {
     document.body.appendChild(tooltip);
     loadFontAwesome();
     const binButton = createIconButton("fa fa-trash-o", "25px", () => {
-      deleteHighLightAPI();
       hideTooltip();
+      deleteHighLightAPI();
     });
     COLORS.forEach(({ color, colorh }) => {
       const colorButton = createColorButton(color, colorh);
@@ -159,7 +201,6 @@ window.addEventListener("load", () => {
     }
     if (message.type === "ENABLE_DATA") {
       isEnabled = message.isEnabled;
-      console.log(isEnabled);
     }
   });
 
@@ -301,21 +342,4 @@ function displayTooltip(left, top) {
   tooltip.style.top = `${top}px`;
   tooltip.style.visibility = "visible";
   tooltip.style.opacity = "1";
-}
-function sendPageContent() {
-  chrome.storage.sync.get(["GETSBEE_LOGIN"], function (result) {
-    accessToken = result.GETSBEE_LOGIN.accessToken;
-    refreshToken = result.GETSBEE_LOGIN.refreshToken;
-    userState = result.GETSBEE_LOGIN.userState;
-
-    chrome.runtime.sendMessage({
-      type: "SEND_BROWSER_INFO",
-      hostName: getDomain(),
-      resultArr: resultArr,
-      HTMLContent: document.documentElement.outerHTML,
-      accessToken: result.GETSBEE_LOGIN.accessToken,
-      refreshToken: result.GETSBEE_LOGIN.refreshToken,
-      userState: result.GETSBEE_LOGIN.userState,
-    });
-  });
 }
