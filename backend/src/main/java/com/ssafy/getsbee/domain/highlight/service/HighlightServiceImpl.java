@@ -166,21 +166,17 @@ public class HighlightServiceImpl implements HighlightService {
     }
 
 
-    private String saveMessageToS3(String message, Post post) {
+    private void saveMessageToS3(String message, Post post) {
         String directoryPath = directoryBodyPath;
         String fileName = UUID.randomUUID() + ".txt";
 
-        try {
-            File tempFile = new File(System.getProperty("java.io.tmpdir"), fileName);
-            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
-                fos.write(message.getBytes(StandardCharsets.UTF_8));
-            }
-            String s3Url = s3Service.uploadFile(tempFile, directoryPath);
-            post.changeBodyUrl(s3Url);
-            return s3Url;
-
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to convert message to file", e);
+        File tempFile = new File(System.getProperty("java.io.tmpdir"), fileName);
+        try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+            fos.write(message.getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e){
+            throw new BadRequestException(TXT_ERROR);
         }
+        String s3Url = s3Service.uploadFile(tempFile, directoryPath);
+        post.changeBodyUrl(s3Url);
     }
 }
