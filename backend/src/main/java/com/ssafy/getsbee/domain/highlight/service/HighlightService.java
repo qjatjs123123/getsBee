@@ -10,7 +10,7 @@ public interface HighlightService {
 
     HighlightResponse addHighlight(CreateHighlightRequest createHighlightRequest, Long MemberId);
 
-    void deleteHighlight(Long highlightId, DeleteHighlightRequest deleteHighlightRequest, Long MemberId);
+    S3UrlResponse deleteHighlight(Long highlightId, DeleteHighlightRequest deleteHighlightRequest, Long MemberId);
 
     void updateHighlight(Long highlightId, UpdateHighlightRequest updateHighlightRequest, Long memberId);
 

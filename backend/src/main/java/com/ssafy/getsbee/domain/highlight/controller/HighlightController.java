@@ -24,9 +24,9 @@ public class HighlightController {
     }
 
     @PostMapping("/{highlight-id}/delete")
-    public void deleteHighlight(@PathVariable("highlight-id") Long highlightId,
+    public S3UrlResponse deleteHighlight(@PathVariable("highlight-id") Long highlightId,
                                 @RequestBody @Valid DeleteHighlightRequest deleteHighlightRequest) {
-        highlightService.deleteHighlight(highlightId, deleteHighlightRequest, SecurityUtil.getCurrentMemberId());
+        return highlightService.deleteHighlight(highlightId, deleteHighlightRequest, SecurityUtil.getCurrentMemberId());
     }
 
     @PatchMapping("/{highlight-id}")

@@ -77,7 +77,7 @@ public class HighlightServiceImpl implements HighlightService {
 
     @Override
     @Transactional
-    public void deleteHighlight(Long highlightId, DeleteHighlightRequest request, Long memberId) {
+    public S3UrlResponse deleteHighlight(Long highlightId, DeleteHighlightRequest request, Long memberId) {
         Member member = memberService.findById(memberId);
         Highlight highlight = highlightRepository.findById(highlightId)
                 .orElseThrow(() -> new BadRequestException(HIGHLIGHT_NOT_FOUND));
@@ -95,6 +95,7 @@ public class HighlightServiceImpl implements HighlightService {
         }
 
         saveMessageToS3(request.message(), post);
+        return S3UrlResponse.from(post.getBodyUrl());
     }
 
     @Override
