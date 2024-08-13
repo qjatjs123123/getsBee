@@ -161,6 +161,7 @@ public class HighlightServiceImpl implements HighlightService {
                 .orElseThrow(() -> new BadRequestException(HIGHLIGHT_NOT_FOUND));
         Post post = highlight.getPost();
         saveMessageToS3(modifyHighlightBodyResponse.message(), post);
+        postRepository.save(post);
         return S3UrlResponse.from(post.getBodyUrl());
     }
 
