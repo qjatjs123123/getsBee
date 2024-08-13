@@ -1,4 +1,5 @@
 import React, { forwardRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Avatar } from 'primereact/avatar';
 import { Divider } from 'primereact/divider';
 import { Button } from 'primereact/button';
@@ -67,10 +68,15 @@ const Feed = forwardRef<HTMLDivElement, FeedProps>(
         <div className="flex mb-3">
           <div className="flex items-center justify-between w-[450px]">
             <div className="flex items-center">
-              <Avatar image={member.memberPicture} size="normal" shape="circle" />
-              <div className="ml-2 flex justify-center">
-                <h2 className="text-sm font-bold text-gray-600">{member.memberEmail.split('@')[0]}</h2>
-              </div>
+              <Link to={`/myhive/${member.memberEmail.split('@')[0]}`}>
+                <Avatar image={member.memberPicture} size="normal" shape="circle" />
+              </Link>
+
+              <Link to={`/myhive/${member.memberEmail.split('@')[0]}`}>
+                <div className="ml-2 flex justify-center">
+                  <h2 className="text-sm font-bold text-gray-600">{member.memberEmail.split('@')[0]}</h2>
+                </div>
+              </Link>
             </div>
             <div className="ml-2 flex justify-end">
               <p className="mt-1 mb-1 text-xs text-gray-600 font-medium">

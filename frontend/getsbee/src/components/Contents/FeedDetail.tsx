@@ -55,9 +55,13 @@ const FeedDetail: React.FC<FeedDetailProps> = React.memo(({ detail }) => {
           <p className="mt-2 ml-4" style={{ color: '#72736A' }}>
             {detail.highlights.length} Highlights & Notes
           </p>
-          {detail.highlights.slice(0, isExpanded ? detail.highlights.length : 1).map((highlight) => {
-            return <HighlightItem key={highlight.highlightId} text={highlight.content} color={highlight.color} />;
-          })}
+          <div className="flex flex-col gap-2">
+            {detail.highlights.slice(0, isExpanded ? detail.highlights.length : 1).map((highlight) => (
+              <Link key={highlight.highlightId} to={`/posts/${detail.postId}`}>
+                <HighlightItem text={highlight.content} color={highlight.color} />
+              </Link>
+            ))}
+          </div>
           <div className="mt-2 mb-2 mr-2 text-right">
             <Button
               label={isExpanded ? 'Show less' : 'Show more'}
