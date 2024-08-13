@@ -1,16 +1,28 @@
 /* eslint-disable no-undef */
 import "./Header.css";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 function Header() {
   const [img, setImg] = useState("");
+  const [login, setLogin] = useState(false);
+  const email = useRef("");
   const handleNavigation = () => {
-    window.open("https://getsbee.kr/about", "_blank");
+    if (!login) window.open("https://getsbee.kr/about", "_blank");
+    else window.open("https://getsbee.kr/myhive/" + email.current, "_blank");
   };
+
   useEffect(() => {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (message.type === "SEND_DATA" && message.data.userState.picture) {
-        setImg(message.data.userState.picture);
+        if (message.data.userState.email) {
+          setImg(message.data.userState.picture);
+          setLogin(true);
+          email.current = message.data.userState.email.split("@")[0];
+        } else {
+          setLogin(false);
+        }
+      } else {
+        setImg(null);
       }
     });
   }, []);

@@ -55,47 +55,6 @@ function createRangeData({
   return data;
 }
 
-// function createRangeObject(rangeData) {
-//   const startpos = getPixelPosition(Number(rangeData.startIndex));
-//   const endpos = getPixelPosition(Number(rangeData.lastIndex));
-
-//   const startInfo = findNodeAtPosition(startpos, rangeData, false);
-//   const endInfo = findNodeAtPosition(endpos, rangeData, true);
-
-//   let startIdx = 0;
-//   let endIdx = 0;
-//   // for (let i = 0; i < startNodeArr.length; i++) {
-//   //   const startNode = startNodeArr[i];
-//   //   for (let j = 0; j < endNodeArr.length; j++) {
-//   //     const endNode = endNodeArr[j];
-
-//   //     const highlightRange = document.createRange();
-//   //     highlightRange.setStart(startNode, rangeData.startOffset);
-//   //     highlightRange.setEnd(endNode, rangeData.lastOffset);
-//   //     if (highlightRange.toString().trim() === rangeData.content.trim()) {
-//   //       startIdx = i;
-//   //       endIdx = j;
-//   //     }
-//   //   }
-//   // }
-//   console.log(startInfo, endInfo);
-
-//   const tmp = document.createRange();
-//   tmp.setStart(startInfo.node, startInfo.offset);
-//   tmp.setEnd(endInfo.node, 0);
-
-//   // Create a range for highlighting
-//   const highlightRange = document.createRange();
-//   highlightRange.setStart(startInfo.node, startInfo.offset);
-//   highlightRange.setEnd(
-//     endInfo.node,
-//     rangeData.content.length - tmp.toString().length
-//   );
-//   console.log(endInfo.node.toString());
-//   console.log(highlightRange.toString());
-//   return highlightRange;
-// }
-
 function createRangeObject(rangeData) {
   const startNode = getReverseTrack(
     document.documentElement,
