@@ -53,7 +53,6 @@ public class CsvUtil {
 
         try (FileWriter fileWriter = new FileWriter(postCsv);
              CSVPrinter csvPrinter = new CSVPrinter(fileWriter,
-//                     CSVFormat.DEFAULT.withHeader(ITEM_ID, CATEGORY, CREATION_TIMESTAMP))) {
                      CSVFormat.DEFAULT.withHeader(ITEM_ID, CATEGORY))) {
             for (Post post : posts) {
                 String category = "ALL";
@@ -61,7 +60,6 @@ public class CsvUtil {
                 if (!interest.isEmpty()) {
                     category = interest.get(0).getCategory().getValue();
                 }
-//                csvPrinter.printRecord(post.getId(), category, Timestamp.valueOf(post.getCreatedAt()).getTime());
                 csvPrinter.printRecord(post.getId(), category);
             }
         } catch (IOException e) {
