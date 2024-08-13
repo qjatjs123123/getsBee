@@ -151,6 +151,8 @@ const MyHiveDir: React.FC = () => {
 
   const posts = postLoadable.contents.content;
 
+  const displayedPostCount = directoryInfo?.directoryName === 'Bookmark' ? posts.length : postCount;
+
   return (
     <div className="flex h-screen">
       <div className="w-56">
@@ -162,7 +164,7 @@ const MyHiveDir: React.FC = () => {
             <DirectoryNav
               userName={username || ''}
               directories={directories}
-              postCount={postCount}
+              postCount={displayedPostCount}
               directoryId={parseInt(directoryId || '0', 10)}
               isFollowing={isFollowing}
               followId={followId}
