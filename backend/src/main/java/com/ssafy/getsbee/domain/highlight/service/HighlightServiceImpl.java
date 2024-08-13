@@ -1,6 +1,5 @@
 package com.ssafy.getsbee.domain.highlight.service;
 
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
 import com.ssafy.getsbee.domain.highlight.dto.request.*;
@@ -17,6 +16,7 @@ import com.ssafy.getsbee.domain.post.service.PostElasticService;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.error.exception.ForbiddenException;
 import com.ssafy.getsbee.global.util.LogUtil;
+import com.ssafy.getsbee.global.util.SecurityUtil;
 import com.ssafy.getsbee.infra.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -158,29 +158,23 @@ public class HighlightServiceImpl implements HighlightService {
     @Override
     @Transactional
     public String showBodyFromUrlAndMemberId(HighlightsRequest highlightsRequest) {
-        Member member = memberService.findById(highlightsRequest.memberId());
-        Post post = postRepository.findByMemberAndUrl(member, highlightsRequest.url())
-                .orElseThrow(() -> new BadRequestException(POST_NOT_FOUND));
-
-        return post.getBodyUrl();
+        Member member = memberService.findById(SecurityUtil.getCurrentMemberId());
+        return postRepository.findByMemberAndUrl(member, highlightsRequest.url())
+                .map(Post::getBodyUrl)
+                .orElse(null);
     }
 
-
-    private String saveMessageToS3(String message, Post post) {
+    private void saveMessageToS3(String message, Post post) {
         String directoryPath = directoryBodyPath;
         String fileName = UUID.randomUUID() + ".txt";
 
-        try {
-            File tempFile = new File(System.getProperty("java.io.tmpdir"), fileName);
-            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
-                fos.write(message.getBytes(StandardCharsets.UTF_8));
-            }
-            String s3Url = s3Service.uploadFile(tempFile, directoryPath);
-            post.changeBodyUrl(s3Url);
-            return s3Url;
-
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to convert message to file", e);
+        File tempFile = new File(System.getProperty("java.io.tmpdir"), fileName);
+        try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+            fos.write(message.getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e){
+            throw new BadRequestException(TXT_ERROR);
         }
+        String s3Url = s3Service.uploadFile(tempFile, directoryPath);
+        post.changeBodyUrl(s3Url);
     }
 }
