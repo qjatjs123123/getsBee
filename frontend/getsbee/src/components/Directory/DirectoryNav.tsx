@@ -113,7 +113,7 @@ const DirectoryNav: React.FC<DirectoryNavProps> = ({
           disabled={isProcessing}
         />
       )}
-      <ConfirmDialog key={dialogKey} />
+      {/* <ConfirmDialog key={dialogKey} /> */}
     </div>
   );
 };
