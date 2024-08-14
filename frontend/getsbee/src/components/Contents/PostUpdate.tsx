@@ -42,12 +42,6 @@ const PostUpdate: React.FC<PostUpdateProps> = ({ post, onSave, onCancel }) => {
     }
   };
 
-  const handleRemoveHighlight = (highlightId: number, content: string) => {
-    const newHighlights = highlights.filter((highlight) => highlight.content !== content);
-    setHighlights(newHighlights);
-    setDeleteHighlightIds([...deleteHighlightIds, highlightId]);
-  };
-
   const publicClass = isPublic ? 'bg-[#DBEAFE] text-[#3B559C]' : 'bg-red-200 text-red-800';
   const publicText = isPublic ? 'Public' : 'Private';
   const iconSrc = isPublic ? publicIcon : privateIcon;
@@ -106,11 +100,6 @@ const PostUpdate: React.FC<PostUpdateProps> = ({ post, onSave, onCancel }) => {
         {highlights.map((highlight) => (
           <div key={highlight.highlightId} className="flex items-center mb-2">
             <HighlightItem text={highlight.content} color={highlight.color} />
-            <Button
-              icon="pi pi-times"
-              className="p-button-text p-button-danger ml-2"
-              onClick={() => handleRemoveHighlight(highlight.highlightId, highlight.content)}
-            />
           </div>
         ))}
       </div>

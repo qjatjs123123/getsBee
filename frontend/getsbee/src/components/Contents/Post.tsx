@@ -60,6 +60,8 @@ const Post: React.FC<PostProps> = ({
           </h2>
           <a
             href={url}
+            target="_blank"
+            rel="noreferrer"
             className="text-[12px] font-semibold hover:underline block mr-2"
             style={{
               color: '#8D8D8D',

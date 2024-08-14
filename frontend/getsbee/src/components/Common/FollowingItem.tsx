@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import { userState } from '../../recoil/userState';
 import starIcon from '../../assets/starIcon.png';
 import stargIcon from '../../assets/stargIcon.png';
 import { deleteFollow, createFollow } from '../../api/FollowingListApi';
@@ -9,7 +11,8 @@ const FollowingItem = ({ item, showStarIcon }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const memberEmail = item.member.memberEmail.split('@')[0];
-
+  const currentUser = useRecoilValue(userState);
+  const isOwnPage = currentUser?.email.split('@')[0] === username;
   const isFollowerPage = location.pathname.includes('follower');
 
   const handleStarClick = async () => {
@@ -104,7 +107,7 @@ const FollowingItem = ({ item, showStarIcon }) => {
         </div>
       </div>
 
-      {showStarIcon && (
+      {isOwnPage && showStarIcon && (
         <img
           className="w-[20px] h-[20px] absolute top-5 right-5 cursor-pointer"
           src={showStarIcon ? starIcon : stargIcon} // showStarIcon 상태에 따라 아이콘 변경
