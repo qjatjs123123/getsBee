@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { TreeTable } from 'primereact/treetable';
 import { Column } from 'primereact/column';
@@ -32,7 +32,6 @@ interface TreeNode {
 
 const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
   const { username } = useParams<{ username: string }>();
-  const navigate = useNavigate();
   const toast = React.useRef<Toast>(null);
 
   const [nodes, setNodes] = useState<NodeData[]>([]);
@@ -198,6 +197,7 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
       accept: async () => {
         try {
           const flattenedNodes = flattenNodes(nodes);
+          window.location.href = `/myhive/${username}`;
           console.log(JSON.stringify(flattenedNodes, null, 2));
           await updateDirectories(memberId, flattenedNodes);
           showToast('success', '성공', '디렉토리 수정에 성공했습니다.');
