@@ -78,6 +78,9 @@ public enum ErrorCode {
     /** CSV */
     CSV_ERROR(BAD_REQUEST, "CSV000", "CSV 생성에 실패했습니다."),
 
+    /** AWS */
+    AWS_SERVER_ERROR(BAD_REQUEST, "AWS000", "AWS 연동에 실패했습니다."),
+
     /**TXT**/
     TXT_ERROR(BAD_REQUEST, "TXT000", "TXT 생성에 실패했습니다."),
 

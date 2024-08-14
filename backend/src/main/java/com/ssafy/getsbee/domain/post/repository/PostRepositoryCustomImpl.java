@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.ssafy.getsbee.domain.directory.entity.QDirectory.directory;
 import static com.ssafy.getsbee.domain.interest.entity.QInterest.*;
 import static com.ssafy.getsbee.domain.post.entity.QPost.post;
 import static com.ssafy.getsbee.global.consts.StaticConst.HOT_POST_LIMIT;
@@ -75,12 +76,13 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
     }
 
     @Override
-    public Slice<Post> findAllByCategory(List<Category> categories, Pageable pageable) {
+    public Slice<Post> findAllByCategory(List<Category> categories, Long postId, Pageable pageable) {
         List<Post> content = jpaQueryFactory.select(post)
                 .from(post)
                 .join(post.directory).fetchJoin()
                 .join(post.highlights).fetchJoin()
-                .where(url(categories),
+                .where(id(postId),
+                        url(categories),
                         isPublic(),
                         postDirectoryName())
                 .limit(pageable.getPageSize() + 1)
@@ -93,6 +95,14 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
             hasNext = true;
         }
         return new SliceImpl<>(content, pageable, hasNext);
+    }
+
+    @Override
+    public List<Post> findAllNotInInterest() {
+        return jpaQueryFactory
+                .selectFrom(post)
+                .where(url())
+                .fetch();
     }
 
     private BooleanExpression createCondition(Long memberId, Long currentMemberId) {
@@ -158,6 +168,10 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         return new SliceImpl<>(posts, pageable, hasNext);
     }
 
+    private BooleanExpression id(Long postId) {
+        return postId == null ? null : post.id.ne(postId);
+    }
+
     private BooleanExpression url(List<Category> categories) {
         return post.url.in(JPAExpressions
                             .select(interest.url)
@@ -174,6 +188,13 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         return post.directory.name.ne("Temporary");
     }
 
+    private BooleanExpression url() {
+        return post.url.notIn(JPAExpressions
+                .select(interest.url).distinct()
+                .from(interest)
+                .where(interest.url.isNotNull()));
+    }
+
     private List<OrderSpecifier> getOrderSpecifier(Sort sort) {
         List<OrderSpecifier> orders = new ArrayList<>();
 
@@ -188,8 +209,6 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 
     @Override
     public List<Post> showHotPostList() {
-        QPost post = QPost.post;
-
         LocalDateTime hotPostOffset = LocalDateTime.now().minusWeeks(HOT_POST_WEEK_OFFSET);
 
 //        return queryFactory
@@ -204,14 +223,30 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 //                .fetch();
 
         // Fetching the posts based on the criteria
+//        return queryFactory
+//                .selectFrom(post)
+//                .where(post.createdAt.after(hotPostOffset)
+//                        .and(post.isDeleted.isFalse())
+//                        .and(post.directory.name.ne("Temporary"))
+//                        .and(post.directory.name.ne("Bookmark"))
+//                )
+//
+//                .orderBy(post.viewCount.desc())
+//                .limit(HOT_POST_LIMIT)
+//                .fetch();
+
         return queryFactory
                 .selectFrom(post)
+                .join(post.directory, directory) // Explicit join
                 .where(post.createdAt.after(hotPostOffset)
                         .and(post.isDeleted.isFalse())
-                        .and(post.isPublic.eq(true)))
+                        .and(directory.name.ne("Temporary"))
+                        .and(directory.name.ne("Bookmark"))
+                )
                 .orderBy(post.viewCount.desc())
                 .limit(HOT_POST_LIMIT)
                 .fetch();
+
     }
 
     @Override
