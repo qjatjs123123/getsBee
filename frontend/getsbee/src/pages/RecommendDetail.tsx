@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useRecoilValueLoadable } from 'recoil';
 import { getPostDetailState } from '../recoil/PostDetailState';
@@ -7,6 +8,7 @@ import { getRelatedPosts, RelatedPostItem } from '../api/RecommendAPI';
 import Header from '../components/Common/Header';
 import Post from '../components/Contents/Post';
 import PostDetail from '../components/Contents/PostDetail';
+import RelatedPostWrapper from '../components/Recommend/RelatedPostWrapper';
 
 const RecommendDetail = () => {
   const { postId } = useParams<{ postId: string }>();
@@ -67,16 +69,7 @@ const RecommendDetail = () => {
             {relatedPosts.length > 0 ? (
               relatedPosts.map((relatedPost) => (
                 <div key={relatedPost.post.postId} className="mt-2">
-                  <Post
-                    title={relatedPost.post.title}
-                    url={relatedPost.post.url}
-                    thumbnail={relatedPost.post.thumbnail}
-                    viewCount={relatedPost.post.viewCount}
-                    directoryName={relatedPost.directory.directoryName}
-                    createdAt={relatedPost.post.createdAt}
-                    highlightColors={relatedPost.highlight.highlightColors}
-                    highlightNumber={relatedPost.highlight.highlightNumber}
-                  />
+                  <RelatedPostWrapper relatedPost={relatedPost} />
                 </div>
               ))
             ) : (

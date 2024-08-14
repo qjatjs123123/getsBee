@@ -9,7 +9,6 @@ import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 import { useFeedDetail } from '../hooks/useFeedDetail';
 import ClipLoaderComponent from '../components/Common/ClipLoaderComponent';
 
-
 const Home: React.FC = () => {
   const { feedPosts, feedLoading, hasMoreFeed, loadMoreFeedPosts, updateFeedItem } = useInfiniteScroll(10);
 
@@ -94,15 +93,15 @@ const Home: React.FC = () => {
               {/* {feedLoading && <div className="text-center py-4">Loading...</div>} */}
               {feedLoading && <ClipLoaderComponent />}
 
-
               {!feedLoading && feedPosts.length === 0 && (
                 <div className="text-center font-bold text-[24px] mt-[160px]">
-                  <img src={flyingbees} alt="flyingbees" className='w-[200px] mb-5' />
+                  <img src={flyingbees} alt="flyingbees" className="w-[200px] mb-5" />
                   <p className="flex justify-center">
-                    <span className="ml-2">다른 유저들을</span>
+                    <span className="ml-2">다른 유저의 디렉토리를 </span>
                     <span className="ml-2 text-[#FFBF09]">팔로우</span>
+                    <span>하고</span>
                   </p>
-                  <p>하고 피드를 받아보세요!</p>
+                  <p>피드를 받아보세요!</p>
                 </div>
               )}
             </div>
