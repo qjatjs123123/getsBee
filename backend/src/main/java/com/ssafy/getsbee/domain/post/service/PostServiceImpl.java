@@ -28,6 +28,7 @@ import com.ssafy.getsbee.global.error.exception.ForbiddenException;
 import com.ssafy.getsbee.global.error.exception.NotFoundException;
 import com.ssafy.getsbee.global.util.LogUtil;
 import com.ssafy.getsbee.global.util.SecurityUtil;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
@@ -37,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.ssafy.getsbee.global.common.model.Interaction.*;
@@ -288,13 +290,15 @@ public class PostServiceImpl implements PostService {
     private Slice<PostListResponse> showPostListByKeyword(String query, Pageable pageable, Long cursor) {
         Slice<Long> postIds = postElasticService.findByKeyword(query, pageable, cursor);
 
-        List<Post> posts = postIds
-                .map(postId -> postRepository.findById(postId)
-                        .orElseThrow(() -> new BadRequestException(POST_NOT_FOUND))).toList();
+        List<Post> posts = postIds.stream()
+                .map(postId -> postRepository.findById(postId).orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
 
         Slice<Post> postSlice = new SliceImpl<>(posts, pageable, postIds.hasNext());
         return makePostListResponseWithPosts(postSlice);
     }
+
 
     private Slice<PostListResponse> showFollowingPostListByMemberId(Long memberId, Long cursor, Pageable pageable) {
         Member member = memberService.findById(memberId);
@@ -322,13 +326,28 @@ public class PostServiceImpl implements PostService {
     }
 
     private Slice<PostListResponse> makePostListResponseWithPosts(Slice<Post> posts) {
-        return posts.map(post ->
-                PostListResponse.from(post, highlightRepository.findAllByPost(post),
-                        checkIfLikedByCurrentUser(post),
-                        checkIfBookmarkedByCurrentUser(post),
-                        postRepository.countPostsByUrl(post.getUrl())));
-    }
+        List<PostListResponse> postListResponses = posts.getContent().stream()
+                .filter(post -> {
+                    try {
+                        Directory directory = post.getDirectory();
+                        return directory != null && !directory.getIsDeleted() && !"Temporary".equals(directory.getName());
+                    } catch (EntityNotFoundException ex) {
+                        return false;
+                    }
+                })
+                .map(post ->
+                        PostListResponse.from(
+                                post,
+                                highlightRepository.findAllByPost(post),
+                                checkIfLikedByCurrentUser(post),
+                                checkIfBookmarkedByCurrentUser(post),
+                                postRepository.countPostsByUrl(post.getUrl())
+                        )
+                )
+                .collect(Collectors.toList());
 
+        return new SliceImpl<>(postListResponses, posts.getPageable(), posts.hasNext());
+    }
 
     private boolean checkIfLikedByCurrentUser(Post post) {
         Member currentMember = memberService.findById(SecurityUtil.getCurrentMemberId());
@@ -336,8 +355,7 @@ public class PostServiceImpl implements PostService {
     }
 
     private boolean checkIfBookmarkedByCurrentUser(Post post) {
-        Member currentMember = memberRepository.findById(SecurityUtil.getCurrentMemberId())
-                .orElseThrow(() -> new NotFoundException(MEMBER_NOT_FOUND));
+        Member currentMember = memberService.findById(SecurityUtil.getCurrentMemberId());
 
         return bookmarkRepository.findByPostAndMember(post, currentMember)
                 .filter(bookmark -> !bookmark.getIsDeleted())

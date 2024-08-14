@@ -127,9 +127,9 @@ public class DirectoryServiceImpl implements DirectoryService {
     public Slice<DirectorySearchResponse> showDirectoriesBySearch(String query, Pageable pageable, Long cursor) {
         Slice<Long> directoryDocumentIds = directoryElasticService.findByKeyword(query, pageable, cursor);
 
-        List<DirectorySearchResponse> responses = directoryDocumentIds.getContent().stream()
+        List<DirectorySearchResponse> responses = directoryDocumentIds.stream()
                 .map(this::makeDirectoryResponseByDirectoryDocument)
-                .collect(Collectors.toList());
+                .toList();
 
         return new SliceImpl<>(responses, pageable, directoryDocumentIds.hasNext());
     }
