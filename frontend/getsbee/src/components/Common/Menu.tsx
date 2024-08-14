@@ -21,7 +21,7 @@ const Menu = () => {
   const renderDialogContent = () => (
     <div className="flex md:flex-row items-stretch h-80">
       <div className="flex flex-col items-center justify-center py-8 px-4 md:px-8 bg-[#FFF6E3] w-full md:w-2/5 rounded-l-lg">
-        <img src={colorBeeIcon} alt="Yellow Bee Icon" className="w-40 mb-8 mr-6" />
+        <img src={colorBeeIcon} alt="Color Bee Icon" className="w-40 mb-8 mr-6" />
         <h2 className="text-3xl font-bold text-[#8D8D8D] text-center">환영합니다!</h2>
       </div>
 

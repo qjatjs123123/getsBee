@@ -51,7 +51,7 @@ const MyHive: React.FC = () => {
   }, [posts]);
 
   useEffect(() => {
-    console.log(initialLoad.current, postLoadable.state, memberId, cursorID);
+    console.log(postLoadable.contents.content);
     if (initialLoad.current && postLoadable.state === 'hasValue') {
       const newPosts = postLoadable.contents.content || [];
       console.log(newPosts);
@@ -66,15 +66,17 @@ const MyHive: React.FC = () => {
       // Pagination: append new posts
       setPosts((prevPosts) => [...prevPosts, ...(postLoadable.contents.content || [])]);
       const newPosts = postLoadable.contents.content || [];
-      if (!selectedPostId && newPosts.length > 0) setSelectedPostId(newPosts[0].post.postId);
+      console.log(newPosts);
+      if (!selectedPostId && newPosts.length > 0) {
+        setSelectedPostId(newPosts[0].post.postId);
+      }
     }
-  }, [postLoadable.state, memberId]);
+  }, [postLoadable.state, memberId, postLoadable.contents.content]);
 
   ////////////////////
   useEffect(() => {
     if (userInfoLoadable.state === 'hasValue' && userInfoLoadable.contents) {
       setMemberId(userInfoLoadable.contents.memberId);
-      console.log(userInfoLoadable.contents.memberId);
     }
   }, [userInfoLoadable.state, userInfoLoadable.contents]);
 
