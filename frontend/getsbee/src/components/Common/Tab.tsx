@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TabMenu, TabMenuTabChangeEvent } from 'primereact/tabmenu';
 import geminiIcon from '../../assets/geminiIcon.png';
+import Vector from '../../assets/Vector.png';
 
 const Tab: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
@@ -13,8 +14,8 @@ const Tab: React.FC = () => {
         <span style={{ position: 'relative' }}>
           Recommend
           <img
-            src={geminiIcon}
-            alt="Gemini Icon"
+            src={Vector}
+            alt="Vector"
             style={{
               width: '11px',
               height: '11px',
