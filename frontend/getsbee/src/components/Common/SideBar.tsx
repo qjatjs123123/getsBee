@@ -108,7 +108,11 @@ const SideBar: React.FC<SideBarProps> = ({ memberId, isOwnHive }) => {
                     >
                       {hiveInfo.postNumber}
                     </p>
-                    <p className="text-[12px] font-semibold" style={{ color: '#5C5C5C' }}>
+                    <p
+                      className="text-[12px] font-semibold cursor-pointer"
+                      onClick={handleProfileClick}
+                      style={{ color: '#5C5C5C' }}
+                    >
                       게시글
                     </p>
                   </div>
@@ -120,7 +124,11 @@ const SideBar: React.FC<SideBarProps> = ({ memberId, isOwnHive }) => {
                     >
                       {hiveInfo.follower}
                     </p>
-                    <p className="text-[12px] font-semibold" style={{ color: '#5C5C5C' }}>
+                    <p
+                      className="text-[12px] font-semibold cursor-pointer"
+                      onClick={handleFollowerClick}
+                      style={{ color: '#5C5C5C' }}
+                    >
                       팔로워
                     </p>
                   </div>
@@ -132,7 +140,11 @@ const SideBar: React.FC<SideBarProps> = ({ memberId, isOwnHive }) => {
                     >
                       {hiveInfo.following}
                     </p>
-                    <p className="text-[12px] font-semibold" style={{ color: '#5C5C5C' }}>
+                    <p
+                      className="text-[12px] font-semibold cursor-pointer"
+                      onClick={handleFollowingClick}
+                      style={{ color: '#5C5C5C' }}
+                    >
                       팔로잉
                     </p>
                   </div>
