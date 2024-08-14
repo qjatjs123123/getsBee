@@ -271,7 +271,8 @@ public class DirectoryServiceImpl implements DirectoryService {
     private boolean isDirectoryChanged(Directory existingDirectory, DirectoryRequest DR, Long newPrevDirectoryId,
                                        Long newNextDirectoryId, Long newParentDirectoryId) {
         if (existingDirectory != null && !existingDirectory.getName().equals(DR.name())) {
-            directoryElasticService.updateDirectoryDocument(existingDirectory);
+            Directory modifiedDirectory = findById(Long.parseLong(DR.directoryId()));
+            directoryElasticService.updateDirectoryDocument(modifiedDirectory);
             return true;
         }
 
