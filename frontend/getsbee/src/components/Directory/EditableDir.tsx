@@ -14,6 +14,7 @@ interface EditableTreeProps {
 }
 
 interface NodeData {
+  key: string | number;
   directoryId: string | number;
   name: string;
   depth: number;
@@ -29,6 +30,7 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
   const toast = React.useRef<Toast>(null);
 
   const [nodes, setNodes] = useState<NodeData[]>([]);
+  const [expandedKeys, setExpandedKeys] = useState<{ [key: string]: boolean }>({});
   const [loading, setLoading] = useState(true);
   const [rootDirectoryId, setRootDirectoryId] = useState<string | number | null>(null);
 
@@ -43,12 +45,18 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
       try {
         setLoading(true);
         const data = await getDirectories(memberId);
-        // Filter out the 'Bookmark' directory
         const filteredData = data.data.filter((node: NodeData) => node.name !== 'Bookmark');
-        setNodes(filteredData);
-        if (filteredData.length > 0) {
-          setRootDirectoryId(filteredData[0].parentDirectoryId);
+        const nodesWithKeys = filteredData.map((node: NodeData) => ({ ...node, key: node.directoryId }));
+        setNodes(nodesWithKeys);
+        if (nodesWithKeys.length > 0) {
+          setRootDirectoryId(nodesWithKeys[0].parentDirectoryId);
         }
+        // Initialize expandedKeys
+        const initialExpandedKeys = {};
+        nodesWithKeys.forEach((node: NodeData) => {
+          initialExpandedKeys[node.key] = false;
+        });
+        setExpandedKeys(initialExpandedKeys);
       } catch (error) {
         console.error('Failed to fetch directories:', error);
       } finally {
@@ -69,6 +77,7 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
 
   const addNode = (parentId: string | number | null, isSubDirectory: boolean = false) => {
     const newNode: NodeData = {
+      key: `T${uuidv4()}`,
       directoryId: `T${uuidv4()}`,
       name: 'New Directory',
       depth: isSubDirectory ? 2 : 1,
@@ -90,6 +99,7 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
             lastChild.nextDirectoryId = newNode.directoryId;
           }
           parentNode.children.push(newNode);
+          setExpandedKeys((prev) => ({ ...prev, [parentId]: true }));
         }
       } else {
         if (updatedNodes.length > 0) {
@@ -101,6 +111,8 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
       }
       return updatedNodes;
     });
+
+    setExpandedKeys((prev) => ({ ...prev, [newNode.key]: false }));
   };
 
   const deleteNode = (id: string | number) => {
@@ -144,6 +156,12 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
 
           return updatedNodes;
         });
+
+        setExpandedKeys((prev) => {
+          const newKeys = { ...prev };
+          delete newKeys[id];
+          return newKeys;
+        });
       },
     });
   };
@@ -174,7 +192,7 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
   const flattenNodes = (nodes: NodeData[]): NodeData[] => {
     let flatNodes: NodeData[] = [];
     nodes.forEach((node) => {
-      const { children, postCount, memberName, ...nodeWithoutExcludedProps } = node;
+      const { children, postCount, memberName, key, ...nodeWithoutExcludedProps } = node;
       const flatNode = {
         ...nodeWithoutExcludedProps,
         children: [], // 항상 빈 배열로 설정
@@ -263,7 +281,12 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
       <Toast ref={toast} />
       <div className="p-4 w-2/3 max-w-3xl">
         <ConfirmDialog />
-        <TreeTable value={nodes} className="p-treetable-sm">
+        <TreeTable
+          value={nodes}
+          className="p-treetable-sm"
+          expandedKeys={expandedKeys}
+          onToggle={(e) => setExpandedKeys(e.value)}
+        >
           <Column
             field="name"
             header={() => <div className="pl-3 font-bold text-lg">{`${username}'s directory`}</div>}
