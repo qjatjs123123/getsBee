@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { ScrollTop } from 'primereact/scrolltop';
 import { useRecoilValue } from 'recoil';
+import { ScrollTop } from 'primereact/scrolltop';
 import { userState } from '../recoil/userState';
 import AboutHeader from '../components/Common/AboutHeader';
 import scrap1 from '../assets/scrap1.png';
@@ -10,6 +10,7 @@ import scrap3 from '../assets/directoryfollow.png';
 import scrap4 from '../assets/othersHighlight.png';
 import highlighting from '../assets/highlighting.mp4';
 import aboutmain from '../assets/aboutmain7.png';
+import mainComb from '../assets/mainComb.png';
 import './about.css';
 
 const ScrollComponent: React.FC = () => {
@@ -31,8 +32,8 @@ const ScrollComponent: React.FC = () => {
   };
 
   useEffect(() => {
-    // window.history.scrollRestoration = 'manual';
-    // window.scrollTo(0, 0);
+    window.history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);
   }, [pathname]);
 
   useEffect(() => {
@@ -54,7 +55,7 @@ const ScrollComponent: React.FC = () => {
         setIsFixed(false);
       }
 
-      if (scrollPosition > 100) {
+      if (scrollPosition > 50) {
         setShowScrollDown(false);
       } else {
         setShowScrollDown(true);
@@ -137,20 +138,23 @@ const ScrollComponent: React.FC = () => {
         }}
       >
         <div className="z-30 relative" style={{ pointerEvents: 'auto' }}>
-          <div className="flex items-center absolute opacity-80 top-[40%]  right-[6%] py-1 px-4 rounded-[10px] z-10 justify-center item-center animate-bounce">
-            {!currentUser && (
+          {!currentUser && (
+            <div className="flex items-center absolute opacity-80 top-[40%]  right-[6%] py-1 px-4 rounded-[10px] z-10 justify-center item-center animate-bounce">
               <p className="text-sm text-gray-700 font-bold">
                 로그인 할 수 있어요
-                <i className="text-sm pi-chevron-right pi" />
+                <i className="text-sm pi-chevron-right pi"></i>
               </p>
-            )}
-          </div>
+            </div>
+          )}
           <AboutHeader />
+        </div>
+        <div className="absolute z-10 right-32 rounded-xl bottom-10 bg-gray-300 p-3 font-bold text-lg text-[#07294D]">
+          크롬익스텐션 하이라이트 시연 영상
         </div>
 
         {showScrollDown && (
           <div className="flex flex-col items-center absolute opacity-80 bottom-10 bg-[#d9d9d9] left-[45%] py-3 px-8 rounded-[40px] z-10 text-gray-800 justify-center item-center">
-            <i className="pi pi-arrow-circle-down animate-bounce text-4xl" />
+            <i className="pi pi-arrow-circle-down animate-bounce text-4xl"></i>
             <p className="text-xl">Scroll down</p>
             <ScrollTop />
           </div>
@@ -195,7 +199,7 @@ const ScrollComponent: React.FC = () => {
         </div>
       </div>
 
-      <div style={{ height: '1200px' }} />
+      <div style={{ height: '1200px' }}></div>
       <div className="flex flex-col justify-center items-center z-10">
         <div className="flex flex-col w-5/6 mt-16">
           <div
@@ -266,10 +270,10 @@ const ScrollComponent: React.FC = () => {
                 3
               </div>
               <p className="text-[#5C5C5C] text-2xl pl-5">
-                Directory의 Follow 기능을 통해 <br />
-                <span className="font-semibold">하이라이트</span>를<br />
-                관리하고 발전시켜보세요.
+                Directory의 <span className="font-semibold">Follow</span> 기능을 통해 <br />
+                원하는 포스트를 구독해 보세요.
               </p>
+              <p className="pl-5 pt-2 text-amber-500 text-lg font-bold">* 디렉토리를 관리할 수 있어요</p>
             </div>
           </div>
 
@@ -278,10 +282,11 @@ const ScrollComponent: React.FC = () => {
               <div className="w-8 h-8 rounded-full text-[#ffffff] font-semibold text-xl bg-amber-400 flex justify-center items-center">
                 4
               </div>
-              <p className="text-[#5C5C5C] text-2xl pl-4 mr-10">
-                getsBee와 함께 여러분의 <br />
-                <span className="font-semibold">하이라이트</span>를 <br />
-                함께 제공합니다.
+              <p className="text-[#5C5C5C] text-2xl pl-4 w-80">
+                같은 URL의 경우 <br />
+                다른 유저들의
+                <span className="font-semibold"> 하이라이트</span>를 <br />
+                함께 볼 수 있어요.
               </p>
             </div>
             <img
@@ -307,6 +312,28 @@ const ScrollComponent: React.FC = () => {
               </p>
             </div>
           </div> */}
+        </div>
+        <div className="relative flex justify-around items-center w-full h-[25rem] bg-[#FDFCE8] px-64">
+          <img src={mainComb} alt="" className="ml-10 w-64 animate-bounce" />
+          <div className="flex flex-col justify-center items-center w-full">
+            <div className="relative flex justify-center text-gray-600">
+              <p className="text-3xl text-left">
+                <span ref={underlineRef} className="text-amber-500 text-5xl font-bold">
+                  Getsbee
+                </span>{' '}
+                <br />
+                인사이트 채집하러 가기
+              </p>
+            </div>
+            <div className="relative mt-6">
+              <input
+                type="button"
+                value="Login"
+                className="py-5 px-32 bg-amber-400 rounded-2xl text-white text-2xl font-bold mt-10 hover:bg-gray-600"
+                onClick={goToChromeWebStore}
+              />
+            </div>
+          </div>
         </div>
       </div>
 

@@ -52,7 +52,7 @@ const Directory: React.FC<DirectoryProps> = ({ directory, username, tempCount })
       <div className="flex items-center mt-2">
         {directory.children.length > 0 && (
           <i
-            className={`pi ${isExpanded ? 'pi-chevron-up' : 'pi-chevron-down'} text-[#BDBDBD] text-[12px] hover:text-[#07294D] cursor-pointer mr-1`}
+            className={`pi ${isExpanded ? 'pi-chevron-up' : 'pi-chevron-down'} text-[#BDBDBD] text-[12px] hover:text-[#07294D] cursor-pointer mr-1 ml-[-16px]`}
             onClick={toggleExpand}
             onKeyDown={handleKeyDown}
             role="button"

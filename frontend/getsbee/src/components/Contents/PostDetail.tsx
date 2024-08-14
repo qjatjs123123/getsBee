@@ -365,7 +365,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
                   <p className="text-[11px]" style={{ color: '#8D8D8D' }}>
                     {formatDate(comment.createdAt)}
                   </p>
-                  {postDetail.isMyPost && comment.isMyComment && (
+                  {comment.isMyComment && (
                     <i
                       className="pi pi-trash ml-auto text-[#8D8D8D] hover:text-[#07294D] cursor-pointer"
                       onClick={() => handleCommentDelete(comment.commentId)}
