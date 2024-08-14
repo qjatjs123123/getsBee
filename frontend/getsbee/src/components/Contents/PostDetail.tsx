@@ -225,6 +225,8 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
           <h2 className="text-[18px] font-bold mr-2">{postDetail.title}</h2>
           <a
             href={postDetail.url}
+            target="_blank"
+            rel="noreferrer"
             className="text-[12px] font-semibold hover:underline block"
             style={{
               color: '#8D8D8D',

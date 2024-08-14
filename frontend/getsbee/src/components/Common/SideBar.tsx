@@ -5,6 +5,7 @@ import { useRecoilValueLoadable, useRecoilValue } from 'recoil';
 import { Tooltip } from 'primereact/tooltip'; // Tooltip 컴포넌트 추가
 import logoIcon from '../../assets/logoIcon.png';
 import settingIcon from '../../assets/settingIcon.png';
+import flyingbees from '../../assets/flyingbees.png';
 import Directory from '../Directory/Directory';
 import { userInfoByIdSelector, userHiveInfoByIdSelector } from '../../recoil/userState';
 import { getDirectoryState } from '../../recoil/DirectoryState';
@@ -31,12 +32,14 @@ const SideBar: React.FC<SideBarProps> = ({ memberId, isOwnHive }) => {
   const directories = directoriesLoadable.state === 'hasValue' ? directoriesLoadable.contents : null;
 
   useEffect(() => {
-    if (directories) {
+    if (directories && directories.length > 0) {
       const bookmarkDirectory = directories.find((directory) => directory.name === 'Bookmark');
       if (bookmarkDirectory) {
         setBookmarkId(bookmarkDirectory.directoryId); // Bookmark 디렉토리의 ID를 상태에 저장
       }
       setTempCount(directories[0].postCount);
+    } else {
+      setTempCount(0); // directories가 없거나 비어 있을 때 0으로 설정
     }
   }, [directories]);
 
@@ -161,7 +164,10 @@ const SideBar: React.FC<SideBarProps> = ({ memberId, isOwnHive }) => {
                 />
               ))
           ) : (
-            <div>Loading...</div>
+            <div className="flex flex-col items-center justify-center text-center mt-[120px]">
+              <img src={flyingbees} className="w-[60px]" />
+              <div className="mt-[20px] text-gray-600 font-bold">Empty Directory</div>
+            </div>
           )}
         </div>
       </div>
