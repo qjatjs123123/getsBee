@@ -23,33 +23,82 @@ const MyHiveDir: React.FC = () => {
   const [directoryInfo, setDirectoryInfo] = useState<DirectoryInfo | null>(null);
   const navigate = useNavigate();
 
+  //무한스크롤
+  const initialLoad = useRef<boolean>(true);
+  const postsContainerRef = useRef<HTMLDivElement>(null);
+  const [cursorID, setCursorID] = useState<null | number>(null);
+  const [posts, setPosts] = useState<Array<any>>([]);
+  const [selectedPostId, setSelectedPostId] = useState<null | number>(null);
+
+  const postLoadable = useRecoilValueLoadable(
+    getPostsByDirectoryState({ directoryId: parseInt(directoryId || '0', 10), cursor: cursorID, size: 10 }),
+  );
+
+  const handleScroll = () => {
+    if (postsContainerRef.current) {
+      const container = postsContainerRef.current;
+      const { scrollTop, scrollHeight, clientHeight } = container;
+
+      if (scrollTop + clientHeight >= scrollHeight - 5) {
+        setCursorID(posts[posts.length - 1]?.post.postId || null);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const container = postsContainerRef.current;
+    container?.addEventListener('scroll', handleScroll);
+    return () => {
+      container?.removeEventListener('scroll', handleScroll);
+    };
+  }, [posts]);
+
+  useEffect(() => {
+    if (initialLoad.current && postLoadable.state === 'hasValue') {
+      const newPosts = postLoadable.contents.content || [];
+      setPosts(newPosts);
+      // posts 배열이 비어있지 않으면 첫 번째 post의 ID를 선택
+      if (newPosts.length > 0) {
+        setSelectedPostId(newPosts[0].post.postId);
+      }
+
+      initialLoad.current = false;
+    } else {
+      // Pagination: append new posts
+      setPosts((prevPosts) => [...prevPosts, ...(postLoadable.contents.content || [])]);
+      const newPosts = postLoadable.contents.content || [];
+      if (!selectedPostId && newPosts.length > 0) setSelectedPostId(newPosts[0].post.postId);
+    }
+  }, [postLoadable.state, memberId]);
+  ///////////////////
+
   useEffect(() => {
     if (userInfoLoadable.state === 'hasValue' && userInfoLoadable.contents) {
       setMemberId(userInfoLoadable.contents.memberId);
     }
   }, [userInfoLoadable.state, userInfoLoadable.contents]);
 
-  const postLoadable = useRecoilValueLoadable(
-    getPostsByDirectoryState({ directoryId: parseInt(directoryId || '0', 10), size: 10 }),
-  );
+  // const postLoadable = useRecoilValueLoadable(
+  //   getPostsByDirectoryState({ directoryId: parseInt(directoryId || '0', 10), size: 10 }),
+  // );
   const refreshPosts = useRecoilRefresher_UNSTABLE(
     getPostsByDirectoryState({ directoryId: parseInt(directoryId || '0', 10), size: 10 }),
   );
 
-  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+  // const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  useEffect(() => {
-    if (postLoadable.state === 'hasValue') {
-      console.log('Left side contents (posts):', postLoadable.contents.content);
-    }
-  }, [postLoadable.state, postLoadable.contents]);
+  // useEffect(() => {
+  //   if (postLoadable.state === 'hasValue') {
+  //     console.log('Left side contents (posts):', postLoadable.contents.content);
+  //   }
+  // }, [postLoadable.state, postLoadable.contents]);
 
-  useEffect(() => {
-    if (postLoadable.state === 'hasValue' && postLoadable.contents.content.length > 0) {
-      setSelectedPostId(postLoadable.contents.content[0].post.postId);
-    }
-  }, [postLoadable.state, postLoadable.contents]);
+  // useEffect(() => {
+  //   if (postLoadable.state === 'hasValue' && postLoadable.contents.content.length > 0) {
+  //     setSelectedPostId(postLoadable.contents.content[0].post.postId);
+  //   }
+  // }, [postLoadable.state, postLoadable.contents]);
 
   interface Directory {
     id: string;
@@ -153,7 +202,7 @@ const MyHiveDir: React.FC = () => {
     return <div>Error: {postLoadable.contents}</div>;
   }
 
-  const posts = postLoadable.contents.content;
+  // const posts = postLoadable.contents.content;
 
   const displayedPostCount = directoryInfo?.directoryName === 'Bookmark' ? posts.length : postCount;
 
@@ -209,6 +258,8 @@ const MyHiveDir: React.FC = () => {
                   createdAt={postData.post.createdAt}
                   highlightColors={postData.highlight.highlightColors}
                   highlightNumber={postData.highlight.highlightNumber}
+                  memberEmail={postData.member.memberEmail}
+                  directoryId={postData.directory.directoryId}
                 />
               </div>
             ))}
