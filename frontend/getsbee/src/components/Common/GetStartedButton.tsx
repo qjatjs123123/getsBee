@@ -41,10 +41,8 @@ const GetStartedButton = () => {
       <Button
         onClick={handleClick}
         disabled={!!user}
-        label="Get Started"
-        className={`bg-[#FFBF09] border-2 border-[#FFBF09] shadow-none ${
-          user ? 'opacity-60 cursor-not-allowed' : 'hover:bg-[#E5AB08]'
-        }`}
+        label="Login"
+        className="py-5 px-32 bg-amber-400 rounded-2xl text-white text-2xl font-bold mt-10 hover:bg-gray-600 border-none"
       />
       <Dialog
         visible={visible}
