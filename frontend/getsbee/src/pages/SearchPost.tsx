@@ -114,6 +114,8 @@ const SearchPost: React.FC = () => {
                       createdAt={postData.post.createdAt}
                       highlightColors={postData.highlight.highlightColors}
                       highlightNumber={postData.highlight.highlightNumber}
+                      memberEmail={postData.member.memberEmail}
+                      directoryId={postData.directory.directoryId}
                     />
                   </div>
                 </div>
