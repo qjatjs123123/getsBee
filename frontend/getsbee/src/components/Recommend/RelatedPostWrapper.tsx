@@ -22,7 +22,7 @@ const RelatedPostWrapper: React.FC<RelatedPostWrapperProps> = ({ relatedPost }) 
   };
 
   return (
-    <div onClick={handleClick}>
+    <div onClick={handleClick} style={{ cursor: 'pointer' }}>
       <Post
         title={relatedPost.post.title}
         url={relatedPost.post.url}
