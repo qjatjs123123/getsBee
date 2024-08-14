@@ -221,7 +221,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
         <div className="w-[440px] ml-4 flex-1">
           <p className="text-[14px] font-semibold" style={{ color: '#8D8D8D' }}>
             <Link to={`/myhive/${postDetail.memberEmail.split('@')[0]}/${postDetail.directoryId}`}>
-              {postDetail.directoryName}
+              {postDetail.memberEmail.split('@')[0]} / {postDetail.directoryName}
             </Link>
           </p>
           <h2 className="text-[18px] font-bold mr-2">{postDetail.title}</h2>
