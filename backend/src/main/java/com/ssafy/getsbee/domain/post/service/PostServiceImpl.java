@@ -263,6 +263,7 @@ public class PostServiceImpl implements PostService {
         List<Post> posts = postIds.getContent().stream()
                 .map(postId -> postRepository.findById(postId)
                         .orElseThrow(() -> new BadRequestException(POST_NOT_FOUND)))
+                .filter(post -> !"Temporary".equalsIgnoreCase(post.getDirectory().getName()))
                 .collect(Collectors.toList());
 
         Slice<Post> postSlice = new SliceImpl<>(posts, pageable, postIds.hasNext());
@@ -272,10 +273,9 @@ public class PostServiceImpl implements PostService {
     private Slice<PostListResponse> showPostListByKeyword(String query, Pageable pageable, Long cursor) {
         Slice<Long> postIds = postElasticService.findByKeyword(query, pageable, cursor);
 
-        List<Post> posts = postIds.getContent().stream()
+        List<Post> posts = postIds
                 .map(postId -> postRepository.findById(postId)
-                        .orElseThrow(() -> new BadRequestException(POST_NOT_FOUND)))
-                .collect(Collectors.toList());
+                        .orElseThrow(() -> new BadRequestException(POST_NOT_FOUND))).toList();
 
         Slice<Post> postSlice = new SliceImpl<>(posts, pageable, postIds.hasNext());
         return makePostListResponseWithPosts(postSlice);
