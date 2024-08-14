@@ -293,11 +293,16 @@ public class PostServiceImpl implements PostService {
         List<Post> posts = postIds.stream()
                 .map(postId -> postRepository.findById(postId).orElse(null))
                 .filter(Objects::nonNull)
+                .filter(post -> {
+                    Directory directory = post.getDirectory();
+                    return directory != null && !"Temporary".equals(directory.getName());
+                })
                 .collect(Collectors.toList());
 
         Slice<Post> postSlice = new SliceImpl<>(posts, pageable, postIds.hasNext());
         return makePostListResponseWithPosts(postSlice);
     }
+
 
 
     private Slice<PostListResponse> showFollowingPostListByMemberId(Long memberId, Long cursor, Pageable pageable) {
@@ -330,7 +335,7 @@ public class PostServiceImpl implements PostService {
                 .filter(post -> {
                     try {
                         Directory directory = post.getDirectory();
-                        return directory != null && !directory.getIsDeleted() && !"Temporary".equals(directory.getName());
+                        return directory != null && !directory.getIsDeleted();
                     } catch (EntityNotFoundException ex) {
                         return false;
                     }
