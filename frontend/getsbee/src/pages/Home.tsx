@@ -94,14 +94,16 @@ const Home: React.FC = () => {
               {feedLoading && <ClipLoaderComponent />}
 
               {!feedLoading && feedPosts.length === 0 && (
-                <div className="text-center font-bold text-[24px] mt-[160px]">
-                  <img src={flyingbees} alt="flyingbees" className="w-[200px] mb-5" />
-                  <p className="flex justify-center">
-                    <span className="ml-2">다른 유저의 디렉토리를 </span>
-                    <span className="ml-2 text-[#FFBF09]">팔로우</span>
-                    <span>하고</span>
-                  </p>
-                  <p>피드를 받아보세요!</p>
+                <div className="flex flex-col items-center justify-center mt-[160px]">
+                  <div className="text-center font-bold text-[24px]">
+                    <img src={flyingbees} alt="flyingbees" className="w-[200px] mb-10 mx-auto" />
+                    <p className="flex justify-center">
+                      <span className="ml-2">다른 유저의 디렉토리를 </span>
+                      <span className="ml-2 text-[#FFBF09]">팔로우</span>
+                      <span>하고</span>
+                    </p>
+                    <p>피드를 받아보세요!</p>
+                  </div>
                 </div>
               )}
             </div>
