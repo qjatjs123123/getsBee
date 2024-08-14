@@ -294,8 +294,12 @@ public class PostServiceImpl implements PostService {
                 .map(postId -> postRepository.findById(postId).orElse(null))
                 .filter(Objects::nonNull)
                 .filter(post -> {
-                    Directory directory = post.getDirectory();
-                    return directory != null && !"Temporary".equals(directory.getName());
+                    try {
+                        Directory directory = post.getDirectory();
+                        return directory != null && !directory.getIsDeleted() && !"Temporary".equals(directory.getName());
+                    } catch (EntityNotFoundException ex) {
+                        return false;
+                    }
                 })
                 .collect(Collectors.toList());
 
