@@ -141,6 +141,8 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .where(
                         post.url.eq(url)
                                 .and(cursor != null ? post.id.lt(cursor) : null)
+                                .and(post.isPublic.eq(true))
+                                .and(post.directory.name.ne("Temporary"))
                 )
                 .orderBy(post.id.desc())
                 .offset(offset)
@@ -205,7 +207,8 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         return queryFactory
                 .selectFrom(post)
                 .where(post.createdAt.after(hotPostOffset)
-                        .and(post.isDeleted.isFalse()))
+                        .and(post.isDeleted.isFalse())
+                        .and(post.isPublic.eq(true)))
                 .orderBy(post.viewCount.desc())
                 .limit(HOT_POST_LIMIT)
                 .fetch();
