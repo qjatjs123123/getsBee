@@ -17,7 +17,7 @@ const RelatedPostWrapper: React.FC<RelatedPostWrapperProps> = ({ relatedPost }) 
       e.stopPropagation();
       window.open(target.getAttribute('href'), '_blank');
     } else {
-      navigate(`/myhive/${relatedPost.member.memberEmail.split('@')[0]}/${relatedPost.directory.directoryId}`);
+      navigate(`/posts/${relatedPost.post.postId}`);
     }
   };
 
