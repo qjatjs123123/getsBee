@@ -1,4 +1,4 @@
-import React, { useState, useEffect, KeyboardEvent, useCallback } from 'react';
+import React, { useState, useEffect, KeyboardEvent, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 // eslint-disable-next-line camelcase
 import { useRecoilValueLoadable, useRecoilValue, useRecoilRefresher_UNSTABLE } from 'recoil';
@@ -70,6 +70,15 @@ const MyHiveDir: React.FC = () => {
       if (!selectedPostId && newPosts.length > 0) setSelectedPostId(newPosts[0].post.postId);
     }
   }, [postLoadable.state, memberId]);
+
+  const handlePostDeleted = () => {
+    const newPost = posts.filter((data) => {
+      return data.post.postId !== selectedPostId;
+    });
+    setPosts(newPost);
+    setSelectedPostId(null);
+  };
+
   ///////////////////
 
   useEffect(() => {
@@ -174,10 +183,10 @@ const MyHiveDir: React.FC = () => {
     }
   };
 
-  const handlePostDeleted = useCallback(() => {
-    refreshPosts();
-    setSelectedPostId(null);
-  }, [refreshPosts]);
+  // const handlePostDeleted = useCallback(() => {
+  //   refreshPosts();
+  //   setSelectedPostId(null);
+  // }, [refreshPosts]);
 
   const handleStartEditing = () => {
     setIsEditing(true);
@@ -193,14 +202,6 @@ const MyHiveDir: React.FC = () => {
       setFollowId(newFollowId);
     }
   };
-
-  if (postLoadable.state === 'loading') {
-    return <div>Loading...</div>;
-  }
-
-  if (postLoadable.state === 'hasError') {
-    return <div>Error: {postLoadable.contents}</div>;
-  }
 
   // const posts = postLoadable.contents.content;
 
@@ -230,7 +231,10 @@ const MyHiveDir: React.FC = () => {
           </div>
         </div>
         <div className="flex flex-grow overflow-hidden">
-          <div className="flex flex-col items-center w-[465px] p-4 border-r overflow-y-auto scrollbar-hide">
+          <div
+            ref={postsContainerRef}
+            className="flex flex-col items-center w-[465px] p-4 border-r overflow-y-auto scrollbar-hide"
+          >
             {posts.map((postData) => (
               <div
                 key={postData.post.postId}
