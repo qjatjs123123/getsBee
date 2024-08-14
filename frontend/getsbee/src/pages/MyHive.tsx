@@ -25,6 +25,8 @@ const MyHive: React.FC = () => {
   const [cursorID, setCursorID] = useState<null | number>(null);
   const [posts, setPosts] = useState<Array<any>>([]);
   const [selectedPostId, setSelectedPostId] = useState<null | number>(null);
+  const [isBalloonVisible, setIsBalloonVisible] = useState(true);
+
   const postLoadable = useRecoilValueLoadable(
     getPostsByMemberState({ memberId: memberId || 0, cursor: cursorID, size: 10 }),
   );
@@ -124,6 +126,10 @@ const MyHive: React.FC = () => {
     setIsEditing(false);
   };
 
+  const handleCloseBalloon = () => {
+    setIsBalloonVisible(false);
+  };
+
   // if (userInfoLoadable.state === 'loading' || postLoadable.state === 'loading') {
   //   return <div>Loading...</div>;
   // }
@@ -138,6 +144,17 @@ const MyHive: React.FC = () => {
     <div className="flex h-screen">
       <div className="w-56">
         <SideBar memberId={memberId} isOwnHive={isOwnHive} />
+        {!isOwnHive && isBalloonVisible && (
+          <div className="absolute top-[250px] left-[140px] w-[135px] p-3 bg-yellow-200 text-black rounded-lg shadow-lg">
+            <button className="absolute top-[1px] right-[6px] text-black" onClick={handleCloseBalloon}>
+              <i className="pi pi-times" style={{ fontSize: '0.7rem' }}></i>
+            </button>
+            <p className="text-[12px]">
+              디렉토리 이동해서 <br></br>팔로우를 해보세요!
+            </p>
+            <div className="absolute top-[50%] left-[-10px] transform -translate-y-1/2 border-[10px] border-transparent border-r-yellow-200"></div>
+          </div>
+        )}
       </div>
       <div className="flex flex-col w-5/6 ml-2">
         <div className="flex justify-between items-center border-b ml-6">

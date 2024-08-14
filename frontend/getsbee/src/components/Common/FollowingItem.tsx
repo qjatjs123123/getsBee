@@ -22,6 +22,7 @@ const FollowingItem = ({ item, showStarIcon }) => {
         return;
       }
       await deleteFollow(item.follow.followId); // 팔로우 취소
+      navigate(0);
     } else {
       await createFollow(item.directory.directoryId); // 팔로우 생성
     }
