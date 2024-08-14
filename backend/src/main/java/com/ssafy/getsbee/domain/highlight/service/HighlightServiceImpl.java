@@ -81,14 +81,14 @@ public class HighlightServiceImpl implements HighlightService {
         }
 
         Post post = highlight.getPost();
+        saveMessageToS3(request.message(), post);
+
         postElasticService.deleteHighlightDocument(highlight);
         highlightRepository.delete(highlight);
 
         if(post.getHighlights().isEmpty() && post.getNote()== null){
             postRepository.delete(post);
-            return;
         }
-        saveMessageToS3(request.message(), post);
     }
 
     @Override

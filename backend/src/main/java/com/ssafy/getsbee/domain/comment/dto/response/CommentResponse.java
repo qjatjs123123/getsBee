@@ -14,8 +14,7 @@ public record CommentResponse(
     String memberName,
     String memberImage,
     LocalDateTime createdAt,
-    Boolean isMyComment
-) {
+    Boolean isMyComment) {
     @Builder
     public CommentResponse(Long commentId, String content, Long memberId, String memberEmail, String memberName,
                            String memberImage, LocalDateTime createdAt, Boolean isMyComment) {

@@ -151,6 +151,8 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .where(
                         post.url.eq(url)
                                 .and(cursor != null ? post.id.lt(cursor) : null)
+                                .and(post.isPublic.eq(true))
+                                .and(post.directory.name.ne("Temporary"))
                 )
                 .orderBy(post.id.desc())
                 .offset(offset)
