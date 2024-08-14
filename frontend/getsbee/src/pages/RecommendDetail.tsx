@@ -73,7 +73,7 @@ const RecommendDetail = () => {
                 </div>
               ))
             ) : (
-              <div className="mt-4 text-center text-gray-500">연관 콘텐츠가 없습니다.</div>
+              <div className="mt-4 text-center text-gray-500">관련 포스트가 없습니다.</div>
             )}
           </div>
         </div>
