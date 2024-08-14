@@ -24,12 +24,6 @@ interface NodeData {
   children: NodeData[];
 }
 
-interface TreeNode {
-  key: string;
-  data: NodeData;
-  children: TreeNode[];
-}
-
 const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
   const { username } = useParams<{ username: string }>();
   const toast = React.useRef<Toast>(null);
@@ -38,7 +32,6 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
   const [loading, setLoading] = useState(true);
   const [rootDirectoryId, setRootDirectoryId] = useState<string | number | null>(null);
 
-  // confirmDialog 스타일 정의
   const confirmDialogStyle = {
     width: '60vw',
     minWidth: '350px',
@@ -50,10 +43,11 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
       try {
         setLoading(true);
         const data = await getDirectories(memberId);
-        console.log(data);
-        setNodes(data.data);
-        if (data.data.length > 0) {
-          setRootDirectoryId(data.data[0].parentDirectoryId);
+        // Filter out the 'Bookmark' directory
+        const filteredData = data.data.filter((node: NodeData) => node.name !== 'Bookmark');
+        setNodes(filteredData);
+        if (filteredData.length > 0) {
+          setRootDirectoryId(filteredData[0].parentDirectoryId);
         }
       } catch (error) {
         console.error('Failed to fetch directories:', error);
@@ -66,7 +60,7 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
   }, [memberId]);
 
   const isSpecialDirectory = (name: string) => {
-    return name === 'Temporary' || name === 'Bookmark';
+    return name === 'Temporary';
   };
 
   const showToast = (severity: 'success' | 'info' | 'warn' | 'error', summary: string, detail: string) => {
@@ -202,9 +196,9 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
       accept: async () => {
         try {
           const flattenedNodes = flattenNodes(nodes);
-          window.location.href = `/myhive/${username}`;
           console.log(JSON.stringify(flattenedNodes, null, 2));
           await updateDirectories(memberId, flattenedNodes);
+          window.location.href = `/myhive/${username}`;
           showToast('success', '성공', '디렉토리 수정에 성공했습니다.');
         } catch (error) {
           console.error('Failed to update directories:', error);
