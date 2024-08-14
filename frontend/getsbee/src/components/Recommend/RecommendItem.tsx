@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from 'primereact/card';
 import defaultThumbnail from '../../assets/defaultThumbnail.png';
@@ -11,11 +11,16 @@ interface RecommendItemProps {
 }
 
 const RecommendItem: React.FC<RecommendItemProps> = ({ data }) => {
+  const [imageSrc, setImageSrc] = useState(data.post.thumbnail || defaultThumbnail);
   const formattedCreatedAt = formatDate(data.post.createdAt);
+
+  const handleImageError = () => {
+    setImageSrc(defaultThumbnail);
+  };
 
   const header = (
     <div className="w-full h-48 overflow-hidden rounded-t-lg">
-      <img alt="Card" src={data.post.thumbnail || defaultThumbnail} className="w-full h-full object-cover" />
+      <img alt="Card" src={imageSrc} onError={handleImageError} className="w-full h-full object-cover" />
     </div>
   );
 
