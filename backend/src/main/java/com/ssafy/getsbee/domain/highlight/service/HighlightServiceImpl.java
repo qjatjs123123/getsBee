@@ -7,11 +7,12 @@ import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
 import com.ssafy.getsbee.domain.highlight.dto.response.S3UrlResponse;
 import com.ssafy.getsbee.domain.highlight.entity.Highlight;
 import com.ssafy.getsbee.domain.highlight.repository.HighlightRepository;
-import com.ssafy.getsbee.domain.interest.entity.Interest;
 import com.ssafy.getsbee.domain.interest.repository.InterestRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.service.MemberService;
 import com.ssafy.getsbee.domain.post.entity.Post;
+import com.ssafy.getsbee.domain.post.entity.PostDocument;
+import com.ssafy.getsbee.domain.post.repository.PostElasticRepository;
 import com.ssafy.getsbee.domain.post.repository.PostRepository;
 import com.ssafy.getsbee.domain.post.service.PostElasticService;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
@@ -45,6 +46,7 @@ public class HighlightServiceImpl implements HighlightService {
     private final ExtractCategoryService extractCategoryService;
     private final InterestRepository interestRepository;
     private final S3Service s3Service;
+    private final PostElasticRepository postElasticRepository;
 
     @Value("${cloud.aws.s3.directory.body}")
     private String directoryBodyPath;
@@ -87,6 +89,10 @@ public class HighlightServiceImpl implements HighlightService {
         highlightRepository.delete(highlight);
 
         if(post.getHighlights().isEmpty() && post.getNote()== null){
+            PostDocument postDocument = postElasticRepository.findByPostId(post.getId()).orElseThrow(
+                    () -> new BadRequestException(POSTDOCUMENT_NOT_FOUND)
+            );
+            postElasticRepository.delete(postDocument);
             postRepository.delete(post);
         }
     }
@@ -102,7 +108,6 @@ public class HighlightServiceImpl implements HighlightService {
         }
         highlight.changeColor(request.color());
         highlightRepository.save(highlight);
-
     }
 
     @Override
@@ -143,9 +148,10 @@ public class HighlightServiceImpl implements HighlightService {
     @Transactional
     public S3UrlResponse showBodyFromUrlAndMemberId(HighlightsRequest highlightsRequest) {
         Member member = memberService.findById(SecurityUtil.getCurrentMemberId());
-        return S3UrlResponse.from(postRepository.findByMemberAndUrl(member, highlightsRequest.url())
-                .map(Post::getBodyUrl)
-                .orElse(null));
+        return postRepository.findByMemberAndUrl(member, highlightsRequest.url())
+                .filter(post -> !post.getIsDeleted())
+                .map(post -> S3UrlResponse.from(post.getBodyUrl()))
+                .orElse(null);
     }
 
     @Override
