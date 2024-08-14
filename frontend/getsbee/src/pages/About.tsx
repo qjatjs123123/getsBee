@@ -11,6 +11,7 @@ import scrap4 from '../assets/othersHighlight.png';
 import highlighting from '../assets/highlighting.mp4';
 import aboutmain from '../assets/aboutmain7.png';
 import mainComb from '../assets/mainComb.png';
+import GetStartedButton from '../components/Common/GetStartedButton';
 import './about.css';
 
 const ScrollComponent: React.FC = () => {
@@ -318,21 +319,19 @@ const ScrollComponent: React.FC = () => {
           <div className="flex flex-col justify-center items-center w-full">
             <div className="relative flex justify-center text-gray-600">
               <p className="text-3xl text-left">
-                <span ref={underlineRef} className="text-amber-500 text-5xl font-bold">
-                  Getsbee
-                </span>{' '}
-                <br />
+                <span className="text-amber-500 text-5xl font-bold">Getsbee</span> <br />
                 인사이트 채집하러 가기
               </p>
             </div>
-            <div className="relative mt-6">
+            {/* <div className="relative mt-6">
               <input
                 type="button"
                 value="Login"
                 className="py-5 px-32 bg-amber-400 rounded-2xl text-white text-2xl font-bold mt-10 hover:bg-gray-600"
                 onClick={goToChromeWebStore}
               />
-            </div>
+            </div> */}
+            <GetStartedButton />
           </div>
         </div>
       </div>

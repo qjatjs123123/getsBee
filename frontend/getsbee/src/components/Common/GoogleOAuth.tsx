@@ -44,7 +44,7 @@ const GoogleOAuth: FC = () => {
           picture: decodedToken.picture,
         });
 
-        window.location.href = '/';
+        window.location.href = `/myhive/${decodedToken.email.split('@')[0]}`;
       } catch (error) {
         console.error('Error decoding token:', error);
       }
