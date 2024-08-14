@@ -7,6 +7,7 @@ import honeyComb from '../assets/honeyComb.png';
 import flyingbees from '../assets/flyingbees.png';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 import { useFeedDetail } from '../hooks/useFeedDetail';
+import ClipLoaderComponent from '../components/Common/ClipLoaderComponent';
 
 
 const Home: React.FC = () => {
@@ -90,7 +91,10 @@ const Home: React.FC = () => {
                   onUpdateFeed={updateFeedItem}
                 />
               ))}
-              {feedLoading && <div className="text-center py-4">Loading...</div>}
+              {/* {feedLoading && <div className="text-center py-4">Loading...</div>} */}
+              {feedLoading && <ClipLoaderComponent />}
+
+
               {!feedLoading && feedPosts.length === 0 && (
                 <div className="text-center font-bold text-[24px] mt-[160px]">
                   <img src={flyingbees} alt="flyingbees" className='w-[200px] mb-5' />
@@ -110,7 +114,9 @@ const Home: React.FC = () => {
                 <img src={honeyComb} alt="honeyComb" className="w-9" />
                 <p className="ml-1 text-[#CC9C00] font-semibold text-[22px]">Others&apos; Highlights</p>
               </div>
+              {/* {detailInitialLoading && <ClipLoaderComponent />} */}
               {detailInitialLoading && <div className="text-center py-4">초기 데이터를 불러오는 중...</div>}
+
               {memoizedDetailItems.map((detail, index) => (
                 <div
                   key={`${detail.postId}-${index}`}

@@ -6,6 +6,7 @@ import FeedDetail from '../components/Contents/FeedDetail';
 import honeyComb from '../assets/honeyComb.png';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll2';
 import { useFeedDetail } from '../hooks/useFeedDetail';
+import ClipLoaderComponent from '../components/Common/ClipLoaderComponent';
 
 const DailyHot: React.FC = () => {
   const { feedPosts, feedLoading, hasMoreFeed, loadMoreFeedPosts, updateFeedItem } = useInfiniteScroll(10);
@@ -88,7 +89,9 @@ const DailyHot: React.FC = () => {
                   onUpdateFeed={updateFeedItem}
                 />
               ))}
-              {feedLoading && <div className="text-center py-4">Loading...</div>}
+              {/* {feedLoading && <div className="text-center py-4">Loading...</div>} */}
+              {feedLoading && <ClipLoaderComponent />}
+
               {!feedLoading && feedPosts.length === 0 && <div className="text-center py-4">포스트가 없습니다.</div>}
             </div>
             <div

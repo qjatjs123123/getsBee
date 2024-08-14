@@ -21,6 +21,7 @@ interface NodeData {
   nextDirectoryId: string | number | null;
   parentDirectoryId: string | number | null;
   memberId: number;
+  memberName?: string;
   children: NodeData[];
 }
 
@@ -176,12 +177,8 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
   const flattenNodes = (nodes: NodeData[]): NodeData[] => {
     let flatNodes: NodeData[] = [];
     nodes.forEach((node) => {
-      const { children, postCount, memberName, ...nodeWithoutExcludedProps } = node;
-      const flatNode = {
-        ...nodeWithoutExcludedProps,
-        children: [], // 항상 빈 배열로 설정
-      };
-      flatNodes.push(flatNode);
+      const { children, ...nodeWithoutChildren } = node;
+      flatNodes.push(nodeWithoutChildren);
       if (children.length > 0) {
         flatNodes = flatNodes.concat(flattenNodes(children));
       }
@@ -200,10 +197,11 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
           const flattenedNodes = flattenNodes(nodes);
           console.log(JSON.stringify(flattenedNodes, null, 2));
           await updateDirectories(memberId, flattenedNodes);
-          showToast('success', '성공', '디렉토리 수정에 성공했습니다.');
+          showToast('success', 'Success', 'Directories updated successfully');
+          // window.location.href = `/myhive/${username}`;
         } catch (error) {
           console.error('Failed to update directories:', error);
-          showToast('error', '실패', '디렉토리 수정에 실패했습니다.');
+          showToast('error', 'Error', 'Failed to update directories');
         }
       },
       reject: () => {
