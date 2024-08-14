@@ -1,15 +1,20 @@
 /* eslint-disable no-undef */
 
-// 하이라이트 insert
+async function updateHTMLBody(highlightId) {
+  const response = await fetch(`https://getsbee.kr/api/v1/highlights/body`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ highlightId, message: document.body.innerHTML }),
+  });
+  if (response.status === 401) {
+    // 필요에 따라 추가 처리 (예: 사용자에게 재로그인 요청)
+    throw new Error("Network response was not ok");
+  }
 
-function storeHTML() {
-  const URL = getURL(); // URL 변수에 값 할당
-
-  // URL 변수를 키로 사용
-  const storageObject = {};
-  storageObject[URL] = document.body.innerHTML; // URL 변수를 키로 설정하고 data를 값으로 설정
-
-  chrome.storage.local.set(storageObject, function () {});
+  return await response.json();
 }
 
 function processHighlight(data, colorh) {
@@ -26,7 +31,8 @@ async function insertHighLightAPI(data) {
     const responseData = await postHighlightData(data);
     data.id = responseData.data.highlightId;
     processHighlight(data, getHoverColor(data.color));
-    storeHTML();
+    await updateHTMLBody(data.id);
+    // storeHTML();
   } catch (error) {
     console.log(error);
   }
@@ -62,7 +68,7 @@ async function updateHighlightData(color) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify({ color }),
+      body: JSON.stringify({ color, message: document.body.innerHTML }),
     }
   );
 
@@ -80,7 +86,8 @@ async function updateHighLightAPI(color, colorh) {
     //const id = '호출API'
     await updateHighlightData(color);
     updateColorById(color, colorh);
-    storeHTML();
+    await updateHTMLBody(SELECTED_ID);
+    // storeHTML();
   } catch (error) {
     loginCheck(401, () => updateHighLightAPI(color, colorh));
   }
@@ -89,13 +96,14 @@ async function updateHighLightAPI(color, colorh) {
 // // 하이라이트 delete
 async function deleteHighlightData() {
   const response = await fetch(
-    `https://getsbee.kr/api/v1/highlights/${SELECTED_ID}`,
+    `https://getsbee.kr/api/v1/highlights/${SELECTED_ID}/delete`,
     {
-      method: "DELETE",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
+      body: JSON.stringify({ message: document.body.innerHTML }),
     }
   );
 
@@ -111,11 +119,13 @@ async function deleteHighLightAPI() {
   try {
     // api 성공하면 프론트에서는 id값과 range값 변환해서 저장하기
     //const id = '호출API'
-    await deleteHighlightData();
     deleteHighlight();
+    await deleteHighlightData();
+
+    // await updateHTMLBody(SELECTED_ID);
     // const changeData = updateRangeInfo();
     // await updateRangeDataAPI(changeData);
-    storeHTML();
+    // storeHTML();
   } catch (error) {
     console.log(error);
   }
@@ -142,7 +152,7 @@ async function updateRangeDataAPI(UpdateIndexHighlight) {
 async function loginCheck(status, callback) {
   chrome.storage.sync.get(["GETSBEE_LOGIN"], async function (result) {
     if (result.GETSBEE_LOGIN === undefined) {
-      window.location.href = "https://getsbee.kr/about";
+      window.open("https://getsbee.kr/about", "_blank");
       return;
     } else {
       if (status === 401) {
@@ -189,7 +199,7 @@ async function loginCheck(status, callback) {
             callback(); // 토큰 갱신 후 콜백 함수 실행
           });
         } catch (error) {
-          //window.location.href = "https://getsbee.kr/about"; // 필요 시 로그인 페이지로 리다이렉션
+          window.location.href = "https://getsbee.kr/about"; // 필요 시 로그인 페이지로 리다이렉션
         }
       }
     }

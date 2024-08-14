@@ -4,9 +4,11 @@ import Tab from '../components/Common/Tab';
 import Feed from '../components/Contents/Feed';
 import FeedDetail from '../components/Contents/FeedDetail';
 import honeyComb from '../assets/honeyComb.png';
+import flyingbees from '../assets/flyingbees.png';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 import { useFeedDetail } from '../hooks/useFeedDetail';
 import ClipLoaderComponent from '../components/Common/ClipLoaderComponent';
+
 
 const Home: React.FC = () => {
   const { feedPosts, feedLoading, hasMoreFeed, loadMoreFeedPosts, updateFeedItem } = useInfiniteScroll(10);
@@ -92,7 +94,17 @@ const Home: React.FC = () => {
               {/* {feedLoading && <div className="text-center py-4">Loading...</div>} */}
               {feedLoading && <ClipLoaderComponent />}
 
-              {!feedLoading && feedPosts.length === 0 && <div className="text-center py-4">포스트가 없습니다.</div>}
+
+              {!feedLoading && feedPosts.length === 0 && (
+                <div className="text-center font-bold text-[24px] mt-[160px]">
+                  <img src={flyingbees} alt="flyingbees" className='w-[200px] mb-5' />
+                  <p className="flex justify-center">
+                    <span className="ml-2">다른 유저들을</span>
+                    <span className="ml-2 text-[#FFBF09]">팔로우</span>
+                  </p>
+                  <p>하고 피드를 받아보세요!</p>
+                </div>
+              )}
             </div>
             <div
               className="flex flex-col flex-grow p-4 items-start overflow-y-auto scrollbar-hide"

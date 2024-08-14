@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
-import { useRecoilValueLoadable, useRecoilRefresher_UNSTABLE } from 'recoil';
-import { userInfoByEmailPrefixSelector } from '../recoil/userState';
+import { useRecoilValueLoadable, useRecoilRefresher_UNSTABLE, useRecoilValue } from 'recoil';
+import { userInfoByEmailPrefixSelector, userState } from '../recoil/userState';
 import SideBar from '../components/Common/SideBar';
 import Menu from '../components/Common/Menu';
 import folderIcon from '../assets/folderIcon.png';
@@ -11,6 +11,9 @@ import EditableDir from '../components/Directory/EditableDir';
 
 const DirectoryUpdate: React.FC = () => {
   const { username } = useParams<{ username: string }>();
+  const navigate = useNavigate();
+
+  const currentUser = useRecoilValue(userState);
 
   const userInfoLoadable = useRecoilValueLoadable(userInfoByEmailPrefixSelector(username || ''));
   const [memberId, setMemberId] = useState<number | null>(null);
@@ -18,6 +21,9 @@ const DirectoryUpdate: React.FC = () => {
   useEffect(() => {
     if (userInfoLoadable.state === 'hasValue' && userInfoLoadable.contents) {
       setMemberId(userInfoLoadable.contents.memberId);
+    }
+    if (currentUser?.email.split('@')[0] !== username) {
+      navigate('/error');
     }
   }, [userInfoLoadable.state, userInfoLoadable.contents]);
 

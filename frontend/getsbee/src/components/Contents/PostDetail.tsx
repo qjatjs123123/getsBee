@@ -4,6 +4,7 @@ import { Avatar } from 'primereact/avatar';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { useRecoilValueLoadable, useSetRecoilState, useRecoilRefresher_UNSTABLE } from 'recoil';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { Link } from 'react-router-dom';
 import DirSelection from '../Directory/DirSelection';
 import HighlightItem from './HighlightItem';
 import PostUpdate from './PostUpdate';
@@ -309,7 +310,9 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
       <div className="flex mt-3 ml-3">
         <h2 className="text-[18px] font-bold">Notes</h2>
       </div>
-      <div className="mt-1 ml-3 p-3 border border-gray-300 rounded-[3px] ">{postDetail.note}</div>
+      <div className="mt-1 ml-3 p-3 border border-gray-300 rounded-[3px]" style={{ fontSize: '14px' }}>
+        {postDetail.note}
+      </div>
       <div className="flex mt-3 ml-3">
         <h2 className="text-[18px] font-bold">Comments</h2>
       </div>
@@ -345,11 +348,19 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
         {postDetail.comments &&
           postDetail.comments.map((comment: CommentType) => (
             <div key={comment.commentId} className="flex items-start mt-3">
-              <img src={comment.memberImage} alt="avatar" className="w-[30px] h-[30px] rounded-full mt-2" />
+              <Link to={`/myhive/${comment.memberEmail.split('@')[0]}`}>
+                <img
+                  src={comment.memberImage}
+                  alt="avatar"
+                  className="w-[30px] h-[30px] rounded-full mt-2 cursor-pointer"
+                />
+              </Link>
               <div className="ml-3 flex-1">
                 <div className="flex items-center">
-                  <p className="font-semibold mr-2">{comment.memberEmail.split('@')[0]}</p>
-                  <p className="text-[12px]" style={{ color: '#8D8D8D' }}>
+                  <Link to={`/myhive/${comment.memberEmail.split('@')[0]}`}>
+                    <p className="font-semibold mr-2 text-[14px] cursor-pointer">{comment.memberEmail.split('@')[0]}</p>
+                  </Link>
+                  <p className="text-[11px]" style={{ color: '#8D8D8D' }}>
                     {formatDate(comment.createdAt)}
                   </p>
                   {postDetail.isMyPost && comment.isMyComment && (
@@ -360,7 +371,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
                     />
                   )}
                 </div>
-                <p className="text-[14px]">{comment.content}</p>
+                <p className="text-[13px]">{comment.content}</p>
               </div>
             </div>
           ))}
