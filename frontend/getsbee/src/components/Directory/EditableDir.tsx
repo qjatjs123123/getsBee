@@ -117,7 +117,12 @@ const EditableDir: React.FC<EditableTreeProps> = ({ memberId }) => {
     }
 
     confirmDialog({
-      message: '디렉토리를 정말 삭제하시겠습니까? 하위 디렉토리 및 포함된 포스트들도 함께 삭제됩니다. ',
+      message: (
+        <div>
+          <p>디렉토리를 정말 삭제하시겠습니까?</p>
+          <p>하위 디렉토리 및 포함된 포스트들도 함께 삭제됩니다.</p>
+        </div>
+      ),
       header: 'Confirmation',
       icon: 'pi pi-exclamation-triangle',
       style: confirmDialogStyle,
