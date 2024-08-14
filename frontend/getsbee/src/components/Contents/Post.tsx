@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { formatDate } from '../util/util';
 import defaultThumbnail from '../../assets/defaultThumbnail.png';
 
@@ -11,6 +12,8 @@ interface PostProps {
   createdAt: string;
   highlightColors: string[];
   highlightNumber: number;
+  memberEmail: string;
+  directoryId: number;
 }
 
 const Post: React.FC<PostProps> = ({
@@ -22,6 +25,8 @@ const Post: React.FC<PostProps> = ({
   createdAt,
   highlightColors,
   highlightNumber,
+  memberEmail,
+  directoryId,
 }) => {
   const formattedCreatedAt = formatDate(createdAt);
 
@@ -73,7 +78,7 @@ const Post: React.FC<PostProps> = ({
             {url}
           </a>
           <p className="text-[14px] font-semibold" style={{ color: '#8D8D8D' }}>
-            {directoryName}
+            <Link to={`/myhive/${memberEmail.split('@')[0]}/${directoryId}`}>{directoryName}</Link>
           </p>
           <p className="text-[12px] font-semibold" style={{ color: '#8D8D8D' }}>
             조회수 {viewCount}
