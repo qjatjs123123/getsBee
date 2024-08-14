@@ -6,20 +6,12 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.ssafy.getsbee.domain.bookmark.repository.BookmarkRepository;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
-import com.ssafy.getsbee.domain.highlight.entity.Highlight;
-import com.ssafy.getsbee.domain.highlight.repository.HighlightRepository;
 import com.ssafy.getsbee.domain.interest.entity.Category;
-import com.ssafy.getsbee.domain.like.repository.LikeRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
-import com.ssafy.getsbee.domain.member.repository.MemberRepository;
-import com.ssafy.getsbee.domain.member.service.MemberService;
-import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
-import com.ssafy.getsbee.global.error.exception.NotFoundException;
 import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -47,10 +39,6 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
     private final JPAQueryFactory queryFactory;
     private final DirectoryRepository directoryRepository;
     private final JPAQueryFactory jpaQueryFactory;
-    private final MemberService memberService;
-    private final MemberRepository memberRepository;
-    private final LikeRepository likeRepository;
-    private final BookmarkRepository bookmarkRepository;
 
     @Override
     public Slice<Post> findAllByMemberId(Long memberId, Long cursor, Pageable pageable) {
@@ -247,30 +235,10 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .where(post.createdAt.after(hotPostOffset)
                         .and(post.isDeleted.isFalse())
                         .and(directory.name.ne("Temporary"))
-                        .and(JPAExpressions.selectFrom(bookmark)
-                                .where(bookmark.post.eq(post)).exists())
-                        .and(JPAExpressions.selectFrom(like)
-                                .where(like.post.eq(post)).exists())
                 )
                 .orderBy(post.viewCount.desc())
                 .limit(HOT_POST_LIMIT)
                 .fetch();
-    }
-
-
-
-    private boolean checkIfLikedByCurrentUser(Post post) {
-        Member currentMember = memberService.findById(SecurityUtil.getCurrentMemberId());
-        return likeRepository.findByMemberAndPost(currentMember, post).isPresent();
-    }
-
-    private boolean checkIfBookmarkedByCurrentUser(Post post) {
-        Member currentMember = memberRepository.findById(SecurityUtil.getCurrentMemberId())
-                .orElseThrow(() -> new NotFoundException(MEMBER_NOT_FOUND));
-
-        return bookmarkRepository.findByPostAndMember(post, currentMember)
-                .filter(bookmark -> !bookmark.getIsDeleted())
-                .isPresent();
     }
 
 
