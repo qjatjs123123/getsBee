@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { Button } from 'primereact/button';
@@ -10,11 +10,13 @@ import myHiveIcon from '../../assets/myHiveIcon.png';
 import aboutIcon from '../../assets/aboutIcon.png';
 import logoutIcon from '../../assets/logoutIcon.png';
 import userIcon from '../../assets/userIcon.png';
+import homeIcon from '../../assets/homeIcon.png';
 
 const PopupMenu: React.FC = () => {
   const [user, setUser] = useRecoilState(userState);
   const navigate = useNavigate();
   const menu = useRef<TieredMenu>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -22,7 +24,6 @@ const PopupMenu: React.FC = () => {
       performLogout();
     } catch (error) {
       console.error('Logout failed:', error);
-      // 에러가 발생해도 로컬의 데이터는 삭제하고 홈으로 리다이렉트
       performLogout();
     }
   };
@@ -34,6 +35,12 @@ const PopupMenu: React.FC = () => {
   };
 
   const items = [
+    {
+      label: 'Home',
+      icon: <img src={homeIcon} alt="Home" className="w-7 mr-3" />,
+      className: 'text-base font-bold',
+      command: () => navigate('/'),
+    },
     {
       label: 'MyHive',
       icon: <img src={myHiveIcon} alt="MyHive" className="w-7 mr-3" />,
@@ -59,21 +66,34 @@ const PopupMenu: React.FC = () => {
   }
 
   const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setIsMenuOpen(!isMenuOpen);
     menu.current?.toggle(event);
   };
 
   return (
     <div className="card flex justify-content-center">
-      <TieredMenu model={items} popup ref={menu} breakpoint="767px" className="custom-tieredmenu w-36 p-0" />
+      <TieredMenu
+        model={items}
+        popup
+        ref={menu}
+        breakpoint="767px"
+        className="custom-tieredmenu w-36 p-0"
+        onShow={() => setIsMenuOpen(true)}
+        onHide={() => setIsMenuOpen(false)}
+      />
       <Button
         onClick={handleToggle}
         rounded
         text
         severity="secondary"
         aria-label="Bookmark"
-        className="p-2 focus:outline-none focus:shadow-none p-0 mr-[20px]"
+        className="p-2 focus:outline-none focus:shadow-none ml-auto"
       >
-        <Avatar image={user.picture || userIcon} size="large" shape="circle" className="w-8 h-8" />
+        <Avatar image={user.picture || userIcon} size="large" shape="circle" className="w-8 h-8 mr-2" />
+        <i
+          className={`pi ${isMenuOpen ? 'pi-angle-up' : 'pi-angle-down'} text-[#8D8D8D]`}
+          style={{ fontSize: '1rem' }}
+        />
       </Button>
     </div>
   );

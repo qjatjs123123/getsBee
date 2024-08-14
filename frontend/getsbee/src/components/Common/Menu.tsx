@@ -44,7 +44,7 @@ const Menu = () => {
         text
         severity="secondary"
         aria-label="Bookmark"
-        className="focus:outline-none focus:shadow-none p-0 mr-[20px]"
+        className="focus:outline-none focus:shadow-none p-0 mr-[28px]"
       >
         <img src={userIcon} alt="Myhive Icon" className="h-8" />
       </Button>
