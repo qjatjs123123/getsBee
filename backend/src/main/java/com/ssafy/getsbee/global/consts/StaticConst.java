@@ -30,7 +30,7 @@ public class StaticConst {
             "\n[POLITICS, SOCIAL, CULTURE, ECONOMY, IT, WORLD, SPORTS, ENTERTAIN, HEALTH, TRAVEL, EDUCATION, LIVING, BEAUTY, FASHION, SCIENCE]";
     public static final String COMMA = ", ";
     public static final Integer HOT_POST_WEEK_OFFSET = 1;
-    public static final Integer HOT_POST_LIMIT = 50;
+    public static final Integer HOT_POST_LIMIT = 30;
 
     /** CSV */
     public static final String MEMBER_CSV = "member.csv";
