@@ -17,7 +17,9 @@ public record PostResponse(
         Long viewCount,
         Long likeCount,
         Long bookmarkCount,
+        Long memberId,
         String memberImage,
+        String memberEmail,
 
         Long directoryId,
         String directoryName,
@@ -44,7 +46,9 @@ public record PostResponse(
                 .viewCount(post.getViewCount())
                 .likeCount(post.getLikeCount())
                 .bookmarkCount(post.getBookmarkCount())
+                .memberId(post.getMember().getId())
                 .memberImage(post.getMember().getPicture())
+                .memberEmail(post.getMember().getEmail())
                 .directoryId(post.getDirectory().getId())
                 .directoryName(post.getDirectory().getName())
                 .comments(comments)
