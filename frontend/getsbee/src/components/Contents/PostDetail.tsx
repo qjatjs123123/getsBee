@@ -310,11 +310,17 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
           ))}
       </div>
       <div className="flex mt-3 ml-3">
-        <h2 className="text-[18px] font-bold">Notes</h2>
+        <h2 className="text-[18px] font-bold">Insights</h2>
       </div>
-      <div className="mt-1 ml-3 p-3 border border-gray-300 rounded-[3px]" style={{ fontSize: '14px' }}>
+      <div
+        className="mt-1 ml-3 p-3 rounded-[3px] bg-gray-100"
+        style={{
+          fontSize: '14px',
+        }}
+      >
         {postDetail.note}
       </div>
+
       <div className="flex mt-3 ml-3">
         <h2 className="text-[18px] font-bold">Comments</h2>
       </div>
