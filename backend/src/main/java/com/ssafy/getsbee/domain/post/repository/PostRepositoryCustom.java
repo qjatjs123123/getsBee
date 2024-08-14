@@ -3,6 +3,7 @@ package com.ssafy.getsbee.domain.post.repository;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.interest.entity.Category;
 import com.ssafy.getsbee.domain.member.entity.Member;
+import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.entity.Post;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -21,7 +22,7 @@ public interface PostRepositoryCustom {
 
     Slice<Post> findAllByCategory(List<Category> categories, Long postId, Pageable pageable);
 
-    List<Post> showHotPostList();
+    Slice<PostListResponse> showHotPostList();
 
     Long countPostsByMember(Member member);
 

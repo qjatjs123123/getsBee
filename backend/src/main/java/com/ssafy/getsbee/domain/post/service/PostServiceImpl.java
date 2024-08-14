@@ -247,11 +247,7 @@ public class PostServiceImpl implements PostService {
     }
 
     public Slice<PostListResponse> showHotPostList() {
-        List<Post> posts = postRepository.showHotPostList();
-        Pageable pageable = PageRequest.of(0, posts.size());
-        Slice<Post> slicePost = new SliceImpl<>(posts, pageable, false);
-
-        return makePostListResponseWithPosts(slicePost);
+        return postRepository.showHotPostList();
     }
 
     private Slice<PostListResponse> showPostListByDirectoryIdAndKeyword(Long directoryId, String keyword,
@@ -263,7 +259,7 @@ public class PostServiceImpl implements PostService {
         List<Post> posts = postIds.getContent().stream()
                 .map(postId -> postRepository.findById(postId)
                         .orElseThrow(() -> new BadRequestException(POST_NOT_FOUND)))
-                .filter(post -> !"Temporary".equalsIgnoreCase(post.getDirectory().getName()))
+                .filter(post -> !"Temporary".equals(post.getDirectory().getName()))
                 .collect(Collectors.toList());
 
         Slice<Post> postSlice = new SliceImpl<>(posts, pageable, postIds.hasNext());
@@ -306,22 +302,14 @@ public class PostServiceImpl implements PostService {
         return makePostListResponseWithPosts(posts);
     }
 
-
     private Slice<PostListResponse> makePostListResponseWithPosts(Slice<Post> posts) {
-
-        List<PostListResponse> postListResponses = posts.stream()
-                .map(post -> {
-                    List<Highlight> highlights = highlightRepository.findAllByPost(post);
-                    Integer relatedFeedNumber = postRepository.countPostsByUrl(post.getUrl());
-                    return PostListResponse.from(post, highlights,
-                            checkIfLikedByCurrentUser(post),
-                            checkIfBookmarkedByCurrentUser(post),
-                            relatedFeedNumber);
-                })
-                .collect(Collectors.toList());
-
-        return new SliceImpl<>(postListResponses, posts.getPageable(), posts.hasNext());
+        return posts.map(post ->
+                PostListResponse.from(post, highlightRepository.findAllByPost(post),
+                        checkIfLikedByCurrentUser(post),
+                        checkIfBookmarkedByCurrentUser(post),
+                        postRepository.countPostsByUrl(post.getUrl())));
     }
+
 
     private boolean checkIfLikedByCurrentUser(Post post) {
         Member currentMember = memberService.findById(SecurityUtil.getCurrentMemberId());

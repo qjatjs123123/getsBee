@@ -6,19 +6,23 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.ssafy.getsbee.domain.bookmark.repository.BookmarkRepository;
 import com.ssafy.getsbee.domain.directory.entity.Directory;
 import com.ssafy.getsbee.domain.directory.repository.DirectoryRepository;
+import com.ssafy.getsbee.domain.highlight.entity.Highlight;
+import com.ssafy.getsbee.domain.highlight.repository.HighlightRepository;
 import com.ssafy.getsbee.domain.interest.entity.Category;
+import com.ssafy.getsbee.domain.like.repository.LikeRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
+import com.ssafy.getsbee.domain.member.repository.MemberRepository;
+import com.ssafy.getsbee.domain.member.service.MemberService;
+import com.ssafy.getsbee.domain.post.dto.response.PostListResponse;
 import com.ssafy.getsbee.domain.post.entity.Post;
-import com.ssafy.getsbee.domain.post.entity.QPost;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
+import com.ssafy.getsbee.global.error.exception.NotFoundException;
 import com.ssafy.getsbee.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -26,8 +30,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.ssafy.getsbee.domain.bookmark.entity.QBookmark.bookmark;
 import static com.ssafy.getsbee.domain.directory.entity.QDirectory.directory;
+import static com.ssafy.getsbee.domain.highlight.entity.QHighlight.highlight;
 import static com.ssafy.getsbee.domain.interest.entity.QInterest.*;
+import static com.ssafy.getsbee.domain.like.entity.QLike.like;
 import static com.ssafy.getsbee.domain.post.entity.QPost.post;
 import static com.ssafy.getsbee.global.consts.StaticConst.HOT_POST_LIMIT;
 import static com.ssafy.getsbee.global.consts.StaticConst.HOT_POST_WEEK_OFFSET;
@@ -40,6 +47,10 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
     private final JPAQueryFactory queryFactory;
     private final DirectoryRepository directoryRepository;
     private final JPAQueryFactory jpaQueryFactory;
+    private final MemberService memberService;
+    private final MemberRepository memberRepository;
+    private final LikeRepository likeRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     @Override
     public Slice<Post> findAllByMemberId(Long memberId, Long cursor, Pageable pageable) {
@@ -207,47 +218,79 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         return orders;
     }
 
-    @Override
-    public List<Post> showHotPostList() {
-        LocalDateTime hotPostOffset = LocalDateTime.now().minusWeeks(HOT_POST_WEEK_OFFSET);
-
+//    @Override
+//    public List<Post> showHotPostList() {
+//        LocalDateTime hotPostOffset = LocalDateTime.now().minusWeeks(HOT_POST_WEEK_OFFSET);
+//
 //        return queryFactory
 //                .selectFrom(post)
-//                .join(post.highlights).fetchJoin()
-//                .join(post.bookmarks).fetchJoin()
-//                .join(post.likes).fetchJoin()
-//                .where(post.createdAt.after(hotPostOffset)
-//                        .and(post.isDeleted.isFalse()))
-//                .orderBy(post.viewCount.desc())
-//                .limit(99)
-//                .fetch();
-
-        // Fetching the posts based on the criteria
-//        return queryFactory
-//                .selectFrom(post)
+//                .join(post.directory, directory) // Explicit join
 //                .where(post.createdAt.after(hotPostOffset)
 //                        .and(post.isDeleted.isFalse())
-//                        .and(post.directory.name.ne("Temporary"))
-//                        .and(post.directory.name.ne("Bookmark"))
+//                        .and(directory.name.ne("Temporary"))
+//                        .and(directory.name.ne("Bookmark"))
 //                )
-//
 //                .orderBy(post.viewCount.desc())
 //                .limit(HOT_POST_LIMIT)
 //                .fetch();
+//
+//    }
 
-        return queryFactory
+    @Override
+    public Slice<PostListResponse> showHotPostList() {
+        LocalDateTime hotPostOffset = LocalDateTime.now().minusWeeks(HOT_POST_WEEK_OFFSET);
+
+        List<Post> hotPosts = queryFactory
                 .selectFrom(post)
-                .join(post.directory, directory) // Explicit join
+                .join(post.directory, directory).fetchJoin()
+                .join(post.highlights, highlight).fetchJoin()
+//                .leftJoin(post.bookmarks, bookmark).fetchJoin()
+//                .leftJoin(post.likes, like).fetchJoin()
                 .where(post.createdAt.after(hotPostOffset)
                         .and(post.isDeleted.isFalse())
                         .and(directory.name.ne("Temporary"))
-                        .and(directory.name.ne("Bookmark"))
                 )
                 .orderBy(post.viewCount.desc())
                 .limit(HOT_POST_LIMIT)
                 .fetch();
 
+        List<PostListResponse> postListResponses = hotPosts.stream()
+                .map(post -> {
+                    List<Highlight> highlights = post.getHighlights();
+//                    Integer relatedFeedNumber = postRepository.countPostsByUrl(post.getUrl());
+                    Integer relatedFeedNumber = 0;
+                    return PostListResponse.from(
+                            post,
+                            highlights,
+                            checkIfLikedByCurrentUser(post),
+                            checkIfBookmarkedByCurrentUser(post),
+                            relatedFeedNumber
+                    );
+                })
+                .collect(Collectors.toList());
+
+        // Create a Pageable object with size equal to HOT_POST_LIMIT
+        Pageable pageable = PageRequest.of(0, HOT_POST_LIMIT);
+
+        // Wrap the result into a Slice object
+        return new SliceImpl<>(postListResponses, pageable, false);
     }
+
+
+    private boolean checkIfLikedByCurrentUser(Post post) {
+        Member currentMember = memberService.findById(SecurityUtil.getCurrentMemberId());
+        return likeRepository.findByMemberAndPost(currentMember, post).isPresent();
+    }
+
+    private boolean checkIfBookmarkedByCurrentUser(Post post) {
+        Member currentMember = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .orElseThrow(() -> new NotFoundException(MEMBER_NOT_FOUND));
+
+        return bookmarkRepository.findByPostAndMember(post, currentMember)
+                .filter(bookmark -> !bookmark.getIsDeleted())
+                .isPresent();
+    }
+
 
     @Override
     public Long countPostsByMember(Member member) {
