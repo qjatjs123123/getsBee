@@ -18,6 +18,7 @@ interface Member {
   memberId: number;
   memberName: string;
   memberPicture: string;
+  memberEmail: string;
 }
 
 interface Directory {
