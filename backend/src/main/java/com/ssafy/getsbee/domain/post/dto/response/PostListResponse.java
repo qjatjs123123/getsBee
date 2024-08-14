@@ -1,6 +1,7 @@
 package com.ssafy.getsbee.domain.post.dto.response;
 
 import lombok.Builder;
+import org.hibernate.Hibernate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,13 +25,17 @@ public record PostListResponse (
             Boolean isBookmarkedByCurrentUser,
             Integer relatedFeedNumber
     ) {
+        // 강제로 프록시 객체를 초기화하여 문제를 방지
+        com.ssafy.getsbee.domain.member.entity.Member member = post.getMember();
+        com.ssafy.getsbee.domain.directory.entity.Directory directory = post.getDirectory();
+
+        // 강제로 초기화
+        Hibernate.initialize(directory);
+
         List<String> highlightColors = highlights.stream()
                 .map(com.ssafy.getsbee.domain.highlight.entity.Highlight::getColor)
                 .distinct()
                 .collect(Collectors.toList());
-
-        com.ssafy.getsbee.domain.member.entity.Member member = post.getMember();
-        com.ssafy.getsbee.domain.directory.entity.Directory directory = post.getDirectory();
 
         return PostListResponse.builder()
                 .post(Post.builder()
@@ -68,6 +73,8 @@ public record PostListResponse (
                         .build())
                 .build();
     }
+
+
     public record Post(
             Long postId,
             String title,
