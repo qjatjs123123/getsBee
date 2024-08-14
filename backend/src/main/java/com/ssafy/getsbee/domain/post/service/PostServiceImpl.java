@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.ssafy.getsbee.global.common.model.Interaction.*;
+import static com.ssafy.getsbee.global.consts.StaticConst.HOT_POST_LIMIT;
 import static com.ssafy.getsbee.global.error.ErrorCode.*;
 
 @Service
@@ -247,7 +248,25 @@ public class PostServiceImpl implements PostService {
     }
 
     public Slice<PostListResponse> showHotPostList() {
-        return postRepository.showHotPostList();
+        List<Post> hotPosts = postRepository.showHotPostList();
+
+        List<PostListResponse> postListResponses = hotPosts.stream()
+                .map(post -> {
+                    List<Highlight> highlights = post.getHighlights();
+                    Integer relatedFeedNumber = postRepository.countPostsByUrl(post.getUrl());
+
+                    return PostListResponse.from(
+                            post,
+                            highlights,
+                            checkIfLikedByCurrentUser(post),
+                            checkIfBookmarkedByCurrentUser(post),
+                            relatedFeedNumber
+                    );
+                })
+                .collect(Collectors.toList());
+
+        Pageable pageable = PageRequest.of(0, HOT_POST_LIMIT);
+        return new SliceImpl<>(postListResponses, pageable, false);
     }
 
     private Slice<PostListResponse> showPostListByDirectoryIdAndKeyword(Long directoryId, String keyword,

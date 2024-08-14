@@ -22,7 +22,7 @@ public interface PostRepositoryCustom {
 
     Slice<Post> findAllByCategory(List<Category> categories, Long postId, Pageable pageable);
 
-    Slice<PostListResponse> showHotPostList();
+    List<Post> showHotPostList();
 
     Long countPostsByMember(Member member);
 

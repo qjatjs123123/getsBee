@@ -237,44 +237,26 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 //    }
 
     @Override
-    public Slice<PostListResponse> showHotPostList() {
+    public List<Post> showHotPostList() {
         LocalDateTime hotPostOffset = LocalDateTime.now().minusWeeks(HOT_POST_WEEK_OFFSET);
 
-        List<Post> hotPosts = queryFactory
+        return queryFactory
                 .selectFrom(post)
                 .join(post.directory, directory).fetchJoin()
                 .join(post.highlights, highlight).fetchJoin()
-//                .leftJoin(post.bookmarks, bookmark).fetchJoin()
-//                .leftJoin(post.likes, like).fetchJoin()
                 .where(post.createdAt.after(hotPostOffset)
                         .and(post.isDeleted.isFalse())
                         .and(directory.name.ne("Temporary"))
+                        .and(JPAExpressions.selectFrom(bookmark)
+                                .where(bookmark.post.eq(post)).exists())
+                        .and(JPAExpressions.selectFrom(like)
+                                .where(like.post.eq(post)).exists())
                 )
                 .orderBy(post.viewCount.desc())
                 .limit(HOT_POST_LIMIT)
                 .fetch();
-
-        List<PostListResponse> postListResponses = hotPosts.stream()
-                .map(post -> {
-                    List<Highlight> highlights = post.getHighlights();
-//                    Integer relatedFeedNumber = postRepository.countPostsByUrl(post.getUrl());
-                    Integer relatedFeedNumber = 0;
-                    return PostListResponse.from(
-                            post,
-                            highlights,
-                            checkIfLikedByCurrentUser(post),
-                            checkIfBookmarkedByCurrentUser(post),
-                            relatedFeedNumber
-                    );
-                })
-                .collect(Collectors.toList());
-
-        // Create a Pageable object with size equal to HOT_POST_LIMIT
-        Pageable pageable = PageRequest.of(0, HOT_POST_LIMIT);
-
-        // Wrap the result into a Slice object
-        return new SliceImpl<>(postListResponses, pageable, false);
     }
+
 
 
     private boolean checkIfLikedByCurrentUser(Post post) {
