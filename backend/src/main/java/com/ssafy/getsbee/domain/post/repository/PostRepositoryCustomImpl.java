@@ -227,7 +227,6 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
     @Override
     public List<Post> showHotPostList() {
         LocalDateTime hotPostOffset = LocalDateTime.now().minusWeeks(HOT_POST_WEEK_OFFSET);
-        Long currentMemberId = SecurityUtil.getCurrentMemberId();
 
         return queryFactory
                 .selectFrom(post)
@@ -236,18 +235,6 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .where(post.createdAt.after(hotPostOffset)
                         .and(post.isDeleted.isFalse())
                         .and(directory.name.ne("Temporary"))
-                        .and(
-                                JPAExpressions.selectFrom(bookmark)
-                                        .where(
-                                                bookmark.post.eq(post).and(bookmark.member.id.eq(currentMemberId))
-                                        ).exists()
-                        )
-                        .and(
-                                JPAExpressions.selectFrom(like)
-                                        .where(
-                                                like.post.eq(post).and(like.member.id.eq(currentMemberId))
-                                        ).exists()
-                        )
                 )
                 .orderBy(post.viewCount.desc())
                 .limit(HOT_POST_LIMIT)
