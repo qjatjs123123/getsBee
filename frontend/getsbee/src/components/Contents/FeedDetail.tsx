@@ -53,7 +53,7 @@ const FeedDetail: React.FC<FeedDetailProps> = React.memo(({ detail }) => {
         </div>
         <div className="p-0">
           <p className="mt-2 ml-4" style={{ color: '#72736A' }}>
-            {detail.highlights.length} Highlights & Notes
+            {detail.highlights.length} Highlights & Insights
           </p>
           <div className="flex flex-col gap-2">
             {detail.highlights.slice(0, isExpanded ? detail.highlights.length : 1).map((highlight) => (
@@ -74,7 +74,7 @@ const FeedDetail: React.FC<FeedDetailProps> = React.memo(({ detail }) => {
         <Divider className="mt-1 my-4 border-gray-300 mb-0" style={{ borderBottomWidth: '1px' }} />
         <div className="p-0">
           <div className="flex items-center gap-2">
-            <p className="mt-4 mb-0 ml-4 text-[22px]">Notes:</p>
+            <p className="mt-4 mb-1 ml-4 text-[18px]">Insights</p>
           </div>
           <div className="mt-0 ml-4 mb-5">
             <p>{detail.note}</p>

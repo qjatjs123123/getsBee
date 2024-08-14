@@ -104,7 +104,7 @@ const PostUpdate: React.FC<PostUpdateProps> = ({ post, onSave, onCancel }) => {
         ))}
       </div>
       <div className="flex mt-3 ml-3">
-        <h2 className="text-[18px] font-bold">Notes</h2>
+        <h2 className="text-[18px] font-bold">Insights</h2>
       </div>
       <div className="mt-1 ml-6">
         <InputTextarea value={note} onChange={(e) => setNote(e.target.value)} rows={5} className="w-full" />
