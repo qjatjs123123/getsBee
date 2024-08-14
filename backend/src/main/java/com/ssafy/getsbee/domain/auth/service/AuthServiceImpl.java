@@ -8,12 +8,14 @@ import com.ssafy.getsbee.domain.auth.entity.RefreshToken;
 import com.ssafy.getsbee.domain.auth.repository.RefreshTokenRedisRepository;
 import com.ssafy.getsbee.domain.block.service.BlockService;
 import com.ssafy.getsbee.domain.directory.service.DirectoryService;
+import com.ssafy.getsbee.domain.member.dto.request.SearchMemberCondition;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.entity.Provider;
 import com.ssafy.getsbee.domain.member.repository.MemberRepository;
 import com.ssafy.getsbee.domain.member.service.MemberService;
 import com.ssafy.getsbee.global.error.exception.BadRequestException;
 import com.ssafy.getsbee.global.util.JwtUtil;
+import com.ssafy.getsbee.global.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -68,6 +70,10 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private Member signup(Provider provider, Payload payload) {
+        if (!memberRepository.search(
+                SearchMemberCondition.of(StringUtil.extractEmailPrefix(payload.get(CLAIM_EMAIL).toString()))).isEmpty()) {
+            throw  new BadRequestException(DUPLICATE_MEMBER);
+        }
         Member member = memberRepository.save(Member.of(provider, payload));
         directoryService.createDefaultDirectoriesForMember(member);
         return member;
