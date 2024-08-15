@@ -111,15 +111,8 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .where(id(postIds),
                         isPublic(),
                         postDirectoryName())
-                .limit(pageable.getPageNumber() + 1)
                 .fetch();
-
-        boolean hasNext = false;
-        if (content.size() > pageable.getPageSize()) {
-            content.remove(pageable.getPageSize());
-            hasNext = true;
-        }
-        return new SliceImpl<>(content, pageable, hasNext);
+        return new SliceImpl<>(content, pageable, false);
     }
 
     private BooleanExpression createCondition(Long memberId, Long currentMemberId) {

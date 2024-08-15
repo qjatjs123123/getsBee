@@ -27,4 +27,14 @@ public class RecommendController {
     public Slice<RecommendResponse> showRelatedPosts(@PathVariable("post-id") Long postId, Pageable pageable) {
         return recommendService.recommendRelatedPosts(postId, pageable);
     }
+
+    @GetMapping("/personalize")
+    public Slice<RecommendResponse> showPersonalizePostsByPersonalize(Pageable pageable) {
+        return recommendService.recommendPersonalizePostsByPersonalize(SecurityUtil.getCurrentMemberId(), pageable);
+    }
+
+    @GetMapping("/personalize/posts/{post-id}")
+    public Slice<RecommendResponse> showRelatedPostsByPersonalize(@PathVariable("post-id") Long postId, Pageable pageable) {
+        return recommendService.recommendRelatedPostsByPersonalize(postId, pageable);
+    }
 }

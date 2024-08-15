@@ -51,7 +51,7 @@ public class RecommendServiceImpl implements RecommendService {
         if (isUpdatedRecommend(member.getUpdatedAt())) {
             List<Long> postIds = personalizeService.getRecommendations(personalizePostArn, memberId.toString(), null, RECOMMEND_SIZE);
             Slice<Post> posts = postRepository.findInPostIds(postIds, pageable);
-            return mapToRecommendResponse(sortPostsByIds(posts, postIds));
+            return mapToRecommendResponse(sortPostsByIds(posts, postIds, pageable.getPageSize()));
         }
         List<Category> categories = mapToCategory(interestRepository.findAllByMember(member));
         return mapToRecommendResponse(postRepository.findAllByCategory(categories, null, pageable));
@@ -63,10 +63,26 @@ public class RecommendServiceImpl implements RecommendService {
         if (isUpdatedRecommend(post.getUpdatedAt())) {
             List<Long> postIds = personalizeService.getRecommendations(relatedPostArn, null, postId.toString(), RECOMMEND_SIZE);
             Slice<Post> posts = postRepository.findInPostIds(postIds, pageable);
-            return mapToRecommendResponse(sortPostsByIds(posts, postIds));
+            return mapToRecommendResponse(sortPostsByIds(posts, postIds, pageable.getPageSize()));
         }
         List<Category> categories = mapToCategory(interestRepository.findByUrl(post.getUrl()));
         return mapToRecommendResponse(postRepository.findAllByCategory(categories, postId, pageable));
+    }
+
+    @Override
+    public Slice<RecommendResponse> recommendPersonalizePostsByPersonalize(Long memberId, Pageable pageable) {
+        List<Long> postIds = personalizeService.getRecommendations(personalizePostArn, memberId.toString(), null, RECOMMEND_SIZE);
+        Slice<Post> posts = postRepository.findInPostIds(postIds, pageable);
+        return mapToRecommendResponse(sortPostsByIds(posts, postIds, pageable.getPageSize()));
+    }
+
+    @Override
+    public Slice<RecommendResponse> recommendRelatedPostsByPersonalize(Long postId, Pageable pageable) {
+        List<Long> postIds = personalizeService.getRecommendations(relatedPostArn, null, postId.toString(), RECOMMEND_SIZE);
+        System.out.println(postIds.size());
+        Slice<Post> posts = postRepository.findInPostIds(postIds, pageable);
+        System.out.println(posts.getSize());
+        return mapToRecommendResponse(sortPostsByIds(posts, postIds, pageable.getPageSize()));
     }
 
     private Boolean isUpdatedRecommend(LocalDateTime updatedAt) {
@@ -76,7 +92,7 @@ public class RecommendServiceImpl implements RecommendService {
         return false;
     }
 
-    private Slice<Post> sortPostsByIds(Slice<Post> posts, List<Long> postIds) {
+    private Slice<Post> sortPostsByIds(Slice<Post> posts, List<Long> postIds, int size) {
         List<Post> postList = posts.getContent();
 
         Map<Long, Integer> postIdIndexMap = IntStream.range(0, postIds.size())
@@ -86,6 +102,7 @@ public class RecommendServiceImpl implements RecommendService {
         List<Post> sortedPostList = postList.stream()
                 .filter(post -> postIdIndexMap.containsKey(post.getId()))
                 .sorted(Comparator.comparing(post -> postIdIndexMap.get(post.getId())))
+                .limit(size)
                 .collect(Collectors.toList());
         return new SliceImpl<>(sortedPostList, posts.getPageable(), posts.hasNext());
     }
