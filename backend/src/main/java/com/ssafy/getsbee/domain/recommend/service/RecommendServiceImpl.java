@@ -86,7 +86,8 @@ public class RecommendServiceImpl implements RecommendService {
     }
 
     private Boolean isUpdatedRecommend(LocalDateTime updatedAt) {
-        if (updatedAt.isBefore(LocalDateTime.now().minus(4, ChronoUnit.DAYS))) {
+        LocalDateTime referenceDate = LocalDateTime.now().minus(1, ChronoUnit.DAYS);
+        if (updatedAt.isBefore(referenceDate) || updatedAt.isEqual(referenceDate)) {
             return true;
         }
         return false;
