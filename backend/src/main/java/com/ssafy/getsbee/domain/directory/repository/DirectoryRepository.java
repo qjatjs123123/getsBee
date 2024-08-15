@@ -16,4 +16,6 @@ public interface DirectoryRepository extends JpaRepository<Directory, Long>, Dir
     Optional<Directory> findDirectoryById(Long directoryId);
 
     List<Directory> findAllByMember(Member member);
+
+    Optional<Directory> findByMemberAndName(Member member, String name);
 }
