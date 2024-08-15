@@ -23,6 +23,7 @@ public class StaticConst {
     public static final long SEVEN_DAYS = 7L;
 
     /** Directory */
+    public static final String BOOKMARK = "Bookmark";
 
     /** Post */
     public static final String EXTRACT_CATEGORY_PROMPT = "\nHere are the links and the Titles for the links. " +
