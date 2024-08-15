@@ -45,9 +45,7 @@ public class StaticConst {
     public static final String TIMESTAMP = "TIMESTAMP";
     public static final String DEFAULT = "";
 
-    /** Interaction */
-    public static final String VIEW = "VIEW";
-    public static final String LIKE = "LIKE";
-    public static final String BOOKMARK = "BOOKMARK";
-    public static final String CREATE = "CREATE";
+    /** Personalize */
+    public static final int RECOMMEND_SIZE = 100;
+
 }

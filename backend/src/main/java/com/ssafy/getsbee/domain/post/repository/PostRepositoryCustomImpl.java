@@ -22,11 +22,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.ssafy.getsbee.domain.bookmark.entity.QBookmark.bookmark;
 import static com.ssafy.getsbee.domain.directory.entity.QDirectory.directory;
 import static com.ssafy.getsbee.domain.highlight.entity.QHighlight.highlight;
 import static com.ssafy.getsbee.domain.interest.entity.QInterest.*;
-import static com.ssafy.getsbee.domain.like.entity.QLike.like;
 import static com.ssafy.getsbee.domain.post.entity.QPost.post;
 import static com.ssafy.getsbee.global.consts.StaticConst.HOT_POST_LIMIT;
 import static com.ssafy.getsbee.global.consts.StaticConst.HOT_POST_WEEK_OFFSET;
@@ -102,6 +100,26 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .selectFrom(post)
                 .where(url())
                 .fetch();
+    }
+
+    @Override
+    public Slice<Post> findInPostIds(List<Long> postIds, Pageable pageable) {
+        List<Post> content = jpaQueryFactory
+                .selectFrom(post)
+                .join(post.directory).fetchJoin()
+                .join(post.highlights).fetchJoin()
+                .where(id(postIds),
+                        isPublic(),
+                        postDirectoryName())
+                .limit(pageable.getPageNumber() + 1)
+                .fetch();
+
+        boolean hasNext = false;
+        if (content.size() > pageable.getPageSize()) {
+            content.remove(pageable.getPageSize());
+            hasNext = true;
+        }
+        return new SliceImpl<>(content, pageable, hasNext);
     }
 
     private BooleanExpression createCondition(Long memberId, Long currentMemberId) {
@@ -192,6 +210,10 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .select(interest.url).distinct()
                 .from(interest)
                 .where(interest.url.isNotNull()));
+    }
+
+    private BooleanExpression id(List<Long> postIds) {
+        return postIds == null ? null : post.id.in(postIds);
     }
 
     private List<OrderSpecifier> getOrderSpecifier(Sort sort) {
