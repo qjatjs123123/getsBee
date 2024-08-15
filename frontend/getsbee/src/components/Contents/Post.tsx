@@ -78,9 +78,13 @@ const Post: React.FC<PostProps> = ({
             {url}
           </a>
           <p className="text-[14px] font-semibold" style={{ color: '#8D8D8D' }}>
-            <Link className="hover:underline" to={`/myhive/${memberEmail.split('@')[0]}/${directoryId}`}>
+            <span
+              className="hover:underline"
+              onClick={() => (window.location.href = `/myhive/${memberEmail.split('@')[0]}/${directoryId}`)}
+              style={{ cursor: 'pointer' }}
+            >
               {directoryName}
-            </Link>
+            </span>
           </p>
           <p className="text-[12px] font-semibold" style={{ color: '#8D8D8D' }}>
             조회수 {viewCount}

@@ -38,19 +38,28 @@ const RecommendItem: React.FC<RecommendItemProps> = ({ data }) => {
 
   return (
     <div className="card flex justify-content-center transform scale-90">
-      <Link to={`/posts/${data.post.postId}`} className="flex items-center font-bold">
+      <div
+        onClick={() => (window.location.href = `/posts/${data.post.postId}`)}
+        className="flex items-center font-bold"
+        style={{ cursor: 'pointer' }}
+      >
         <Card footer={footer} header={header} className="w-full max-w-sm shadow h-[360px] overflow-hidden">
           <h2 className="text-xl font-bold mb-2 line-clamp-2 min-h-[3.5rem]">{data.post.title}</h2>
 
           <div className="flex items-center font-bold">
-            <Link to={`/myhive/${data.member.memberEmail.split('@')[0]}/${data.directory.directoryId}`}>
-              <p className="ml-1 text-base text-[#8D8D8D] truncate hover:underline">
-                {`${data.member.memberEmail.split('@')[0]} / ${data.directory.directoryName}`}
-              </p>
-            </Link>
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                window.location.href = `/myhive/${data.member.memberEmail.split('@')[0]}/${data.directory.directoryId}`;
+              }}
+              className="ml-1 text-base text-[#8D8D8D] truncate hover:underline"
+              style={{ cursor: 'pointer' }}
+            >
+              {`${data.member.memberEmail.split('@')[0]} / ${data.directory.directoryName}`}
+            </div>
           </div>
         </Card>
-      </Link>
+      </div>
     </div>
   );
 };

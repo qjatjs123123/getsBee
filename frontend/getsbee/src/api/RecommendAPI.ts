@@ -80,6 +80,6 @@ export const getRelatedPosts = async (postId: number, size: number): Promise<Rel
 };
 
 export const getRecommendPosts = async (): Promise<RelatedPostsResponse> => {
-  const response = await axios.get<RelatedPostsResponse>('/recommends');
+  const response = await axios.get<RelatedPostsResponse>('/recommends?size=99');
   return response.data;
 };
