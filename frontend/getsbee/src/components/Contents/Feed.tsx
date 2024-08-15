@@ -72,7 +72,10 @@ const Feed = forwardRef<HTMLDivElement, FeedProps>(
                 <Avatar image={member.memberPicture} size="normal" shape="circle" />
               </Link>
 
-              <Link to={`/myhive/${member.memberEmail.split('@')[0]}/${directory.directoryId}`}>
+              <Link
+                className="hover:underline"
+                to={`/myhive/${member.memberEmail.split('@')[0]}/${directory.directoryId}`}
+              >
                 <div className="ml-2 flex justify-center">
                   <h2 className="text-sm font-bold text-gray-600">{`${member.memberEmail.split('@')[0]} / ${directory.directoryName}`}</h2>
                 </div>

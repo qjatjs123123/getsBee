@@ -117,6 +117,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
       await deletePost(postId);
       setPostDetail(null);
       onDelete();
+      window.location.reload();
     } catch (error) {
       console.error('Failed to delete post:', error);
     }
@@ -124,8 +125,8 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
 
   const confirmDelete = () => {
     confirmDialog({
-      message: 'Are you sure you want to delete this post?',
-      header: 'Delete Confirmation',
+      message: '정말로 포스트를 삭제하시겠습니까?',
+      header: '포스트 삭제',
       icon: 'pi pi-exclamation-triangle',
       accept: handleDelete,
     });
@@ -170,12 +171,19 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
   };
 
   const handleCommentDelete = async (commentId: number) => {
-    try {
-      await deleteComment(commentId);
-      refreshPostDetail(); // 포스트 데이터 리프레시 호출
-    } catch (error) {
-      console.error('Failed to delete comment:', error);
-    }
+    confirmDialog({
+      message: '정말로 댓글을 삭제하시겠습니까?',
+      header: '댓글 삭제',
+      icon: 'pi pi-exclamation-triangle',
+      accept: async () => {
+        try {
+          await deleteComment(commentId);
+          refreshPostDetail(); // 포스트 데이터 리프레시 호출
+        } catch (error) {
+          console.error('Failed to delete comment:', error);
+        }
+      },
+    });
   };
 
   if (!postDetail) {
@@ -220,7 +228,10 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
         </div>
         <div className="w-[440px] ml-4 flex-1">
           <p className="text-[14px] font-semibold" style={{ color: '#8D8D8D' }}>
-            <Link to={`/myhive/${postDetail.memberEmail.split('@')[0]}/${postDetail.directoryId}`}>
+            <Link
+              className="hover:underline"
+              to={`/myhive/${postDetail.memberEmail.split('@')[0]}/${postDetail.directoryId}`}
+            >
               {postDetail.memberEmail.split('@')[0]} / {postDetail.directoryName}
             </Link>
           </p>
@@ -358,18 +369,20 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
         {postDetail.comments &&
           postDetail.comments.map((comment: CommentType) => (
             <div key={comment.commentId} className="flex items-start mt-3">
-              <Link to={`/myhive/${comment.memberEmail.split('@')[0]}`}>
-                <img
-                  src={comment.memberImage}
-                  alt="avatar"
-                  className="w-[30px] h-[30px] rounded-full mt-2 cursor-pointer"
-                />
-              </Link>
+              <img
+                src={comment.memberImage}
+                alt="avatar"
+                className="w-[30px] h-[30px] rounded-full mt-2 cursor-pointer"
+                onClick={() => (window.location.href = `/myhive/${comment.memberEmail.split('@')[0]}`)}
+              />
               <div className="ml-3 flex-1">
                 <div className="flex items-center">
-                  <Link to={`/myhive/${comment.memberEmail.split('@')[0]}`}>
-                    <p className="font-semibold mr-2 text-[14px] cursor-pointer">{comment.memberEmail.split('@')[0]}</p>
-                  </Link>
+                  <p
+                    className="font-semibold mr-2 text-[14px] cursor-pointer"
+                    onClick={() => (window.location.href = `/myhive/${comment.memberEmail.split('@')[0]}`)}
+                  >
+                    {comment.memberEmail.split('@')[0]}
+                  </p>
                   <p className="text-[11px]" style={{ color: '#8D8D8D' }}>
                     {formatDate(comment.createdAt)}
                   </p>

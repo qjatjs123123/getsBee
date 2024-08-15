@@ -78,7 +78,9 @@ const Post: React.FC<PostProps> = ({
             {url}
           </a>
           <p className="text-[14px] font-semibold" style={{ color: '#8D8D8D' }}>
-            <Link to={`/myhive/${memberEmail.split('@')[0]}/${directoryId}`}>{directoryName}</Link>
+            <Link className="hover:underline" to={`/myhive/${memberEmail.split('@')[0]}/${directoryId}`}>
+              {directoryName}
+            </Link>
           </p>
           <p className="text-[12px] font-semibold" style={{ color: '#8D8D8D' }}>
             조회수 {viewCount}

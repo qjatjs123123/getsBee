@@ -64,3 +64,18 @@ export const getDirectoryInfo = async (directoryId: number) => {
 
   return response.data;
 };
+
+export const getBookmarkId = async () => {
+  try {
+    const response = await axios.get(`/bookmarks/me`);
+    console.log(response);
+    if (response.status !== 200) {
+      throw new Error('Failed to get bookmark ID');
+    }
+
+    return response.data.data.directoryId; // 북마크 ID를 반환
+  } catch (error) {
+    console.error('Error fetching bookmark ID:', error);
+    throw error;
+  }
+};

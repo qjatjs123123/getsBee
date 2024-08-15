@@ -29,7 +29,10 @@ const FeedDetail: React.FC<FeedDetailProps> = React.memo(({ detail }) => {
               <Avatar image={detail.memberImage} size="large" shape="circle" />
             </Link>
             <div className="ml-2 flex flex-col justify-center">
-              <Link to={`/myhive/${detail.memberEmail.split('@')[0]}/${detail.directoryId}`}>
+              <Link
+                className="hover:underline"
+                to={`/myhive/${detail.memberEmail.split('@')[0]}/${detail.directoryId}`}
+              >
                 <h2 className="text-lg font-bold">
                   {detail.memberEmail.split('@')[0]} / {detail.directoryName}
                 </h2>
