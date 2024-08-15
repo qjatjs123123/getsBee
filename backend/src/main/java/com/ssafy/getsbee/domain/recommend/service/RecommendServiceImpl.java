@@ -20,9 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -79,9 +77,7 @@ public class RecommendServiceImpl implements RecommendService {
     @Override
     public Slice<RecommendResponse> recommendRelatedPostsByPersonalize(Long postId, Pageable pageable) {
         List<Long> postIds = personalizeService.getRecommendations(relatedPostArn, null, postId.toString(), RECOMMEND_SIZE);
-        System.out.println(postIds.size());
         Slice<Post> posts = postRepository.findInPostIds(postIds, pageable);
-        System.out.println(posts.getSize());
         return mapToRecommendResponse(sortPostsByIds(posts, postIds, pageable.getPageSize()));
     }
 
@@ -104,7 +100,7 @@ public class RecommendServiceImpl implements RecommendService {
                 .filter(post -> postIdIndexMap.containsKey(post.getId()))
                 .sorted(Comparator.comparing(post -> postIdIndexMap.get(post.getId())))
                 .limit(size)
-                .collect(Collectors.toList());
+                .toList();
         return new SliceImpl<>(sortedPostList, posts.getPageable(), posts.hasNext());
     }
 
@@ -115,10 +111,19 @@ public class RecommendServiceImpl implements RecommendService {
     }
 
     private Slice<RecommendResponse> mapToRecommendResponse(Slice<Post> posts) {
-        return posts.map(post ->
+        return filterDistinctPostsByUrl(posts).map(post ->
                 RecommendResponse.of(PostResponse.of(post),
                         MemberResponse.of(post.getMember()),
                         DirectoryResponse.of(post.getDirectory().getId(), directoryService.findFullNameByDirectory(post.getDirectory())),
                         HighlightResponse.of(post.getHighlights())));
+    }
+
+    private Slice<Post> filterDistinctPostsByUrl(Slice<Post> posts) {
+        Set<String> urls = new HashSet<>();
+
+        List<Post> filteredPosts = posts.stream()
+                .filter(post -> urls.add(post.getUrl()))
+                .toList();
+        return new SliceImpl<>(filteredPosts, posts.getPageable(), posts.hasNext());
     }
 }
