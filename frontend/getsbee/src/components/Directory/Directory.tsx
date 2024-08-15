@@ -36,8 +36,8 @@ const Directory: React.FC<DirectoryProps> = ({ directory, username, tempCount })
   };
 
   const handleDirectoryClick = () => {
-    navigate(`/myhive/${username}/${directory.directoryId}`);
-    window.location.reload();
+    // navigate(`/myhive/${username}/${directory.directoryId}`);
+    window.location.href = `/myhive/${username}/${directory.directoryId}`;
   };
 
   const fontSize = directory.depth === 1 ? 'text-[16px]' : 'text-[14px]';
