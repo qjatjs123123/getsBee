@@ -8,4 +8,7 @@ public interface RecommendService {
 
     Slice<RecommendResponse> recommendPersonalizePosts(Long memberId, Pageable pageable);
     Slice<RecommendResponse> recommendRelatedPosts(Long postId, Pageable pageable);
+    Slice<RecommendResponse> recommendPersonalizePostsByPersonalize(Long memberId, Pageable pageable);
+    Slice<RecommendResponse> recommendRelatedPostsByPersonalize(Long postId, Pageable pageable);
+
 }

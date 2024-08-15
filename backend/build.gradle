@@ -69,6 +69,10 @@ dependencies {
 	implementation 'org.apache.commons:commons-csv:1.10.0'
 	// AWS
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+	// AWS Personalize
+	implementation 'software.amazon.awssdk:personalize:2.16.83'
+	implementation 'software.amazon.awssdk:personalizeruntime:2.16.83'
+	implementation 'software.amazon.awssdk:personalizeevents:2.16.83'
 }
 
 // open ai

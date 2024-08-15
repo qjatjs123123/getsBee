@@ -55,6 +55,10 @@ cloud:
         body: ${DIRECTORY_BODY}
     lambda:
       url: ${LAMBDA_URL}
+    personalize:
+      campaign:
+        personalize-post-arn: ${PERSONALIZE_POST_ARN}
+        related-post-arn: ${RELATED_POST_ARN}
 logging:
   level:
     com:
