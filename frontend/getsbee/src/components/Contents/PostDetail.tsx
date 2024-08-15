@@ -228,12 +228,15 @@ const PostDetail: React.FC<PostDetailProps> = ({ postId, onDelete, onStartEditin
         </div>
         <div className="w-[440px] ml-4 flex-1">
           <p className="text-[14px] font-semibold" style={{ color: '#8D8D8D' }}>
-            <Link
+            <span
               className="hover:underline"
-              to={`/myhive/${postDetail.memberEmail.split('@')[0]}/${postDetail.directoryId}`}
+              onClick={() =>
+                (window.location.href = `/myhive/${postDetail.memberEmail.split('@')[0]}/${postDetail.directoryId}`)
+              }
+              style={{ cursor: 'pointer' }}
             >
               {postDetail.memberEmail.split('@')[0]} / {postDetail.directoryName}
-            </Link>
+            </span>
           </p>
           <h2 className="text-[18px] font-bold mr-2">{postDetail.title}</h2>
           <a

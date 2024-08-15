@@ -25,20 +25,27 @@ const FeedDetail: React.FC<FeedDetailProps> = React.memo(({ detail }) => {
       <div className="p-0 mt-4 mr-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 mb-1">
-            <Link to={`/myhive/${detail.memberEmail.split('@')[0]}`}>
+            <div
+              onClick={() => (window.location.href = `/myhive/${detail.memberEmail.split('@')[0]}`)}
+              style={{ cursor: 'pointer' }}
+            >
               <Avatar className="flex" image={detail.memberImage} size="large" shape="circle" />
-            </Link>
+            </div>
             <div className="ml-2 flex flex-col justify-center">
-              <Link
+              <div
+                onClick={() =>
+                  (window.location.href = `/myhive/${detail.memberEmail.split('@')[0]}/${detail.directoryId}`)
+                }
                 className="hover:underline"
-                to={`/myhive/${detail.memberEmail.split('@')[0]}/${detail.directoryId}`}
+                style={{ cursor: 'pointer' }}
               >
                 <h2 className="text-lg font-bold">
                   {detail.memberEmail.split('@')[0]} / {detail.directoryName}
                 </h2>
-              </Link>
+              </div>
             </div>
           </div>
+
           <div className="flex items-center gap-4 mt-5 mr-2">
             <div className="flex items-center gap-1">
               <i className="pi pi-heart" style={{ fontSize: '1.2rem', color: '#8F8F8F' }} />
