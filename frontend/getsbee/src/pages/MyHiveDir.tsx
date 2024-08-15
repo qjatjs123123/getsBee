@@ -209,7 +209,7 @@ const MyHiveDir: React.FC = () => {
 
   return (
     <div className="flex h-screen">
-      <div className="w-56">
+      <div className="w-56 z-20">
         <SideBar memberId={memberId} isOwnHive={isOwnHive} />
       </div>
       <div className="flex flex-col w-5/6 ml-2">
@@ -233,7 +233,7 @@ const MyHiveDir: React.FC = () => {
         <div className="flex flex-grow overflow-hidden">
           <div
             ref={postsContainerRef}
-            className="flex flex-col items-center w-[465px] p-4 border-r overflow-y-auto scrollbar-hide"
+            className="flex flex-col items-center w-[465px] bg-white z-10 p-4 border-r overflow-y-auto scrollbar-hide"
           >
             {posts.map((postData) => (
               <div
@@ -268,7 +268,7 @@ const MyHiveDir: React.FC = () => {
               </div>
             ))}
           </div>
-          <div className="flex flex-grow justify-center items-start overflow-y-auto scrollbar-hide transform scale-110 mt-8 mb-8">
+          <div className="flex flex-grow justify-center items-start overflow-y-auto scrollbar-hide transform scale-110 mt-8 mb-8 z-0">
             {selectedPostId && (
               <PostDetail
                 postId={selectedPostId}

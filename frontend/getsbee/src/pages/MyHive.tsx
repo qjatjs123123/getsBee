@@ -142,7 +142,7 @@ const MyHive: React.FC = () => {
 
   return (
     <div className="flex h-screen">
-      <div className="w-56">
+      <div className="w-56 z-20">
         <SideBar memberId={memberId} isOwnHive={isOwnHive} />
         {!isOwnHive && isBalloonVisible && (
           <div className="absolute top-[250px] left-[140px] w-[135px] p-3 bg-yellow-200 text-black rounded-lg shadow-lg">
@@ -176,7 +176,7 @@ const MyHive: React.FC = () => {
         <div className="flex flex-grow overflow-hidden">
           <div
             ref={postsContainerRef}
-            className="flex flex-col items-center w-[465px] p-4 border-r overflow-y-auto scrollbar-hide "
+            className="flex flex-col items-center w-[465px] bg-white p-4 border-r overflow-y-auto scrollbar-hide z-10"
           >
             {posts.map((postData) => (
               <div
@@ -210,7 +210,7 @@ const MyHive: React.FC = () => {
               </div>
             ))}
           </div>
-          <div className="flex flex-grow justify-center items-start overflow-y-auto scrollbar-hide transform scale-110 mt-8 mb-8">
+          <div className="flex flex-grow justify-center items-start overflow-y-auto scrollbar-hide transform scale-110 mt-8 mb-8 z-0">
             {selectedPostId && (
               <PostDetail
                 postId={selectedPostId}

@@ -10,6 +10,7 @@ import Directory from '../Directory/Directory';
 import { userInfoByIdSelector, userHiveInfoByIdSelector } from '../../recoil/userState';
 import { getDirectoryState } from '../../recoil/DirectoryState';
 import { userState } from '../../recoil/userState';
+import { getBookmarkId } from '../../api/DirectoryApi';
 
 interface SideBarProps {
   memberId: number | null;
@@ -32,11 +33,18 @@ const SideBar: React.FC<SideBarProps> = ({ memberId, isOwnHive }) => {
   const directories = directoriesLoadable.state === 'hasValue' ? directoriesLoadable.contents : null;
 
   useEffect(() => {
-    if (directories && directories.length > 0) {
-      const bookmarkDirectory = directories.find((directory) => directory.name === 'Bookmark');
-      if (bookmarkDirectory) {
-        setBookmarkId(bookmarkDirectory.directoryId); // Bookmark 디렉토리의 ID를 상태에 저장
+    const fetchBookmarkId = async () => {
+      try {
+        const bookmarkId = await getBookmarkId(); // API 호출하여 북마크 ID 가져오기
+        setBookmarkId(bookmarkId);
+      } catch (error) {
+        console.error('Failed to fetch bookmark ID:', error);
       }
+    };
+
+    fetchBookmarkId(); // 컴포넌트가 마운트될 때 북마크 ID 가져오기
+
+    if (directories && directories.length > 0) {
       setTempCount(directories[0].postCount);
     } else {
       setTempCount(0); // directories가 없거나 비어 있을 때 0으로 설정
@@ -45,7 +53,7 @@ const SideBar: React.FC<SideBarProps> = ({ memberId, isOwnHive }) => {
 
   const handleBookmarkClick = () => {
     if (username && bookmarkId) {
-      navigate(`/myhive/${username}/${bookmarkId}`);
+      window.location.href = `/myhive/${username}/${bookmarkId}`;
     }
   };
 

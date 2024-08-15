@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { userState } from '../../recoil/userState';
 import starIcon from '../../assets/starIcon.png';
 import stargIcon from '../../assets/stargIcon.png';
@@ -17,12 +18,18 @@ const FollowingItem = ({ item, showStarIcon }) => {
 
   const handleStarClick = async () => {
     if (showStarIcon) {
-      const confirmed = window.confirm('정말로 팔로우를 취소하시겠습니까?');
-      if (!confirmed) {
-        return;
-      }
-      await deleteFollow(item.follow.followId); // 팔로우 취소
-      navigate(0);
+      confirmDialog({
+        message: '정말로 팔로우를 취소하시겠습니까?',
+        header: '팔로우 취소',
+        icon: 'pi pi-exclamation-triangle',
+        accept: async () => {
+          await deleteFollow(item.follow.followId); // 팔로우 취소
+          navigate(0); // 페이지 리로드
+        },
+        reject: () => {
+          // 취소 시의 동작을 여기에 추가할 수 있습니다. 필요 없으면 생략 가능.
+        },
+      });
     } else {
       await createFollow(item.directory.directoryId); // 팔로우 생성
     }
@@ -55,6 +62,7 @@ const FollowingItem = ({ item, showStarIcon }) => {
         borderWidth: '2px',
       }}
     >
+      <ConfirmDialog />
       {!isFollowerPage && (
         <div className="absolute top-2 left-4 text-[12px] text-blue-600">
           {item.follow.followCount}
