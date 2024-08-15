@@ -69,7 +69,7 @@ const Feed = forwardRef<HTMLDivElement, FeedProps>(
           <div className="flex items-center justify-between w-[450px]">
             <div className="flex items-center">
               <Link to={`/myhive/${member.memberEmail.split('@')[0]}`}>
-                <Avatar image={member.memberPicture} size="normal" shape="circle" />
+                <Avatar className="flex" image={member.memberPicture} size="normal" shape="circle" />
               </Link>
 
               <Link

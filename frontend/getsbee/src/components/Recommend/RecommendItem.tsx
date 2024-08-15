@@ -20,7 +20,7 @@ const RecommendItem: React.FC<RecommendItemProps> = ({ data }) => {
 
   const header = (
     <div className="w-full h-48 overflow-hidden rounded-t-lg">
-      <img alt="Card" src={imageSrc} onError={handleImageError} className="w-full h-full object-cover" />
+      <img alt="Card" src={imageSrc} onError={handleImageError} className="w-full object-cover" />
     </div>
   );
 
