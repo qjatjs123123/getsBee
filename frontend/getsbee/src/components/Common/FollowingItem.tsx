@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { ConfirmDialog } from 'primereact/confirmdialog';
 import { userState } from '../../recoil/userState';
 import starIcon from '../../assets/starIcon.png';
 import stargIcon from '../../assets/stargIcon.png';
 import { deleteFollow, createFollow } from '../../api/FollowingListApi';
 
 const FollowingItem = ({ item, showStarIcon }) => {
+  const [isDialogVisible, setIsDialogVisible] = useState(false);
   const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -18,21 +19,17 @@ const FollowingItem = ({ item, showStarIcon }) => {
 
   const handleStarClick = async () => {
     if (showStarIcon) {
-      confirmDialog({
-        message: '정말로 팔로우를 취소하시겠습니까?',
-        header: '팔로우 취소',
-        icon: 'pi pi-exclamation-triangle',
-        accept: async () => {
-          await deleteFollow(item.follow.followId); // 팔로우 취소
-          navigate(0); // 페이지 리로드
-        },
-        reject: () => {
-          // 취소 시의 동작을 여기에 추가할 수 있습니다. 필요 없으면 생략 가능.
-        },
-      });
+      setIsDialogVisible(true);
     } else {
       await createFollow(item.directory.directoryId); // 팔로우 생성
+      navigate(0); // 페이지 리로드
     }
+  };
+
+  const confirmDeletion = async () => {
+    await deleteFollow(item.follow.followId); // 팔로우 취소
+    navigate(0); // 페이지 리로드
+    setIsDialogVisible(false); // 다이얼로그 닫기
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLImageElement>) => {
@@ -62,7 +59,15 @@ const FollowingItem = ({ item, showStarIcon }) => {
         borderWidth: '2px',
       }}
     >
-      <ConfirmDialog />
+      <ConfirmDialog
+        visible={isDialogVisible}
+        onHide={() => setIsDialogVisible(false)}
+        message="정말로 팔로우를 취소하시겠습니까?"
+        header="팔로우 취소"
+        icon="pi pi-exclamation-triangle"
+        accept={confirmDeletion}
+        reject={() => setIsDialogVisible(false)}
+      />
       {!isFollowerPage && (
         <div className="absolute top-2 left-4 text-[12px] text-blue-600">
           {item.follow.followCount}
