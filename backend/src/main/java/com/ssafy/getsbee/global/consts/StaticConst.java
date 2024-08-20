@@ -17,7 +17,7 @@ public class StaticConst {
 
     public static final int MAX_MEMORY_SIZE = 5 * 1024 * 1024;
 
-    public static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 2;
+    public static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 4;
     public static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 14;
     public static final long ONE_MINUTE = 60 * 1000L;
     public static final long SEVEN_DAYS = 7L;
@@ -30,7 +30,7 @@ public class StaticConst {
             "Just answer which category this link belongs to below" +
             "\n[POLITICS, SOCIAL, CULTURE, ECONOMY, IT, WORLD, SPORTS, ENTERTAIN, HEALTH, TRAVEL, EDUCATION, LIVING, BEAUTY, FASHION, SCIENCE]";
     public static final String COMMA = ", ";
-    public static final Integer HOT_POST_WEEK_OFFSET = 1;
+    public static final Integer HOT_POST_WEEK_OFFSET = 2;
     public static final Integer HOT_POST_LIMIT = 30;
 
     /** CSV */
