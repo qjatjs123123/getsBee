@@ -1,0 +1,106 @@
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-20%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(20%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInTop {
+  from {
+    transform: translateY(20%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.card-top {
+  opacity: 0;
+  transform: translateY(-20%);
+  animation: slideInTop 1s ease-out forwards;
+}
+
+.card-left {
+  opacity: 0;
+  transform: translateX(-20%);
+  animation: slideInLeft 1s ease-out forwards;
+}
+
+.card-right {
+  opacity: 0;
+  transform: translateX(20%);
+  animation: slideInRight 1s ease-out forwards;
+}
+
+.card.visible-top {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.card.visible-left {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.card.visible-right {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* src/styles/global.css */
+@keyframes underline-animation {
+  from {
+    transform: scaleX(0); /* 시작할 때 밑줄의 길이를 0으로 설정 */
+    transform-origin: bottom left; /* 애니메이션 시작 위치를 왼쪽 하단으로 설정 */
+  }
+  to {
+    transform: scaleX(1); /* 끝날 때 밑줄의 길이를 100%로 설정 */
+    transform-origin: bottom left; /* 애니메이션 끝 위치를 왼쪽 하단으로 설정 */
+  }
+}
+
+.underline-effect {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  opacity: 1; /* 기본 상태는 보이지 않음 */
+  transition: opacity 0.5s ease;
+}
+
+.underline-effect::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px; /* 밑줄의 위치 조정 */
+  width: 100%;
+  height: 1.5rem; /* 밑줄의 두께 */
+  background-color: rgba(249, 212, 0, 0.5); /* 밑줄 색상 */
+  transform: scaleX(0); /* 애니메이션 초기 상태 */
+  transform-origin: bottom left; /* 애니메이션 시작 위치를 왼쪽 하단으로 설정 */
+  transition: transform 1s ease; /* 애니메이션 속도를 1초로 설정 */
+}
+
+.underline-effect.visible {
+  opacity: 1; /* 스크롤 시 보이도록 설정 */
+}
+
+.underline-effect.visible::after {
+  animation: underline-animation 2s ease forwards; /* 애니메이션을 1초 동안 실행 */
+}

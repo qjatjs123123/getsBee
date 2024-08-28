@@ -1,0 +1,53 @@
+.content-container {
+    flex:7;
+    overflow:auto;
+    padding: 20px 0px;
+}
+.buttonDiv {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.error-container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.button {
+    border: none;
+    background-color: #07294D;
+    color: white;
+    padding: 10px 12px;
+    font-size: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+    user-select: none; /* 텍스트 선택 방지 */
+  }
+  .disabled {
+    background-color: gray;
+    user-select: all;
+
+  }
+.content-container::-webkit-scrollbar {
+    width: 5px;
+    
+  }
+
+  .container::-webkit-scrollbar-thumb {
+    background-color: #FFE285;
+    border-radius: 10px;
+  }
+
+  .error-message {
+    color : crimson;
+    font-size: 18px;
+  }
