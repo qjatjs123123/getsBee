@@ -67,7 +67,7 @@
 ### DB Schema
 
 <div align="center">
-<img width="1024" alt="image" src="https://github.com/user-attachments/assets/3c41bdb8-eed6-49d5-8ce4-1ae910df90de">
+<img width="1024" alt="image" src="https://github.com/user-attachments/assets/c93b7526-03b4-4092-ae57-ea3ecc84030e">
 </div>
 
 <!-- ### 📡 Software Architecture
@@ -108,7 +108,7 @@
 ### 앱 출시 완료
 
 2024년 8월 12일 부로 심사 최종 승인 후 Chrome WebStore에 출시가 완료되었습니다.
-[웹 ㄴㄴ스토어 바로가기 Link](https://chromewebstore.google.com/detail/getsbee/mkloamglbhkpbaefjpmfggbfbfobeima)
+[웹 스토어 바로가기 Link](https://chromewebstore.google.com/detail/getsbee/mkloamglbhkpbaefjpmfggbfbfobeima)
 
 <!-- ### 앱스토어 노출 수
 
