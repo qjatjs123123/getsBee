@@ -30,9 +30,9 @@
 | :------------------------------------------------------------------------------------- |
 | :: [getsBee Chrome Web Store Link](https://apps.apple.com/kr/app/onlypickone/id6469682692) |  
 
-<!-- | :: Youtube                                                                  |
+| :: Youtube                                                                  |
 | :------------------------------------------------------------------------------------- |
-| :: [Youtube Link](https://legendary-sink-372.notion.site/API-Document-870598a962ee4d7c87c73fbaed737c92?pvs=4) | -->
+| :: [Youtube Link](https://www.youtube.com/watch?v=FJcdYlHUIUI) |
 
 ## 🗓️ 수행 기간
 
