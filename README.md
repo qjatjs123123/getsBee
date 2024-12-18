@@ -98,11 +98,12 @@
 <br />
 
 ## 🤔 기술적 이슈와 해결 과정
-- 드래그시 하이라이트 생성하기
-<img src="https://github.com/user-attachments/assets/542e9f4c-c796-4e2b-99a9-a2f44761c4a7" width="450"/>
-DOM트리 순회하여 드래그한 모든 TextNode에 커스텀태그를 추가한다.
+> ### 드래그시 하이라이트 생성하기
+> <img src="https://github.com/user-attachments/assets/542e9f4c-c796-4e2b-99a9-a2f44761c4a7" width="450"/> <br/>
+> DOM트리 순회하여 드래그한 모든 TextNode에 커스텀태그를 추가한다. <br/>
+> 1. Selection API를 사용하여 드래그한 Range객체를 찾고 Range객체에 포함된 모든 TextNode를 찾는다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#L108-L132)
+> 2. Range 범위에 포함된 TextNode사이에 커스텀 태그 bee를 추가한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#L134-L166)
 
-[highlight.js에서 108~132 라인](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#L108-L132)
 
 
 
