@@ -117,7 +117,7 @@
 > 1. ContentScript에서는 `chrome.runtime.sendMessage`로 크롬 익스텐션 탭에 메시지를 보낼 수 있다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/content.js#L79-L95)
 > 2. ContentScript에서 `chrome.runtime.onMessage.addListener`로 크롬 익스텐션 탭 메시지를 받을 수 있다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/content.js#L196-L206)
 > 3. background.js는 ContentScript와 크롬 익스텐션 간의 메시지 전송을 중개하는 역할을 백그라운드에서 수행한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/background.js#L4-L77)
-> 4. 크롬 익스텐션에서는 ContentScript에 메시지를 `chrome.runtime.sendMessage`로 보낼 수 있다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/background.js#L174-L177)
+> 4. 크롬 익스텐션에서는 ContentScript에 메시지를 `chrome.runtime.sendMessage`로 보낼 수 있다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/src/Content.js#L174-L177)
 <br />
 
 
