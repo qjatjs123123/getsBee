@@ -1,5 +1,5 @@
 <div align="center">
-
+<img src="https://github.com/user-attachments/assets/e1dc4557-b96a-40bb-b14c-596f2e826126" width="300"/>
 <img src="https://github.com/user-attachments/assets/abd8a2d7-ba0c-46c0-8810-3c35ba90231d" width="600"/>
 
 ### Browsing Assist 기반 인사이트 공유 플랫폼 🖍️
@@ -136,7 +136,7 @@
 > 
 > > 💡 **3. S3를 활용하여 변경된 body 내용을 저장하고, 페이지 접속 시 이를 적용한다.**
 > > <img src="https://github.com/user-attachments/assets/1678d118-0675-4e8f-85cc-cced694ecb6a" width="450"/>
-> > - AWS 저장된 body태그를 적용한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/content.js#59-L78)
+> > - AWS 저장된 body태그를 적용한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/content.js#L59-L78)
 > >  <br />
 > > ⚠️ <strong style="color: red;">`에러`</strong>: 이 방법은 내용이 수정되어도 변경되지 않음
 <br />
