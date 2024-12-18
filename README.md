@@ -123,8 +123,8 @@
 
 > ### 페이지 접속 시 하이라이트 복원
 > >💡 **1. 하이라이트된 TextNode를 Node Tree에서 인덱스로 표현한다. ex)0,1,5,4,3**
-> > - Node Tree를 순회하여 각 TextNode의 위치를 인덱스로 변환한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#14-L26)
-> > - 변환된 인덱스를 기준으로 TextNode를 식별한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#28-L34)
+> > - Node Tree를 순회하여 각 TextNode의 위치를 인덱스로 변환한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#L14-L26)
+> > - 변환된 인덱스를 기준으로 TextNode를 식별한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#L28-L34)
 > > - 해당 태그에 하이라이트 커스텀 태그를 추가한다.
 > >  <br />
 > > ⚠️ <strong style="color: red;">`에러`</strong>: 이 방법은 커스텀 태그가 삭제되거나 추가될 때 Node Tree의 인덱스가 변동되어 오류가 발생
