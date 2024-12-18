@@ -107,10 +107,19 @@
 
 > ### 하이라이트 색 수정, 삭제하기
 > 1. 하이라이트가 정상적으로 생성되면 백엔드로 부터 고유 id값을 부여받는다.
-> 2. 하이라이트 생성될 때 받은 id값을 부여하여 태그를 생성한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#L160-L165)
+> 2. 하이라이트 생성될 때 받은 id값을 부여하여 태그를 생성한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#L160-L166)
 > 3. 해당 태그에 이벤트를 건다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#L168-L202)
 > 4. 해당 고유 id를 토대로 수정한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#L54-L66)
 > 5. 해당 고유 id를 토대로 삭제한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#L40-L52)
+<br />
+
+> ### 크롬 익스텐션 탭과 ContentScript간 데이터 통신
+> 1. ContentScript에서는 `chrome.runtime.sendMessage`로 크롬 익스텐션 탭에 메시지를 보낼 수 있다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/content.js#L79-L95)
+> 2. ContentScript에서 `chrome.runtime.onMessage.addListener`로 크롬 익스텐션 탭 메시지를 받을 수 있다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/content.js#L196-L206)
+> 3. background.js는 ContentScript와 크롬 익스텐션 간의 메시지 전송을 중개하는 역할을 백그라운드에서 수행한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/background.js#L4-L77)
+> 4. 크롬 익스텐션에서는 ContentScript에 메시지를 `chrome.runtime.sendMessage`로 보낼 수 있다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/src/background.js#L174-L177)
+<br />
+
 
 ## 💁‍♂️ 프로젝트 팀원
 | **Backend** | **Backend** | **Backend** | **Frontend** | **Frontend** | **Frontend** |
