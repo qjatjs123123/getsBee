@@ -120,6 +120,27 @@
 > 4. 크롬 익스텐션에서는 ContentScript에 메시지를 `chrome.runtime.sendMessage`로 보낼 수 있다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/src/Content.js#L174-L177)
 <br />
 
+> ### 페이지 접속 시 하이라이트 복원
+> >💡 **1. 하이라이트된 TextNode를 Node Tree에서 인덱스로 표현한다. ex)0,1,5,4,3**
+> > - Node Tree를 순회하여 각 TextNode의 위치를 인덱스로 변환한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#14-L26)
+> > - 변환된 인덱스를 기준으로 TextNode를 식별한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#28-L34)
+> > - 해당 태그에 하이라이트 커스텀 태그를 추가한다.
+> >  <br />
+> > ⚠️ <strong style="color: red;">`에러`</strong>: 이 방법은 커스텀 태그가 삭제되거나 추가될 때 Node Tree의 인덱스가 변동되어 오류가 발생
+> <br />
+> 
+> > 💡 **2. 브라우저에서 하이라이트의 상대적인 높이와 위치를 구한다.**
+> > <br />
+> > ⚠️ <strong style="color: red;">`에러`</strong>: 이 방법은 이미지나 정적 파일이 늦게 로드될 경우, 높이와 위치가 지속적으로 변경되는 오류가 발생
+> <br />
+> 
+> > 💡 **3. S3를 활용하여 변경된 body 내용을 저장하고, 페이지 접속 시 이를 적용한다.**
+> > <img src="https://github.com/user-attachments/assets/1678d118-0675-4e8f-85cc-cced694ecb6a" width="450"/>
+> > - AWS 저장된 body태그를 적용한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/content.js#59-L78)
+> >  <br />
+> > ⚠️ <strong style="color: red;">`에러`</strong>: 이 방법은 내용이 수정되어도 변경되지 않음
+<br />
+
 
 ## 💁‍♂️ 프로젝트 팀원
 | **Backend** | **Backend** | **Backend** | **Frontend** | **Frontend** | **Frontend** |
