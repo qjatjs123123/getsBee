@@ -101,6 +101,7 @@
 - 드래그시 하이라이트 생성하기
 <img src="https://github.com/user-attachments/assets/542e9f4c-c796-4e2b-99a9-a2f44761c4a7" width="450"/>
 DOM트리 순회하여 드래그한 모든 TextNode에 커스텀태그를 추가한다.
+
 [highlight.js에서 108~132 라인](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#L108-L132)
 
 
