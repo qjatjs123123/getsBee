@@ -127,8 +127,8 @@
 > > - Node Tree를 순회하여 각 TextNode의 위치를 인덱스로 변환한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#L14-L26)
 > > - 변환된 인덱스를 기준으로 TextNode를 식별한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#L28-L34)
 > > - 해당 태그에 하이라이트 커스텀 태그를 추가한다.
-> >  <br />
-> > ⚠️ <strong style="color: red;">`에러`</strong>: 이 방법은 커스텀 태그가 삭제되거나 추가될 때 Node Tree의 인덱스가 변동되어 오류가 발생
+> >  <br />  
+> > ⚠️ <strong style="color: red;">에러</strong> : 이 방법은 커스텀 태그가 삭제되거나 추가될 때 Node Tree의 인덱스가 변동되어 오류가 발생
 > <br />
 > 
 > > 💡 **2. 브라우저에서 하이라이트의 상대적인 높이와 위치를 구한다.**
@@ -139,8 +139,8 @@
 > > 💡 **3. S3를 활용하여 변경된 body 내용을 저장하고, 페이지 접속 시 이를 적용한다.**
 > > <img src="https://github.com/user-attachments/assets/1678d118-0675-4e8f-85cc-cced694ecb6a" width="450"/>
 > > - AWS 저장된 body태그를 적용한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/content.js#L59-L78)
-> >  <br />
-> > ⚠️ <strong style="color: red;">`에러`</strong>: 이 방법은 내용이 수정되어도 변경되지 않음
+> >  <br />  
+> > ⚠️ <strong style="color: red;">에러</strong>: 이 방법은 내용이 수정되어도 변경되지 않음
 <br />
 
 
