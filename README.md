@@ -6,7 +6,8 @@
 ### Browsing Assist 기반 인사이트 공유 플랫폼 🖍️
 
 [<img src="https://img.shields.io/badge/release-v0.0.0-ㅎㄱㄷ두?style=flat&logo=google-chrome&logoColor=white" />]() 
-<br/> [<img src="https://img.shields.io/badge/프로젝트 기간-2024.07.02~2024.08.16-fab2ac?style=flat&logo=&logoColor=white" />]()
+<br/> [<img src="https://img.shields.io/badge/프로젝트 기간-2024.07.02~2024.08.16-fab2ac?style=flat&logo=&logoColor=white" />]() <br/>
+<img src="https://img.shields.io/badge/공통 프로젝트 최우수상-FFD700?style=for-the-badge&logo=award&logoColor=white" alt="최우수상">
 
 </div> 
 
