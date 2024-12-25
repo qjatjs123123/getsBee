@@ -165,3 +165,18 @@
 | :------------------------------------------------------------------------------------- |
 | :: [Youtube Link](https://youtu.be/NwPTFSbICX0) | 
 
+| :: 개발 일지                                                                |
+| :------------------------------------------------------------------------------------- |
+| :: [Velog Link](https://velog.io/@qjatjs123123/series/Browsing-Assist) | 
+
+| :: Articles                                                                |
+| :------------------------------------------------------------------------------------- |
+| :: [✔️ Browsing Assist 소개](https://velog.io/@qjatjs123123/Browsing-Assist-%ED%81%AC%EB%A1%AC-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98-1) | 
+| :: [✔️ 드래그한 문장에 형광펜 칠하기](https://velog.io/@qjatjs123123/Browsing-Assist-%ED%81%AC%EB%A1%AC-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98-2) | 
+| :: [✔️ tooltip UI 만들기](https://velog.io/@qjatjs123123/Browsing-Assist-%ED%81%AC%EB%A1%AC-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98-3) | 
+| :: [✔️ 형광펜 색상 변경하기](https://velog.io/@qjatjs123123/Browsing-Assist-%ED%81%AC%EB%A1%AC-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98-4) | 
+| :: [✔️ 페이지 접속 시 하이라이트 복원](https://velog.io/@qjatjs123123/Browsing-Assist-%ED%81%AC%EB%A1%AC-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98-5) | 
+| :: [✔️ AI 핵심 문장 추천](https://velog.io/@qjatjs123123/Browsing-Assist-%ED%81%AC%EB%A1%AC-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98-6) | 
+| :: [✔️ 특정 도메인에서 확장 프로그램 기능의 활성화/비활성화 구현](https://velog.io/@qjatjs123123/Browsing-Assist-%ED%81%AC%EB%A1%AC-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98-7) | 
+
+
