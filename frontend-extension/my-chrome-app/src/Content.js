@@ -104,7 +104,7 @@ function Content({ isEnabled }) {
       if (message.type === "SEND_DATA" && message.data.accessToken) {
         login.current = true;
       }
-
+      console.log(message.data);
       const tmp = message.data.resultArr;
 
       if (tmp.length !== 0) {
@@ -176,6 +176,7 @@ function Content({ isEnabled }) {
         resultArr: sortedTextContents,
       });
     } catch (error) {
+      console.log(error);
       setErrorMessage("요약 불가 포스트입니다");
       setError(true);
     }

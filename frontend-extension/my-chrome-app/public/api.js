@@ -1,4 +1,33 @@
 /* eslint-disable no-undef */
+function insertLocalStorage(data, isInsert) {
+  data.isInsert = isInsert;
+
+  const localStorageKey = "storageKey";
+    let storageData = JSON.parse(localStorage.getItem(localStorageKey)) || {};
+
+    // URL을 키로 데이터를 배열에 저장
+    const urlKey = data.url;
+    if (!storageData[urlKey]) {
+        storageData[urlKey] = []; // 해당 URL 키가 없으면 초기화
+    }
+    storageData[urlKey].push(data);
+
+    // LocalStorage에 다시 저장
+    localStorage.setItem(localStorageKey, JSON.stringify(storageData));
+    console.log("!@3123");
+}
+
+function selectLocalStorage(url) {
+  // LocalStorage 키
+  const localStorageKey = "storageKey";
+
+  // LocalStorage에서 데이터 가져오기
+  const storageData = JSON.parse(localStorage.getItem(localStorageKey)) || {};
+
+  // URL에 해당하는 배열 반환, 없으면 빈 배열 반환
+  return storageData[url] || [];
+}
+
 
 async function updateHTMLBody(highlightId) {
   const response = await fetch(`https://getsbee.kr/api/v1/highlights/body`, {
@@ -20,18 +49,19 @@ async function updateHTMLBody(highlightId) {
 function processHighlight(data, colorh) {
   insertHighLight(data);
   const highlightRange = createRangeObject(data);
-  RANGE_ARR.push(highlightRange);
-
+  RANGE_ARR[data.id] = highlightRange;
   const textNodes = findTextNodesInRange(highlightRange);
   highlightTextNodes(textNodes, highlightRange, data.color, colorh, data);
 }
 
 async function insertHighLightAPI(data) {
+
   try {
     const responseData = await postHighlightData(data);
     data.id = responseData.data.highlightId;
     processHighlight(data, getHoverColor(data.color));
-    await updateHTMLBody(data.id);
+    insertLocalStorage(data, true);
+    // await updateHTMLBody(data.id);
     // storeHTML();
   } catch (error) {
     console.log(error);
@@ -119,6 +149,18 @@ async function deleteHighLightAPI() {
   try {
     // api 성공하면 프론트에서는 id값과 range값 변환해서 저장하기
     //const id = '호출API'
+    const range = RANGE_ARR[SELECTED_ID];
+
+    const rangeData = createRangeData({
+      content: range.toString(),
+      startIndex: JSON.stringify(getTrack(range.startContainer)),
+      startOffset: range.startOffset,
+      lastIndex: JSON.stringify(getTrack(range.endContainer)),
+      lastOffset: range.endOffset,
+      color: "00000",
+    });
+    rangeData.id = SELECTED_ID;
+    insertLocalStorage(rangeData, false);
     deleteHighlight();
     await deleteHighlightData();
 
@@ -206,12 +248,23 @@ async function loginCheck(status, callback) {
   });
 }
 
-// // 하이라이트 select
+function removeElementByDataId(id) {
+  const element = document.querySelector(`[data-id="${id}"]`);
+
+  if (element) {
+      element.remove();
+  }
+}
+
 function processSelect(params) {
   for (const param of params) {
     try {
-      param.id = param.highlightId;
-      processHighlight(param, getHoverColor(param.color));
+      if (!param.is_deleted) {
+        processHighlight(param, getHoverColor(param.color));
+      } else {
+        removeElementByDataId(param.id);
+      }
+      
     } catch (error) {
       console.error("Error processing item:", param, error);
       // 오류가 발생해도 다음 항목으로 계속 진행합니다.
@@ -219,10 +272,26 @@ function processSelect(params) {
   }
 }
 
+
+// // 하이라이트 select
+// function processSelect(params) {
+//   for (const param of params) {
+//     try {
+//       param.id = param.highlightId;
+//       processHighlight(param, getHoverColor(param.color));
+//     } catch (error) {
+//       console.error("Error processing item:", param, error);
+//       // 오류가 발생해도 다음 항목으로 계속 진행합니다.
+//     }
+//   }
+// }
+
 async function selectHighLightAPI() {
   try {
     const responseData = await selectHighLight();
     processSelect(responseData.data);
+    // const arr = selectLocalStorage(getURL());
+    // processSelect(arr);
   } catch (error) {
     console.error("Error:", error);
     return "ERROR";

@@ -1,6 +1,6 @@
 let selection = null;
 const RANGE_DATA_ARR = [];
-const RANGE_ARR = [];
+const RANGE_ARR = {};
 const RECOMMEND_DATA_ARR = [];
 let SELECTED_ID = 0;
 
