@@ -1,31 +1,13 @@
 /* eslint-disable no-undef */
 import "./Header.css";
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 
-function Header() {
-  const [img, setImg] = useState("");
-  const [login, setLogin] = useState(false);
-  const email = useRef("");
+function Header({isLogin, userState}) {
+  console.log(isLogin, userState)
   const handleNavigation = () => {
-    if (!login) window.open("https://getsbee.kr/about", "_blank");
-    else window.open("https://getsbee.kr/myhive/" + email.current, "_blank");
+    if (!isLogin) window.open("https://getsbee.kr/about", "_blank");
+    else window.open("https://getsbee.kr/myhive/" + userState.email.split("@")[0], "_blank");
   };
-
-  useEffect(() => {
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      if (message.type === "SEND_DATA" && message.data.userState.picture) {
-        if (message.data.userState.email) {
-          setImg(message.data.userState.picture);
-          setLogin(true);
-          email.current = message.data.userState.email.split("@")[0];
-        } else {
-          setLogin(false);
-        }
-      } else {
-        setImg(null);
-      }
-    });
-  }, []);
 
   return (
     <>
@@ -40,11 +22,11 @@ function Header() {
           <img
             onClick={handleNavigation}
             className="profile"
-            src={img ? img : "/userIcon.png"}
+            src={isLogin ? userState.picture : "/userIcon.png"}
             alt="Profile"
             style={{
               cursor: "pointer",
-              borderRadius: img ? "50%" : "0%", // img가 있을 때는 border-radius 50%, 없으면 0%
+              borderRadius: isLogin ? "50%" : "0%", // img가 있을 때는 border-radius 50%, 없으면 0%
             }}
           />
         </div>

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "getsBee",
   "description": "highlight sentences and share",
-  "version": "1.1",
+  "version": "1.5",
   "action": {
     "default_popup": "index.html",
     "default_icon": "icon.png"
@@ -15,12 +15,29 @@
     {
       "matches": ["<all_urls>"],
       "js": [
-        "data.js",
-        "content.js",
-        "highlight.js",
-        "constant.js",
-        "api.js",
-        "validation.js"
+        "/utils/constant.js",
+        "/utils/validation.js",
+        "/views/View.js",
+        "/views/TooltipView.js",
+        "/views/ColorBtnView.js",
+        "/views/TrashBtnView.js",
+        "views/HighlightView.js",
+        "/model/pageModel.js",
+        "/model/selectionModel.js",
+        "/model/loginModel.js",
+        "/model/highlightModel.js",
+        "/model/LocalStorageModel.js",
+        "/model/recommendModel.js",
+        "/controller/MainController.js",
+        "/utils/api.js",
+        "/app.js"
+        
+        // "data.js",
+        // "content.js",
+        // "highlight.js",
+        // "constant.js",
+        // "api.js",
+        // "validation.js"
       ],
       "css": ["getsBeeCustom.css"],
       "type": "module"

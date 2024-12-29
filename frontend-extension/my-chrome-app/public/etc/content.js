@@ -10,6 +10,7 @@ let isEnabled = true;
 
 /* eslint-disable no-undef */
 window.addEventListener("load", async () => {
+  highlightRecovery();
   sendPageContent();
   originalHTML = document.body.innerHTML;
 
@@ -76,12 +77,24 @@ window.addEventListener("load", async () => {
       console.log(error);
     }
   }
+  function highlightRecovery() {
+    chrome.storage.sync.get(["GETSBEE_LOGIN"], function (result) {
+      selectHighLightAPI();
+      requestAnimationFrame(() => {
+        applyBeeStyles();
+        init();
+      });
+    })
+    
+  }
+
   function sendPageContent() {
     chrome.storage.sync.get(["GETSBEE_LOGIN"], function (result) {
       accessToken = result.GETSBEE_LOGIN.accessToken;
       refreshToken = result.GETSBEE_LOGIN.refreshToken;
       userState = result.GETSBEE_LOGIN.userState;
-      getAwsURL();
+      // getAwsURL();
+      
       chrome.runtime.sendMessage({
         type: "SEND_BROWSER_INFO",
         hostName: getDomain(),
@@ -161,6 +174,7 @@ window.addEventListener("load", async () => {
             processHighlight(rangeData, GRAY_COLOR_H);
             RECOMMEND_DATA_ARR.push(rangeData);
             // dragHighlight(range, YELLOW_COLOR);
+            
           }
         }
       }
@@ -254,10 +268,34 @@ window.addEventListener("load", async () => {
     button.style.display = "flex";
     button.style.alignItems = "center";
     button.style.justifyContent = "center";
+    
+    const icon = document.createElement("span");
+    icon.style.display = "flex";
+    icon.style.alignItems = "center";
+    icon.style.justifyContent = "center";
+    icon.innerHTML = `
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="${iconClass}"
+        style="width: ${fontSize}; height: ${fontSize};"
+      >
+        <polyline points="3 6 5 6 21 6"></polyline>
+        <path d="M19 6l-2 14H7L5 6"></path>
+        <path d="M10 11v6"></path>
+        <path d="M14 11v6"></path>
+        <rect x="9" y="2" width="6" height="4" rx="1" ry="1"></rect>
+      </svg>
+    `;
 
-    const icon = document.createElement("i");
-    icon.className = iconClass;
-    icon.style.fontSize = fontSize;
+    // const icon = document.createElement("i");
+    // icon.className = iconClass;
+    // icon.style.fontSize = fontSize;
 
     button.appendChild(icon);
     button.addEventListener("mousedown", (event) => {
