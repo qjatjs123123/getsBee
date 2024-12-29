@@ -3,40 +3,75 @@ import "./App.css";
 import Content from "./Content";
 import Header from "./Header";
 import Footer from "./Footer";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useReducer } from "react";
+
+const initloginState = {
+  islogin: false,
+  accessToken: null,
+  userState: null,
+};
+
+function loginReducer(loginState, action) {
+  switch (action.type) {
+    case "login" : 
+      return {
+        ...loginState,
+        islogin: true,
+        accessToken: action.payload.accessToken,
+        userState: action.payload.userState
+      }
+    case "logout" :
+      return {
+        ...loginState,
+        islogin: false,
+        accessToken: null,
+        userState: null
+      }
+    default:
+      break;
+  }
+}
 
 function App() {
+  const [loginstate, loginDispatch] = useReducer(loginReducer, initloginState);
+  const [HTMLContent, setHTMLContent] = useState("");
   const [domain, setDomain] = useState("");
   const [isEnabled, setIsEnabled] = useState(false);
 
   useEffect(() => {
-    // 페이지 로드 시 chrome.storage에서 데이터 가져오기
-    // eslint-disable-next-line no-undef
-    chrome.runtime.onMessage.addListener((message) => {
-      if (message.data.hostName) {
-        setDomain(message.data.hostName);
+    chrome.storage.sync.get(["GETSBEE_LOGIN"], (result) => {
+      if (result.GETSBEE_LOGIN) {
+        loginDispatch({
+          type: "login",
+          payload: result.GETSBEE_LOGIN,
+        });
+      } else {
+        loginDispatch({
+          type: "logout",
+          payload: result.GETSBEE_LOGIN,
+        });
       }
     });
+
+    chrome.storage.local.get(["domain", "resultArr", "HTMLContent"], (result) => {
+      setDomain(result.domain);
+      setHTMLContent(result.HTMLContent)
+    });
   }, []);
+
+
   useEffect(() => {
-    // Load the saved switch state from chrome.storage
-    // eslint-disable-next-line no-undef
     chrome.storage.sync.get([domain], (result) => {
       setIsEnabled(result[domain] || false);
     });
   }, [domain]);
-
-  useEffect(() => {
-    chrome.runtime.sendMessage({
-      type: "ENABLE_DATA",
-      isEnabled: isEnabled,
-    });
-  }, [isEnabled]);
+  
+;
   return (
     <>
       <div className="App">
-        <Header />
-        <Content domain={domain} isEnabled={isEnabled} />
+        <Header isLogin={loginstate.islogin} userState={loginstate.userState}/>
+        <Content isLogin={loginstate.islogin} isEnabled={isEnabled} HTMLContent={HTMLContent}/>
         <Footer
           domain={domain}
           isEnabled={isEnabled}

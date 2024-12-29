@@ -6,7 +6,15 @@ function Footer({ domain, isEnabled, setIsEnabled }) {
   const handleToggle = () => {
     const newState = !isEnabled;
     setIsEnabled(newState);
-    chrome.storage.sync.set({ [domain]: newState });
+
+    
+
+    chrome.storage.sync.set({ [domain]: newState }, () => {
+      chrome.runtime.sendMessage({
+        type: "ENABLE_DATA",
+        isEnabled: newState,
+      });
+    });
   };
   return (
     <>
