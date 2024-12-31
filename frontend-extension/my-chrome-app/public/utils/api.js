@@ -1,12 +1,7 @@
 /* eslint-disable no-undef */
 async function apiFunc( url, method, body, callFunc) {
-  const loginResult = await loginModel.login();
+  await apiInterceptor();
 
-  if (!loginResult) { 
-    window.open("https://getsbee.kr/about", "_blank");
-    return;
-  }
-  // await loginModel.login();
   try {
     const response = await fetch(
       url,
@@ -20,16 +15,36 @@ async function apiFunc( url, method, body, callFunc) {
       }
     );
 
-    if (response.status === 401) {
-      await loginModel.refresh();
-      await loginModel.login();
-      await apiFunc(url, method, body); 
-    }
-
-    // if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-
-    return await response.json();
+    return await handleAPIStatus(response, url, method, body);
+    
   } catch (error) {
-    console.error("API call failed:", error);
+    throw new Error(error);
   }
+}
+
+async function apiInterceptor() {
+  const loginResult = await loginModel.login();
+
+  if (!loginResult) { 
+    window.open("https://getsbee.kr/about", "_blank");
+    throw new Error(ERROR_LOG.LOGIN);
+  }
+}
+
+async function handleAPIStatus(response, url, method, body) {
+  switch (response.status) {
+    case 200:
+      return await response.json();
+    case 401:
+      await handleRefresh(response, url, method, body);
+      break;
+    default:
+      throw new Error(`Unexpected error: ${response.status}`);
+  }
+}
+
+async function handleRefresh(url, method, body) {
+  await loginModel.refresh();
+  await loginModel.login();
+  await apiFunc(url, method, body); 
 }

@@ -49,7 +49,7 @@ async function updateHTMLBody(highlightId) {
 function processHighlight(data, colorh) {
   insertHighLight(data);
   const highlightRange = createRangeObject(data);
-  RANGE_ARR[data.id] = highlightRange;
+  RANGE_PARSE_ARR[data.id] = highlightRange;
   const textNodes = findTextNodesInRange(highlightRange);
   highlightTextNodes(textNodes, highlightRange, data.color, colorh, data);
 }
@@ -149,7 +149,7 @@ async function deleteHighLightAPI() {
   try {
     // api 성공하면 프론트에서는 id값과 range값 변환해서 저장하기
     //const id = '호출API'
-    const range = RANGE_ARR[SELECTED_ID];
+    const range = RANGE_PARSE_ARR[SELECTED_ID];
 
     const rangeData = createRangeData({
       content: range.toString(),

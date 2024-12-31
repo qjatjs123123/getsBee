@@ -20,11 +20,11 @@ const loginModel = {
           this.accessToken = event.data.accessToken;
           this.refreshToken = event.data.refreshToken;
           this.userState = event.data.userState;
-          this.saveChrome(() => this.sendChrome(), userData);
+          this.saveChrome(() => {}, userData);
           break;
 
         case "TOKEN_DELETE":
-          this.deleteChrome(() => this.sendChrome());
+          this.deleteChrome(() => {});
           break;
 
         default:
@@ -63,11 +63,10 @@ const loginModel = {
       this.accessToken = data.accessToken;
       this.refreshToken = data.refreshToken;
 
-      this.saveChrome(() => this.sendChrome(), data);
+      this.saveChrome(() => {}, data);
 
     } catch (error) {
       console.log(error);
-      //window.location.href = "https://getsbee.kr/about"; // 필요 시 로그인 페이지로 리다이렉션
     }
   },
 
@@ -78,31 +77,10 @@ const loginModel = {
     }, () => callFunc());
   },
 
-  saveChromePage(domain) {
-    const saveData  = {
-      domain: domain,
-      HTMLContent: document.documentElement.outerHTML,
-      resultArr: []
-    }
-    chrome.storage.local.set(saveData, () => {});
-  },
-
   deleteChrome(callFunc) {
     this.accessToken = "";
     this.refreshToken = "";
 
     chrome.storage.sync.remove("GETSBEE_LOGIN", () => {});
   },
-
-  sendChrome() {
-    chrome.runtime.sendMessage({
-      type: "SEND_BROWSER_INFO",
-      hostName: pageModel.domain,
-      resultArr: resultArr,
-      HTMLContent: document.documentElement.outerHTML,
-      accessToken: loginModel.accessToken,
-      refreshToken: loginModel.refreshToken,
-      userState: loginModel.userState,
-    });
-  }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const pageModel = {
   domain: "",
   url: "",
@@ -13,5 +14,16 @@ const pageModel = {
     this.url = window.location.href;
     this.thumbnailUrl = ogImageMetaTag ? ogImageMetaTag.getAttribute("content") : null;
     this.title = titleMetaTag ? titleMetaTag.textContent : null;
-  }
+  },
+
+  saveChromePage(domain, recommendArr, highlightArr) {
+    const saveData  = {
+      domain,
+      HTMLContent: document.documentElement.outerHTML,
+      recommendArr,
+      highlightArr,
+      summaryContent: ""
+    }
+    chrome.storage.local.set(saveData, () => {});
+  },
 }

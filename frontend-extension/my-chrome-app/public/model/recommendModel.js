@@ -14,7 +14,6 @@ const recommendModel = {
       }
 
       if (message.type === "ENABLE_DATA") {
-        console.log(Main.disable, message.isEnabled)
         if (Main.disable === message.isEnabled) return;
         window.location.reload()
       }

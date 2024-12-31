@@ -3,7 +3,6 @@ import "./Header.css";
 import React from "react";
 
 function Header({isLogin, userState}) {
-  console.log(isLogin, userState)
   const handleNavigation = () => {
     if (!isLogin) window.open("https://getsbee.kr/about", "_blank");
     else window.open("https://getsbee.kr/myhive/" + userState.email.split("@")[0], "_blank");

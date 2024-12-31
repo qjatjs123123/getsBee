@@ -1,9 +1,10 @@
 /* eslint-disable no-undef */
 import "./App.css";
-import Content from "./Content";
+import Container from "./components/Container";
 import Header from "./Header";
 import Footer from "./Footer";
 import React, { useState, useEffect, useRef, useReducer } from "react";
+import { RecoilRoot } from 'recoil';
 
 const initloginState = {
   islogin: false,
@@ -34,10 +35,12 @@ function loginReducer(loginState, action) {
 
 function App() {
   const [loginstate, loginDispatch] = useReducer(loginReducer, initloginState);
-  const [HTMLContent, setHTMLContent] = useState("");
   const [domain, setDomain] = useState("");
   const [isEnabled, setIsEnabled] = useState(false);
+  const [HTMLContent, setHTMLContent] = useState(null);
+  const [highlightArr, setHighlightArr] = useState({});
 
+  console.log(HTMLContent)
   useEffect(() => {
     chrome.storage.sync.get(["GETSBEE_LOGIN"], (result) => {
       if (result.GETSBEE_LOGIN) {
@@ -53,15 +56,19 @@ function App() {
       }
     });
 
-    chrome.storage.local.get(["domain", "resultArr", "HTMLContent"], (result) => {
+    chrome.storage.local.get(["domain", "recommendArr", "HTMLContent", "highlightArr", "summaryContent"], (result) => {
       setDomain(result.domain);
       setHTMLContent(result.HTMLContent)
+      setHighlightArr(result.recommendArr)
+      if (HTMLContent !== result.HTMLContent) {
+        setHTMLContent(result.HTMLContent);
+      }
     });
   }, []);
 
 
   useEffect(() => {
-    chrome.storage.sync.get([domain], (result) => {
+    chrome.storage.sync.get(["domain"], (result) => {
       setIsEnabled(result[domain] || false);
     });
   }, [domain]);
@@ -70,13 +77,15 @@ function App() {
   return (
     <>
       <div className="App">
-        <Header isLogin={loginstate.islogin} userState={loginstate.userState}/>
-        <Content isLogin={loginstate.islogin} isEnabled={isEnabled} HTMLContent={HTMLContent}/>
-        <Footer
-          domain={domain}
-          isEnabled={isEnabled}
-          setIsEnabled={setIsEnabled}
-        />
+        <RecoilRoot>
+          <Header isLogin={loginstate.islogin} userState={loginstate.userState}/>
+          <Container highlightArr={highlightArr} isEnabled={isEnabled} HTMLContent={HTMLContent}/>
+          <Footer
+            domain={domain}
+            isEnabled={isEnabled}
+            setIsEnabled={setIsEnabled}
+          />
+        </RecoilRoot>
       </div>
     </>
   );

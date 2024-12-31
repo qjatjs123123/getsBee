@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "getsBee",
   "description": "highlight sentences and share",
-  "version": "1.5",
+  "version": "1.7",
   "action": {
     "default_popup": "index.html",
     "default_icon": "icon.png"
@@ -29,15 +29,10 @@
         "/model/LocalStorageModel.js",
         "/model/recommendModel.js",
         "/controller/MainController.js",
+        "/dto/highlightDTO.js",
         "/utils/api.js",
         "/app.js"
         
-        // "data.js",
-        // "content.js",
-        // "highlight.js",
-        // "constant.js",
-        // "api.js",
-        // "validation.js"
       ],
       "css": ["getsBeeCustom.css"],
       "type": "module"

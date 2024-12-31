@@ -1,6 +1,6 @@
 let selection = null;
-const RANGE_DATA_ARR = [];
-const RANGE_ARR = {};
+const RANGE_STRINGIFY_ARR = [];
+const RANGE_PARSE_ARR = {};
 const RECOMMEND_DATA_ARR = [];
 let SELECTED_ID = 0;
 
@@ -29,7 +29,7 @@ function getTitle() {
 }
 
 function insertHighLight(data) {
-  RANGE_DATA_ARR.push(data);
+  RANGE_STRINGIFY_ARR.push(data);
 }
 
 function createRangeData({
@@ -75,7 +75,7 @@ function createRangeObject(rangeData) {
 
 function findRangeDataById() {
   // 배열에서 id가 일치하는 객체를 찾습니다
-  return RANGE_DATA_ARR.find((obj) => obj.id === SELECTED_ID) || null;
+  return RANGE_STRINGIFY_ARR.find((obj) => obj.id === SELECTED_ID) || null;
 }
 
 function findRecommendDataById() {

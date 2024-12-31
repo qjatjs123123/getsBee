@@ -1,14 +1,13 @@
+import React from "react";
 import "./Item.css";
 
-function Item({ content }) {
+const Item = React.memo(({ content, color }) => {
   return (
-    <>
-      <div className="item-container">
-        <div className="item-bar"></div>
-        <div className="item-txt">{content}</div>
-      </div>
-    </>
+    <div className="item-container">
+      <div className="item-bar" style={{ backgroundColor: color }}></div>
+      <div className="item-txt">{content}</div>
+    </div>
   );
-}
+});
 
 export default Item;

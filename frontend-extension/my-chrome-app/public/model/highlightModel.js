@@ -1,62 +1,7 @@
 /* eslint-disable no-undef */
 const highlightModel = {
-  RANGE_ARR: {},
-  RANGE_DATA_ARR:[],
-
-  stringifyRange({ color, range, url, thumbnailUrl, title }) {
-
-    return {
-      url: url,
-      thumbnailUrl: thumbnailUrl,
-      title: title,
-      content: range.toString(),
-      color: color,
-      startIndex: JSON.stringify(this.getTrack(range.startContainer)),
-      startOffset: range.startOffset,
-      lastIndex: JSON.stringify(this.getTrack(range.endContainer)),
-      lastOffset: range.endOffset,
-      type: "TEXT",
-    };
-  },
-
-  parseRange(rangeData) {
-    const startNode = this.getReverseTrack(
-      document.documentElement,
-      JSON.parse(rangeData.startIndex)
-    );
-  
-    const endNode = this.getReverseTrack(
-      document.documentElement,
-      JSON.parse(rangeData.lastIndex)
-    );
-  
-    const highlightRange = document.createRange();
-    highlightRange.setStart(startNode, rangeData.startOffset);
-    highlightRange.setEnd(endNode, rangeData.lastOffset);
-    return highlightRange;
-  },
-
-  getTrack(Node) {
-    const track = [];
-    while (Node.nodeName !== "HTML") {
-      const siblingNodes = Array.from(Node.parentNode.childNodes);
-      for (let i = 0; i < siblingNodes.length; i++) {
-        if (siblingNodes[i] === Node) track.push(i);
-      }
-  
-      Node = Node.parentNode;
-    }
-  
-    return track;
-  },
-  
-  getReverseTrack(rootNode, track) {
-    let currentNode = rootNode;
-    for (let i = track.length - 1; i >= 0; i--) {
-      currentNode = currentNode.childNodes[track[i]];
-    }
-    return currentNode;
-  },
+  RANGE_PARSE_ARR: {},
+  RANGE_STRINGIFY_ARR: {},
 
   findTextNodesInRange(range) {
     let textNodes = [];
@@ -103,43 +48,43 @@ const highlightModel = {
   },
   
   
-  async insertAPI(param) {
-    const data = this.stringifyRange(param);
-    const responseData = await apiFunc("https://getsbee.kr/api/v1/highlights", "POST", data, (param) => this.insertAPI(param));
-    data.id = responseData.data.highlightId;
+  async insertAPI(stringifyData) {
+    const responseData = await apiFunc(
+      "https://getsbee.kr/api/v1/highlights", 
+      "POST", 
+      stringifyData, 
+      (stringifyData) => this.insertAPI(stringifyData)
+    );
 
-    return data;
-
-
-    //insertLocalStorage(data, true);
+    return responseData;
 
   },
 
-  async updateAPI(color) {
+  async updateAPI(color, id) {
     const data = {
       color : color,
       message: "update",
     }
 
     const responseData = await apiFunc(
-      `https://getsbee.kr/api/v1/highlights/${selectionModel.SELECTED_ID}`, 
+      `https://getsbee.kr/api/v1/highlights/${id}`, 
       "PATCH",
       data, 
       (color) => this.updateAPI(color)
     );
 
-    this.updateColor(color);
+    return responseData;
   },
 
-  async deleteAPI() {
+  async deleteAPI(id) {
     const responseData = await apiFunc(
-      `https://getsbee.kr/api/v1/highlights/${selectionModel.SELECTED_ID}/delete`,
+      `https://getsbee.kr/api/v1/highlights/${id}/delete`,
       "POST",
       { message: "Delete" }, 
       () => this.deleteAPI()
     );
-
-    this.deleteColor();
+    
+    return responseData;
   },
 
   async selectAPI(url) {
@@ -166,8 +111,8 @@ const highlightModel = {
     });
   },
 
-  updateColor(color) {
-    const elements = document.querySelectorAll(`[data-id="${selectionModel.SELECTED_ID}"]`);
+  updateColor(color, id) {
+    const elements = document.querySelectorAll(`[data-id="${id}"]`);
     elements.forEach((element) => {
       if (element) {
         element.style.backgroundColor = color;
@@ -175,8 +120,8 @@ const highlightModel = {
     });
   },
   
-  deleteColor() {
-    const elements = document.querySelectorAll(`[data-id="${selectionModel.SELECTED_ID}"]`);
+  deleteColor(id) {
+    const elements = document.querySelectorAll(`[data-id="${id}"]`);
   
     elements.forEach((element) => {
       if (element) {
@@ -187,5 +132,28 @@ const highlightModel = {
         element.remove();
       }
     });
+  },
+  
+  setRANGE_PARSE_ARR(id, parseData)  {
+    highlightModel.RANGE_PARSE_ARR[id] = parseData; 
+  },
+  getRANGE_PARSE_ARR_by_ID(id) {
+    return highlightModel.RANGE_PARSE_ARR[id]
+  },
+  deleteRANGE_PARSE_ARR(id) {
+    delete highlightModel.RANGE_PARSE_ARR[id];
+  },
+
+  setRANGE_STRINGIFY_ARR(id, parseData)  {
+    highlightModel.RANGE_STRINGIFY_ARR[id] = parseData; 
+  },
+  getRANGE_STRINGIFY_ARR(id) {
+    return highlightModel.RANGE_STRINGIFY_ARR[id]
+  },
+  deleteRANGE_STRINGIFY_ARR(id) {
+    delete highlightModel.RANGE_STRINGIFY_ARR[id];
+  },
+  updateRANGE_STRINGIFY_ARR(id, color) {
+    highlightModel.RANGE_STRINGIFY_ARR[id].color = color;
   }
 }

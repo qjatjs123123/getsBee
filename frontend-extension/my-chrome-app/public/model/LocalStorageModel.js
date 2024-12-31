@@ -1,27 +1,31 @@
+/* eslint-disable no-undef */
 const LocalStorageModel = {
-  insert(data, isInsert, isUpdate) {
-    data.is_deleted = isInsert;
-    data.is_updated = false;
-    if (isUpdate)
-      data.is_updated = isUpdate;
-    const localStorageKey = "storageKey";
-      let storageData = JSON.parse(localStorage.getItem(localStorageKey)) || {};
-  
-      const urlKey = data.url;
-      if (!storageData[urlKey]) {
-          storageData[urlKey] = []; 
-      }
-      
-      storageData[urlKey].push(data);
-  
-      localStorage.setItem(localStorageKey, JSON.stringify(storageData));
+  insert(data, storageKey) {
 
+    let storageData = this.getStorageData(storageKey);
+
+    if (this.isNotStorageInData(data.url, storageData)) {
+      storageData[data.url] = [];
+    }
+
+    storageData[data.url].push(data);
+    this.setStorageData(storageKey, storageData);
   },
   
-  select(url) {
-    const localStorageKey = "storageKey";
-    const storageData = JSON.parse(localStorage.getItem(localStorageKey)) || {};
-  
+  getStorageData(storageKey) {
+    return JSON.parse(localStorage.getItem(storageKey)) || {};
+  },
+
+  setStorageData(storageKey, data) {
+    localStorage.setItem(storageKey, JSON.stringify(data));
+  },
+
+  isNotStorageInData(urlKey, storageData) {
+    return !(urlKey in storageData);
+  },
+
+  select(storageKey, url) {
+    const storageData = JSON.parse(localStorage.getItem(storageKey)) || {};
     return storageData[url] || [];
   }
 }
