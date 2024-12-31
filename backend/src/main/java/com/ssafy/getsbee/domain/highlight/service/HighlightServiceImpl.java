@@ -6,7 +6,10 @@ import com.ssafy.getsbee.domain.highlight.dto.request.*;
 import com.ssafy.getsbee.domain.highlight.dto.response.HighlightResponse;
 import com.ssafy.getsbee.domain.highlight.dto.response.S3UrlResponse;
 import com.ssafy.getsbee.domain.highlight.entity.Highlight;
+import com.ssafy.getsbee.domain.highlight.entity.HighlightLog;
+import com.ssafy.getsbee.domain.highlight.repository.HighlightLogRepository;
 import com.ssafy.getsbee.domain.highlight.repository.HighlightRepository;
+import com.ssafy.getsbee.domain.highlight.repository.HighlightLogRepository;
 import com.ssafy.getsbee.domain.interest.repository.InterestRepository;
 import com.ssafy.getsbee.domain.member.entity.Member;
 import com.ssafy.getsbee.domain.member.service.MemberService;
@@ -48,6 +51,8 @@ public class HighlightServiceImpl implements HighlightService {
     private final S3Service s3Service;
     private final PostElasticRepository postElasticRepository;
 
+    private final HighlightLogRepository highlightLogRepository;
+
     @Value("${cloud.aws.s3.directory.body}")
     private String directoryBodyPath;
 
@@ -66,7 +71,10 @@ public class HighlightServiceImpl implements HighlightService {
 
         Highlight highlight = request.toHighlightEntity(post);
         highlightRepository.save(highlight);
-        
+
+        HighlightLog highlightLog = new HighlightLog(highlight, false, post);
+        highlightLogRepository.save(highlightLog);
+
         postElasticService.savePostDocument(highlight);
         return HighlightResponse.of(highlight.getId());
     }
@@ -88,6 +96,9 @@ public class HighlightServiceImpl implements HighlightService {
         postElasticService.deleteHighlightDocument(highlight);
         highlightRepository.delete(highlight);
 
+        HighlightLog highlightLog = new HighlightLog(highlight, true, post);
+        highlightLogRepository.save(highlightLog);
+
         if(post.getHighlights().isEmpty() && post.getNote()== null){
             PostDocument postDocument = postElasticRepository.findByPostId(post.getId()).orElseThrow(
                     () -> new BadRequestException(POSTDOCUMENT_NOT_FOUND)
@@ -108,23 +119,47 @@ public class HighlightServiceImpl implements HighlightService {
         }
         highlight.changeColor(request.color());
         highlightRepository.save(highlight);
+
+        HighlightLog highlightLog = highlightLogRepository.findByHighlightId(highlightId)
+                .orElseThrow(() -> new BadRequestException(HIGHLIGHT_NOT_FOUND));
+        if(highlightLog.getPost().getMember() != member) {
+            throw new ForbiddenException(_FORBIDDEN);
+        }
+        highlightLog.changeColor(request.color());
+        highlightLogRepository.save(highlightLog);
     }
 
     @Override
-    @Transactional
     public List<HighlightResponse> getHighlights(String url, Long memberId) {
         Member member = memberService.findById(memberId);
         return postRepository.findAllByMemberAndUrl(member, url)
-                .map(highlightRepository::findAllByPost)
+                .map(highlightLogRepository::findAllByPost)
                 .map(highlights -> {
                     List<HighlightResponse> hr = new ArrayList<>();
-                    for (Highlight highlight : highlights) {
+                    for (HighlightLog highlight : highlights) {
                         hr.add(HighlightResponse.of(highlight));
                     }
                     return hr;
                 })
                 .orElseGet(ArrayList::new);
     }
+
+
+//    @Override
+//    @Transactional
+//    public List<HighlightResponse> getHighlights(String url, Long memberId) {
+//        Member member = memberService.findById(memberId);
+//        return postRepository.findAllByMemberAndUrl(member, url)
+//                .map(highlightRepository::findAllByPost)
+//                .map(highlights -> {
+//                    List<HighlightResponse> hr = new ArrayList<>();
+//                    for (Highlight highlight : highlights) {
+//                        hr.add(HighlightResponse.of(highlight));
+//                    }
+//                    return hr;
+//                })
+//                .orElseGet(ArrayList::new);
+//    }
 
     @Override
     @Transactional
