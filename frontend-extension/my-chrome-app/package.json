@@ -12,6 +12,7 @@
     "buffer": "^6.0.3",
     "cheerio": "^1.0.0-rc.12",
     "fs": "^0.0.1-security",
+    "groq-sdk": "^0.9.1",
     "jsdom": "^24.1.1",
     "node-fetch": "^3.3.2",
     "path-browserify": "^1.0.1",
