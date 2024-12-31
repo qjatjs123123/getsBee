@@ -10,13 +10,12 @@ const recommendModel = {
       if (message.type === "RECOMMEND_CLICKED") {
         // this.recommendArr = message.resultArr;
         // recommendModel.highlightRecommend();
-
       }
 
       if (message.type === "ENABLE_DATA") {
-        if (Main.disable === message.isEnabled) return;
         window.location.reload()
       }
+
     });
   },
 

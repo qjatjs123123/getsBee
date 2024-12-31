@@ -62,7 +62,7 @@ function App() {
       <div className="App">
         <Header isLogin={loginstate.islogin} userState={loginstate.userState}/>
           {
-            !enable ? <Container/>:<Disable />
+            !enable && loginstate.islogin ? <Container/>:<Disable />
           }
         <Footer/>
       </div>

@@ -21,7 +21,8 @@
         "/views/TooltipView.js",
         "/views/ColorBtnView.js",
         "/views/TrashBtnView.js",
-        "views/HighlightView.js",
+        "/views/HighlightView.js",
+        "/views/CloseBtnView.js",
         "/model/pageModel.js",
         "/model/selectionModel.js",
         "/model/loginModel.js",
@@ -31,15 +32,15 @@
         "/controller/MainController.js",
         "/dto/highlightDTO.js",
         "/utils/api.js",
-        "/app.js"
+        "app.js"
         
       ],
       "css": ["getsBeeCustom.css"],
-      "type": "module"
+      "type": "module",
+      "host_permissions": [
+        "https://velog.io/*",
+        "https://www.withme.my/*"
+      ]
     }
-  ],
-  "content_security_policy": {
-    "script-src": "'self' 'https://unpkg.com'",
-    "object-src": "'self'"
-  }
+  ]
 }

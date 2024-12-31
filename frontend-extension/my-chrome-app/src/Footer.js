@@ -22,9 +22,17 @@ function Footer() {
     setEnable(newState);
 
     chrome.storage.sync.set({ [domain]: newState }, () => {
-      chrome.runtime.sendMessage({
-        type: "ENABLE_DATA",
-        isEnabled: newState,
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        const tab = tabs[0];
+        chrome.tabs.sendMessage(
+            tab.id, {
+                type: 'ENABLE_DATA',
+                isEnabled: newState
+            },
+            (response) => {
+                console.log(response);
+            }
+        );
       });
     });
   };

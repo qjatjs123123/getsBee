@@ -30,7 +30,7 @@ TooltipView.getHtmlElement = function() {
 };
 
 
-TooltipView.render = function (left, top) {
+TooltipView.render = async function (left, top) {
   this.el.style.left = `${left}px`;
   this.el.style.top = `${top}px`;
   this.show();

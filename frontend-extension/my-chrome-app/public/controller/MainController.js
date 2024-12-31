@@ -8,26 +8,28 @@ class Main {
    * 2. 툴팁 활성/비활성화 이벤트를 발생한다.
    */
   init() {
-
     window.addEventListener("load", async() => {
+      
       pageModel.init();
       recommendModel.init();
       pageModel.saveChromePage(pageModel.domain,recommendModel.recommendArr, highlightModel.RANGE_STRINGIFY_ARR);
-      
-      Main.disable = await this.isDisableDomain(pageModel.domain);
-      if (Main.disable) return;
-
-      const tooltip = this.getToolTipElement();
-      document.body.appendChild(tooltip);
 
       loginModel.init();
-           
+      loginModel.login();
+      
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+          pageModel.saveChromePage(pageModel.domain,recommendModel.recommendArr, highlightModel.RANGE_STRINGIFY_ARR);
+        } 
+      });
+
+      if(await this.isNotstartTooltip(pageModel.domain)) return;
+      const tooltip = this.getToolTipElement();
+      document.body.appendChild(tooltip);
       document.addEventListener("mouseup", (event) => this.onMouseUp());
       document.addEventListener("mousedown", (event) => this.onMouseDown());
-
-      loginModel.login();
       this.handleSelect();
-      pageModel.saveChromePage(pageModel.domain,recommendModel.recommendArr, highlightModel.RANGE_STRINGIFY_ARR);
+      pageModel.saveChromePage(pageModel.domain,recommendModel.recommendArr, highlightModel.RANGE_STRINGIFY_ARR); 
     });
 
   }
@@ -49,8 +51,13 @@ class Main {
     TooltipView.setup(tooltip);
 
     const trashBtn = TrashBtnView.getHtmlElement();
+    const CloseBtn = CloseBtnView.getHtmlElement();
+
     TrashBtnView.setup(trashBtn)
       .on('mousedown', e => this.onDelete())
+
+    CloseBtnView.setup(CloseBtn)
+      .on('mousedown', e => loginModel.logout())
 
     BTN_COLOR.forEach(({ color, hoverColor }) => {
       const colorButton = ColorBtnView.getHtmlElement();
@@ -62,7 +69,8 @@ class Main {
     });
 
     tooltip.appendChild(trashBtn);
-
+    tooltip.appendChild(CloseBtn);
+    
     return tooltip;
   }
 
@@ -95,7 +103,6 @@ class Main {
    */
   async onMouseUp() {
     
-
     const result = selectionModel.create();
     if (!result) return;
 
@@ -105,6 +112,14 @@ class Main {
     TooltipView.render(left, top);
     
   }
+  async isNotstartTooltip(domain) {
+    const isDisabledDomain = await this.isDisableDomain(domain);
+    const loginResult = await loginModel.login();
+  
+    if (!isDisabledDomain && loginResult) return false
+    return true;
+  }
+  
 
   async handleRecommend(color) {
     highlightModel.deleteColor(selectionModel.SELECTED_ID);

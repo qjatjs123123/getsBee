@@ -77,10 +77,11 @@ const loginModel = {
     }, () => callFunc());
   },
 
-  deleteChrome(callFunc) {
+  logout() {
     this.accessToken = "";
     this.refreshToken = "";
 
     chrome.storage.sync.remove("GETSBEE_LOGIN", () => {});
+    window.location.reload()
   },
 }
