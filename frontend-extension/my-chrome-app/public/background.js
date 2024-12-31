@@ -2,7 +2,7 @@
 // 메시지 수신 및 데이터 저장
 chrome.runtime.onInstalled.addListener(() => {
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    
+    console.log(message)
     if (message.type === "ENABLE_DATA") {
       chrome.tabs.query(
         {

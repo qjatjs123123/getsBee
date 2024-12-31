@@ -8,6 +8,8 @@ import Groq from "groq-sdk";
 import useMainContent from "../business/useMainContent";
 import useGPTContent from "../business/useGPTContent";
 import Error from "./Error";
+import { useRecoilState } from 'recoil';
+import { recommendState } from "../recoil/recommendState";
 
 const groq = new Groq({ apiKey: process.env.REACT_APP_API_KEY,
   dangerouslyAllowBrowser: true, 
@@ -19,12 +21,10 @@ function Content({ HTMLContent }) {
     run, 
     loading,
     error,
-    errorMessage,
-    setLoading,
     setError,
     setErrorMessage } = useGPTContent();
-  
-  const [result, setResult] = useState([]);
+
+  const [recommendations, setRecommendations] = useRecoilState(recommendState);
 
   const regex = /(\{[^}]+\})/g;
 
@@ -34,9 +34,7 @@ function Content({ HTMLContent }) {
       const responseData = await run(prompt);
       const result = parseData(responseData);
 
-      setResult(result);
-      setLoading(false);
-
+      setRecommendations(result);
     } catch( error ) {
       setError(true);
       setErrorMessage("오류가 발생하였습니다.")
@@ -47,6 +45,7 @@ function Content({ HTMLContent }) {
   useEffect(() => {
     
     if (mainContentArr.length === 0) return;
+    if (recommendations) return;
     getAPIResult();
   }, [mainContentArr])
 
@@ -91,10 +90,10 @@ function Content({ HTMLContent }) {
   }
 
   const renderContent = () => {
-    if (loading) return <Spinner />; 
+    if (!recommendations) return <Spinner />; 
     if (error) return <Error />
     
-    return result.map((idx) => <Item key={idx} content={idx} color={"rgb(235, 235, 235)"} />); 
+    return recommendations.map((idx) => <Item key={idx} content={idx} color={"rgb(235, 235, 235)"} />); 
   }
 
   return (

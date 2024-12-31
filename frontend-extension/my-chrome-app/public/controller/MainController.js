@@ -12,6 +12,7 @@ class Main {
     window.addEventListener("load", async() => {
       pageModel.init();
       recommendModel.init();
+      pageModel.saveChromePage(pageModel.domain,recommendModel.recommendArr, highlightModel.RANGE_STRINGIFY_ARR);
       
       Main.disable = await this.isDisableDomain(pageModel.domain);
       if (Main.disable) return;

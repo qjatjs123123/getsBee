@@ -3,6 +3,9 @@ import Spinner from "../Spinner";
 import useMainContent from "../business/useMainContent";
 import useGPTContent from "../business/useGPTContent";
 import Error from "./Error";
+import { useRecoilState } from 'recoil';
+import { summaryState } from "../recoil/summaryState";
+
 
 function Summary({ HTMLContent }) {
   const { mainContentArr } = useMainContent(HTMLContent);
@@ -15,7 +18,8 @@ function Summary({ HTMLContent }) {
     setError,
     setErrorMessage } = useGPTContent();
   const [result, setResult] = useState([]);
-  
+  const [summary, setSummary] = useRecoilState(summaryState);
+
   const createPrompt = () => {
     let prompt = `
       다음 문장을 요약해서 간단하게 알려주세요
@@ -36,7 +40,7 @@ function Summary({ HTMLContent }) {
       const prompt = createPrompt();
       const responseData = await run(prompt);
 
-      setResult(responseData);
+      setSummary(responseData);
       setLoading(false);
 
     } catch( error ) {
@@ -48,14 +52,15 @@ function Summary({ HTMLContent }) {
 
   useEffect(() => {    
     if (mainContentArr.length === 0) return;
+    if (summary) return;
     getAPIResult();
   }, [mainContentArr])
 
   const renderContent = () => {
-    if (loading) return <Spinner />; 
+    if (!summary) return <Spinner />; 
     if (error) return <Error />
     
-    return <p style={{  lineHeight: '1.5' }}>{result}</p>
+    return <p style={{  lineHeight: '1.5' }}>{summary}</p>
   }
 
   return (

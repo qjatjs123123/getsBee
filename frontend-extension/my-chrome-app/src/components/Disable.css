@@ -1,0 +1,26 @@
+.disabled-container {
+  position: relative;
+  flex:7;
+  background-color: #f0f0f0;
+  padding: 20px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.disabled-text {
+  color: black
+}

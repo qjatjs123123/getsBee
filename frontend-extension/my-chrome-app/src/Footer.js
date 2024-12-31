@@ -1,13 +1,25 @@
 /* eslint-disable no-undef */
 import "./Footer.css";
 import React, { useState, useEffect } from "react";
+import { useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
+import { domainState } from "./recoil/domainState"
+import { enableState } from "./recoil/enableState";
 
-function Footer({ domain, isEnabled, setIsEnabled }) {
+function Footer() {
+  const domain = useRecoilValue(domainState);
+  const [enable, setEnable] = useRecoilState(enableState);
+
+  useEffect(() => {
+    chrome.storage.sync.get([domain], (result) => {
+      setEnable(result[domain] || false);
+    });
+
+  }, [domain]);
+
   const handleToggle = () => {
-    const newState = !isEnabled;
-    setIsEnabled(newState);
-
-    
+    const newState = !enable;
+    setEnable(newState);
 
     chrome.storage.sync.set({ [domain]: newState }, () => {
       chrome.runtime.sendMessage({
@@ -27,7 +39,7 @@ function Footer({ domain, isEnabled, setIsEnabled }) {
             <input
               role="switch"
               type="checkbox"
-              checked={!isEnabled}
+              checked={!enable}
               onChange={handleToggle}
             />
           </label>
