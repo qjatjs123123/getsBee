@@ -32,9 +32,9 @@ function Content({ HTMLContent }) {
     try{
       const prompt = createPrompt();
       const responseData = await run(prompt);
-      console.log(responseData)
+
       const result = parseData(responseData);
-      console.log(result);
+
       setRecommendations(result);
     } catch( error ) {
       setError(true);
@@ -91,7 +91,7 @@ function Content({ HTMLContent }) {
   }
 
   const renderContent = () => {
-    console.log(recommendations, !recommendations)
+
     if (!recommendations) return <Spinner />; 
     if (error) return <Error />
     

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "getsBee",
   "description": "highlight sentences and share",
-  "version": "1.9",
+  "version": "2.0",
   "action": {
     "default_popup": "index.html",
     "default_icon": "icon.png"
@@ -15,6 +15,7 @@
     {
       "matches": ["<all_urls>"],
       "js": [
+        "/controller/EventManager.js",
         "/utils/constant.js",
         "/utils/validation.js",
         "/views/View.js",

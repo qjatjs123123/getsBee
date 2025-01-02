@@ -61,8 +61,8 @@ HighlightView.onClick = function(event) {
 
   const left = event.clientX + window.scrollX + 10;
   const top = event.clientY + window.scrollY + 10;
-
-  TooltipView.render(left, top);
+  eventManager.emit('showTooltip', { left, top });
+  // TooltipView.render(left, top);
 }
 
 HighlightView.getHoverColor = (color) => {

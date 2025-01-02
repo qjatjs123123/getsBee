@@ -4,29 +4,15 @@ const highlightModel = {
   RANGE_STRINGIFY_ARR: {},
 
   findTextNodesInRange(range) {
-    let textNodes = [];
-  
-    function isTextNode(node) {
-      return node.nodeType === Node.TEXT_NODE;
-    }
-  
-    function isNonEmptyTextNode(node) {
-      return !/^\s*$/.test(node.nodeValue);
-    }
-  
+    const isValidTextNode = node => node.nodeType === Node.TEXT_NODE && !/^\s*$/.test(node.nodeValue);
+    
     function recurse(node) {
-      if (
-        isTextNode(node) &&
-        range.intersectsNode(node) &&
-        isNonEmptyTextNode(node)
-      ) {
-        textNodes.push(node);
-      } else {
-        node.childNodes.forEach(recurse);
-      }
+      if (range.intersectsNode(node) && isValidTextNode(node)) return [node];
+
+      return Array.from(node.childNodes).flatMap(recurse);
     }
-    recurse(range.commonAncestorContainer);
-    return textNodes.filter((node) => range.intersectsNode(node));
+  
+    return recurse(range.commonAncestorContainer);
   },
 
 

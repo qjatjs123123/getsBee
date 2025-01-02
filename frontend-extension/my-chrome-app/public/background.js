@@ -20,7 +20,7 @@ chrome.runtime.onInstalled.addListener(() => {
     }
   
     if (message.type === "RECOMMEND_CLICKED") {
-      console.log("RECOMMEND_CLICKED")
+
       chrome.tabs.query(
         {
           active: true,
