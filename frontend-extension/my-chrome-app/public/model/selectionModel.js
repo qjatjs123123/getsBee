@@ -6,10 +6,10 @@ const selectionModel = {
   
   create () {
     const curSelection = window.getSelection();
-    if (!isValidSelection( curSelection )) return false;
+    if (!this.isValidSelection( curSelection )) return false;
 
     const curRange = curSelection.getRangeAt(0);
-    if (!isTextSelected(curRange)) return false;
+    if (!this.isTextSelected(curRange)) return false;
 
     this.selection = curSelection;
     this.range = curRange;
@@ -34,6 +34,7 @@ const selectionModel = {
   },
 
   getRectPos() {
+    if (!this.range) return [null, null];
     const rects = this.range.getClientRects();
     if (rects.length <= 0) return [null, null];
 
@@ -43,3 +44,5 @@ const selectionModel = {
     return [left, top];
   }
 }
+
+module.exports = { selectionModel };
