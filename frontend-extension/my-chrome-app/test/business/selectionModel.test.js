@@ -3,7 +3,7 @@
  * @jest-environment jsdom
  */
 const { mockHtml } = require('../mock/mockHtml.js');
-const { selectionModel } = require('../../public/model/selectionModel');
+const { selectionModel } = require('../../public/model/selectionModel.js');
 
 describe("selectionModel 테스트", () => {
   // 사용자가 testID 태그를 선택했다고 가정
