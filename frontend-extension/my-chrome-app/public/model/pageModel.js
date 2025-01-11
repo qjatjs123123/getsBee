@@ -27,3 +27,5 @@ const pageModel = {
     chrome.storage.local.set(saveData, () => {});
   },
 }
+
+module.exports = { pageModel };
