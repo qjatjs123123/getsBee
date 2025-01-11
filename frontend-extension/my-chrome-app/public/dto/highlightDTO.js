@@ -153,3 +153,5 @@ class HighlightDTO {
     return this.#id;
   }
 }
+
+module.exports = { HighlightDTO };
