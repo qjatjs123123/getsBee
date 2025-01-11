@@ -143,3 +143,5 @@ const highlightModel = {
     highlightModel.RANGE_STRINGIFY_ARR[id].color = color;
   }
 }
+
+module.exports = { highlightModel };
