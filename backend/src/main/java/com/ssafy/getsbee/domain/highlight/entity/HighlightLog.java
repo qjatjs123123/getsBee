@@ -7,20 +7,19 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
-import static jakarta.persistence.FetchType.*;
+import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE highlight SET is_deleted = true WHERE highlight_id = ?")
-@SQLRestriction("is_deleted = false")
-public class Highlight extends BaseTimeEntity {
+public class HighlightLog extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "log_id")
+    private Long log_id;
+
     @Column(name = "highlight_id")
     private Long id;
 
@@ -54,16 +53,16 @@ public class Highlight extends BaseTimeEntity {
     private Post post;
 
     @Builder
-    public Highlight(String content, String color, String startIndex, String lastIndex, Integer startOffset,
-                     Integer lastOffset, Type type, Post post) {
-        this.content = content;
-        this.color = color;
-        this.startIndex = startIndex;
-        this.lastIndex = lastIndex;
-        this.startOffset = startOffset;
-        this.lastOffset = lastOffset;
-        this.isDeleted = false;
-        this.type = type;
+    public HighlightLog(Highlight highlight, Boolean isDeleted, Post post) {
+        this.id = highlight.getId();
+        this.content = highlight.getContent();
+        this.color = highlight.getColor();
+        this.startIndex = highlight.getStartIndex();
+        this.lastIndex = highlight.getLastIndex();
+        this.startOffset = highlight.getStartOffset();
+        this.lastOffset = highlight.getLastOffset();
+        this.isDeleted = isDeleted;
+        this.type = Type.TEXT;
         this.post = post;
     }
 
@@ -77,5 +76,4 @@ public class Highlight extends BaseTimeEntity {
         this.lastIndex = lastIndex;
         this.lastOffset = lastOffset;
     }
-
 }

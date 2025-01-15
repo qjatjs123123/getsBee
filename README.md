@@ -1,30 +1,12 @@
-<div align="center"> 
-<img src="https://github.com/user-attachments/assets/abd8a2d7-ba0c-46c0-8810-3c35ba90231d" width="600"/>
-  <br/>
-<img src="https://github.com/user-attachments/assets/e1dc4557-b96a-40bb-b14c-596f2e826126" width="100" height="100"/>
-  
-### Browsing Assist 기반 인사이트 공유 플랫폼 🖍️
+# 하이라이트 기반 스크랩 및 공유 플랫폼 getsBee 🐝
+**getsBee와 함께 당신의 하이라이트를 스크랩하세요!**
 
-[<img src="https://img.shields.io/badge/release-v0.0.0-ㅎㄱㄷ두?style=flat&logo=google-chrome&logoColor=white" />]() 
-<br/> [<img src="https://img.shields.io/badge/프로젝트 기간-2024.07.02~2024.08.16-fab2ac?style=flat&logo=&logoColor=white" />]() <br/>
-<img src="https://img.shields.io/badge/공통 프로젝트 최우수상-FFD700?style=for-the-badge&logo=award&logoColor=white" alt="최우수상">
+<div align="center">
+<!-- <img width="1024" alt="image" src="https://github.com/110w110/110w110/assets/87888411/ea4fa14d-c71a-43ce-831c-11cf149d3f9d"> -->
+</div>
 
-</div> 
+## 핵심 기능
 
-
-## 📝 목차
-- [1. 프로젝트 개요](#1-프로젝트-개요)
-- [2. 담당 역할](#2-담당-역할)
-- [3. 프로젝트 화면 구성](#3-프로젝트-화면-구성)
-- [4. 사용한 기술 스택](#4-사용한-기술-스택)
-- [5. 기술적 이슈와 해결 과정](#5-기술적-이슈와-해결-과정)
-- [6. 팀원](#6-팀원)
-
-다음과 같은 목차로 구성되어 있습니다.
-
-<br />
-
-## 🚀 프로젝트 개요
 💡 **하이라이트 기반 스크랩 포스트 생성**
 - 다양한 색상으로 웹 사이트의 본문에 하이라이트를 표시할 수 있습니다.
 - getsBee에 접속하여 하이라이트한 내용을 확인하고 디렉토리 단위로 관리할 수 있습니다.
@@ -40,122 +22,9 @@
 
 💡 **Elasticsearch 기반 검색**
 - Elasticsearch 기반 검색 엔진을 통해 더욱 향상된 검색 경험을 제공합니다.
-<br />
-
-## 👨‍💻 담당 역할
-💡 **Browsing Assist 크롬 익스텐션 개발**
-- 드래그 한 문구에 하이라이트 생성, 수정, 삭제
-
-💡 **LLM 기반 핵심 문장 추천**
-- 원클릭으로 페이지 본문 핵심 문장 추천
-
-💡 **특정 도메인에서 확장 프로그램 기능의 활성화/비활성화 구현**
-- 토글 버튼으로 특정 도메인에서 확장 프로그램 기능 활성화/비활성화 구현
-
-💡 **페이지 접속 시 하이라이트 복원**
-- 페이지 접속시 저장된 하이라이트 복원
-
-<br />
-
-## 🖥️ 화면 구성
-|하이라이트 생성|
-|:---:|
-|<img src="https://github.com/user-attachments/assets/2f10f4b1-e644-46bb-b6d1-8f501be68b76" width="450"/>|
-|Selection API를 활용하여 드래그 한 문구에 하이라이트 생성|
-
-
-|하이라이트 수정/삭제|
-|:---:|
-|<img src="https://github.com/user-attachments/assets/455ccdcc-a942-4fe3-94de-38f0585c1b2a" width="450"/>|
-|커스텀 태그마다 각 id를 부여하여 수정, 삭제 기능|
-
-|LLM 기반 핵심 문장 추천|
-|:---:|
-|<img src="https://github.com/user-attachments/assets/537b9b82-d35b-4b61-9f18-f80c41c39410" width="450"/>|
-|Gemini API, ReadAbility를 사용한 페이지 핵심 문장 추천|
-
-|특정 도메인에서 확장 프로그램 기능의 활성화/비활성화 구현|
-|:---:|
-|<img src="https://github.com/user-attachments/assets/a1cc6c63-075d-4d4f-b93a-8d56d7abe738" width="450"/>|
-|Chrome Storage API를 사용한 도메인 활성화/비활성화 구현|
-
-|페이지 접속 시 하이라이트 복원|
-|:---:|
-|<img src="https://github.com/user-attachments/assets/b580b39b-1f1d-4815-8de2-2beb5f9ef80c" width="450"/>|
-|S3를 활용한 하이라이트 복원 기능 구현|
-<br />
-
-## ⚙ 사용한 기술 스택
-<div>
-<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/JavaScript.png?raw=true" width="80">
-<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/React.png?raw=true" width="80">
-</div>
-
-### Tools
-<div>
-<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Github.png?raw=true" width="80">
-<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Notion.png?raw=true" width="80">
-</div>
-
-<br />
-
-## 🤔 기술적 이슈와 해결 과정
-> ### 드래그시 하이라이트 생성하기
-> <img src="https://github.com/user-attachments/assets/542e9f4c-c796-4e2b-99a9-a2f44761c4a7" width="450"/> <br/>
-> #### DOM트리 순회하여 드래그한 모든 TextNode에 커스텀태그를 추가한다. <br/>
-> 1. Selection API를 사용하여 드래그한 Range객체를 찾고 Range객체에 포함된 모든 TextNode를 찾는다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#L108-L132)
-> 2. Range 범위에 포함된 TextNode사이에 커스텀 태그 bee를 추가한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#L134-L166)
-<br />
-
-> ### 하이라이트 색 수정, 삭제하기
-> 1. 하이라이트가 정상적으로 생성되면 백엔드로 부터 고유 id값을 부여받는다.
-> 2. 하이라이트 생성될 때 받은 id값을 부여하여 태그를 생성한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#L160-L166)
-> 3. 해당 태그에 이벤트를 건다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#L168-L202)
-> 4. 해당 고유 id를 토대로 수정한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#L54-L66)
-> 5. 해당 고유 id를 토대로 삭제한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#L40-L52)
-<br />
-
-> ### 크롬 익스텐션 탭과 ContentScript간 데이터 통신
-> 1. ContentScript에서는 `chrome.runtime.sendMessage`로 크롬 익스텐션 탭에 메시지를 보낼 수 있다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/content.js#L79-L95)
-> 2. ContentScript에서 `chrome.runtime.onMessage.addListener`로 크롬 익스텐션 탭 메시지를 받을 수 있다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/content.js#L196-L206)
-> 3. background.js는 ContentScript와 크롬 익스텐션 간의 메시지 전송을 중개하는 역할을 백그라운드에서 수행한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/background.js#L4-L77)
-> 4. 크롬 익스텐션에서는 ContentScript에 메시지를 `chrome.runtime.sendMessage`로 보낼 수 있다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/src/Content.js#L174-L177)
-<br />
-
-> ### 페이지 접속 시 하이라이트 복원
-> >💡 **1. 하이라이트된 TextNode를 Node Tree에서 인덱스로 표현한다. ex)0,1,5,4,3**
-> > - Node Tree를 순회하여 각 TextNode의 위치를 인덱스로 변환한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#L14-L26)
-> > - 변환된 인덱스를 기준으로 TextNode를 식별한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/highlight.js#L28-L34)
-> > - 해당 태그에 하이라이트 커스텀 태그를 추가한다.
-> >  <br />  
-> > ⚠️ <strong style="color: red;">에러</strong> : 이 방법은 커스텀 태그가 삭제되거나 추가될 때 Node Tree의 인덱스가 변동되어 오류가 발생
-> <br />
-> 
-> > 💡 **2. 브라우저에서 하이라이트의 상대적인 높이와 위치를 구한다.**
-> > <br />
-> > ⚠️ <strong style="color: red;">`에러`</strong>: 이 방법은 이미지나 정적 파일이 늦게 로드될 경우, 높이와 위치가 지속적으로 변경되는 오류가 발생
-> <br />
-> 
-> > 💡 **3. S3를 활용하여 변경된 body 내용을 저장하고, 페이지 접속 시 이를 적용한다.**
-> > <img src="https://github.com/user-attachments/assets/1678d118-0675-4e8f-85cc-cced694ecb6a" width="450"/>
-> > - AWS 저장된 body태그를 적용한다. [코드 바로보기](https://github.com/qjatjs123123/getsBee/tree/main/frontend-extension/my-chrome-app/public/content.js#L59-L78)
-> >  <br />  
-> > ⚠️ <strong style="color: red;">에러</strong>: 이 방법은 내용이 수정되어도 변경되지 않음
-<br />
-
-
-## 💁‍♂️ 프로젝트 팀원
-| **Backend** | **Backend** | **Backend** | **Frontend** | **Frontend** | **Frontend** |
-|:---:|:---:|:---:|:---:|:---:|:---:|
-| ![](https://github.com/hoshogi.png?width=120&height=120) | ![](https://github.com/dahyunko.png??width=120&height=120) | ![](https://github.com/wonchul98.png??width=120&height=120) | ![](https://github.com/qjatjs123123.png??width=120&height=120) | ![](https://github.com/chanhyun22.png??width=120&height=120) | ![](https://github.com/monghwadang.png??width=120&height=120) |
-| [이호석](https://github.com/hoshogi) | [고다현](https://github.com/dahyunko) | [신원철](https://github.com/wonchul98) | [홍범선](https://github.com/qjatjs123123) | [변찬현](https://github.com/chanhyun22) | [김명화](https://github.com/monghwadang) |
-
-
 
 ## 📲 링크
-| :: 배포                                                            |
-| :------------------------------------------------------------------------------------- |
-| :: [getsBee Link](https://getsbee.kr/) | 
+
 
 | :: Chrome Web Store                                                           |
 | :------------------------------------------------------------------------------------- |
@@ -163,20 +32,146 @@
 
 | :: Youtube                                                                  |
 | :------------------------------------------------------------------------------------- |
-| :: [Youtube Link](https://youtu.be/NwPTFSbICX0) | 
+| :: [Youtube Link](https://www.youtube.com/watch?v=FJcdYlHUIUI) |
 
-| :: 개발 일지                                                                |
-| :------------------------------------------------------------------------------------- |
-| :: [Velog Link](https://velog.io/@qjatjs123123/series/Browsing-Assist) | 
+## 🗓️ 수행 기간
 
-| :: Articles                                                                |
-| :------------------------------------------------------------------------------------- |
-| :: [✔️ Browsing Assist 소개](https://velog.io/@qjatjs123123/Browsing-Assist-%ED%81%AC%EB%A1%AC-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98-1) | 
-| :: [✔️ 드래그한 문장에 형광펜 칠하기](https://velog.io/@qjatjs123123/Browsing-Assist-%ED%81%AC%EB%A1%AC-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98-2) | 
-| :: [✔️ tooltip UI 만들기](https://velog.io/@qjatjs123123/Browsing-Assist-%ED%81%AC%EB%A1%AC-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98-3) | 
-| :: [✔️ 형광펜 색상 변경하기](https://velog.io/@qjatjs123123/Browsing-Assist-%ED%81%AC%EB%A1%AC-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98-4) | 
-| :: [✔️ 페이지 접속 시 하이라이트 복원](https://velog.io/@qjatjs123123/Browsing-Assist-%ED%81%AC%EB%A1%AC-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98-5) | 
-| :: [✔️ AI 핵심 문장 추천](https://velog.io/@qjatjs123123/Browsing-Assist-%ED%81%AC%EB%A1%AC-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98-6) | 
-| :: [✔️ 특정 도메인에서 확장 프로그램 기능의 활성화/비활성화 구현](https://velog.io/@qjatjs123123/Browsing-Assist-%ED%81%AC%EB%A1%AC-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98-7) | 
+- 2024.07.19 - 프로젝트 설계 및 구현 시작
+- 2024.08.12 - v1.0.0 앱스토어 출시 완료
+- 2024.08.20 - v1.0.4 업데이트 배포  
+
+## 📚 기술 스택
+
+### Frontend
+<img src="https://img.shields.io/badge/react-61DAFB?style=for-the-badge&logo=swift&logoColor=white"> <img src="https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=white"> <img src="https://img.shields.io/badge/recoil-3578E5?style=for-the-badge&logo=recoil&logoColor=white"> <img src="https://img.shields.io/badge/html-E34F26?style=for-the-badge&logo=html5&logoColor=white"> <img src="https://img.shields.io/badge/css-1572B6?style=for-the-badge&logo=css3&logoColor=white"> 
+
+### Backend
+<img src="https://img.shields.io/badge/java-000000?style=for-the-badge&logo=openjdk&logoColor=white"> <img src="https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white"> <img src="https://img.shields.io/badge/spring%20boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"> <img src="https://img.shields.io/badge/spring%20security-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white"> <img src="https://img.shields.io/badge/spring%20ai-6DB33F?style=for-the-badge&logo=spring&logoColor=white"> <img src="https://img.shields.io/badge/jpa-006600?style=for-the-badge&logo=hibernate&logoColor=white"> <img src="https://img.shields.io/badge/QueryDSL-0769AD?style=for-the-badge&logo=querydsl&logoColor=white"> <img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white"> 
+
+### Database
+<img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> <img src="https://img.shields.io/badge/elastic search-005571?style=for-the-badge&logo=elasticsearch&logoColor=white"> <img src="https://img.shields.io/badge/redis-DC382D?style=for-the-badge&logo=redis&logoColor=white"> 
+
+### Infra
+<img src="https://img.shields.io/badge/ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white"> <img src="https://img.shields.io/badge/nginx-009639?style=for-the-badge&logo=nginx&logoColor=white"> <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"> <img src="https://img.shields.io/badge/jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white"> 
+
+### AWS
+<img src="https://img.shields.io/badge/ec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white"> <img src="https://img.shields.io/badge/rds-527FFF?style=for-the-badge&logo=amazonrds&logoColor=white"> <img src="https://img.shields.io/badge/s3-569A31?style=for-the-badge&logo=amazons3&logoColor=white"> <img src="https://img.shields.io/badge/lambda-FF9900?style=for-the-badge&logo=awslambda&logoColor=white"> <img src="https://img.shields.io/badge/personalize-00A8E1?style=for-the-badge&logo=awspersonalize&logoColor=white">
+
+### Collaboration
+<img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/gitlab-FC6D26?style=for-the-badge&logo=gitlab&logoColor=white"> <img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=white"> <img src="https://img.shields.io/badge/mattermost-0058CC?style=for-the-badge&logo=mattermost&logoColor=white"> <img src="https://img.shields.io/badge/figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white"> 
+<br>
+
+## ⚙️ System Architecture
+
+### 🗄️ Database 설계
+### DB Schema
+
+<div align="center">
+<img width="1024" alt="image" src="https://github.com/user-attachments/assets/c93b7526-03b4-4092-ae57-ea3ecc84030e">
+</div>
+
+<!-- ### 📡 Software Architecture
+
+<div align="center">
+<img width="600" alt="image" src="https://github.com/OnlyPickOne/onlypickone-server/assets/71253970/2957e5b0-ee4b-4861-a38f-1e910b80361b">
+</div> -->
+
+## 🗂️ 패치노트
+
+### v1.0.0
+2024.08.12
+
+- getsBee 서비스가 시작되었습니다.
+
+### v1.0.1
+2024.08.14
+
+- 익스텐션 기능을 개선했습니다.
+
+### v1.0.2
+2024.08.15
+
+- 웹 사이트 재접속 시 하이라이트 정보를 다시 보이도록 구현했습니다.
+
+### v1.0.3
+2024.08.16
+
+- 오류를 수정했습니다.
+
+### v1.0.4
+2024.08.20
+
+- 핵심 문장 추천 기능을 개선했습니다.
+
+## 📊 성과
+
+### 앱 출시 완료
+
+2024년 8월 12일 부로 심사 최종 승인 후 Chrome WebStore에 출시가 완료되었습니다.
+[웹 스토어 바로가기 Link](https://chromewebstore.google.com/detail/getsbee/mkloamglbhkpbaefjpmfggbfbfobeima)
+
+<!-- ### 앱스토어 노출 수
+
+<div align="center">
+<img width="480" alt="image" src="https://github.com/OnlyPickOne/onlypickone-ios/assets/87888411/d46296b7-d2c6-4994-b899-3557b91bbd2b">
+</div>
+현재 앱스토어 출시 이후로 꾸준한 페이지 노출 수를 나타내고 있습니다. 별도의 홍보나 프로모션 없이 순수하게 이상형 월드컵 등의 키워드로 조회되는 통계입니다.
+
+### 다운로드 수
+
+<div align="center">
+<img width="480" alt="image" src="https://github.com/OnlyPickOne/onlypickone-server/assets/71253970/2b8f5882-2d3c-45ab-ac22-f80342ed5eac">
+</div>
+2월 기준 실제 앱스토어에서 다운로드 된 통계입니다. 별도의 홍보 없이도 매일 꾸준하게 다운로드가 되고 있음을 확인할 수 있습니다.
+
+### 충돌 수
+
+<div align="center">
+<img width="480" alt="image" src="https://github.com/OnlyPickOne/onlypickone-ios/assets/87888411/2ecded23-6a2b-491e-8cf6-f854bafda39f">
+</div>
+통계를 내기 충분한 수의 회원이 사용했음에도 테스트 중에 발생했던 1회의 충돌 이외에 어떤 크래시도 발생하지 않았습니다.
+
+### 유입 경로
+
+<div align="center">
+<img width="480" alt="image" src="https://github.com/OnlyPickOne/onlypickone-ios/assets/87888411/2a9cc1ea-4d8e-4931-9803-64b8105d3ba6">
+</div>
+앱스토어에서 이상형 월드컵 등을 검색하거나 앱스토어 앱 추천을 통해 유입되는 케이스가 꾸준하게 발생하는 것을 확인할 수 있습니다. -->
+
+<!-- <br>
+
+## 📝 서비스 이용 규칙 또는 약관
+
+### 개인정보 처리방침
+
+https://water-advantage-4b6.notion.site/8ff7ccd28d05427c85c5aacbc59cfe06?pvs=4
+
+### 이용 약관
+
+https://water-advantage-4b6.notion.site/7e7e7929ce6f4d6a88c6dcdb31e0fa12?pvs=4
+
+## 🖌️ UI/UX 디자인
+
+### iOS App 디자인 (Figma)
+
+<div align="center">
+<img width="720" alt="image" src="https://github.com/OnlyPickOne/onlypickone-ios/assets/87888411/ae59b523-d459-44dd-acd4-b9877f98a28e">
+</div> -->
 
 
+
+
+<!-- ## 👨🏻‍💻 팀 구성
+
+### Han Taehee
+
+- iOS Development
+- https://github.com/110w110
+- 프로젝트 기획 및 설계, 전체 UI 디자인 및 구현, iOS 앱 개발 전체 과정 등
+
+### Lee Hoseok
+
+- Backend Development, Database, Infra
+- https://github.com/hoshogi
+- Backend 개발, Database 설계, Infra 구축 및 배포, REST API 설계 등  
+<br> -->
