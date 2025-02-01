@@ -72,8 +72,8 @@ public class HighlightServiceImpl implements HighlightService {
         Highlight highlight = request.toHighlightEntity(post);
         highlightRepository.save(highlight);
 
-        HighlightLog highlightLog = new HighlightLog(highlight, false, post);
-        highlightLogRepository.save(highlightLog);
+//        HighlightLog highlightLog = new HighlightLog(highlight, false, post);
+//        highlightLogRepository.save(highlightLog);
 
         postElasticService.savePostDocument(highlight);
         return HighlightResponse.of(highlight.getId());
@@ -96,8 +96,8 @@ public class HighlightServiceImpl implements HighlightService {
         postElasticService.deleteHighlightDocument(highlight);
         highlightRepository.delete(highlight);
 
-        HighlightLog highlightLog = new HighlightLog(highlight, true, post);
-        highlightLogRepository.save(highlightLog);
+//        HighlightLog highlightLog = new HighlightLog(highlight, true, post);
+//        highlightLogRepository.save(highlightLog);
 
         if(post.getHighlights().isEmpty() && post.getNote()== null){
             PostDocument postDocument = postElasticRepository.findByPostId(post.getId()).orElseThrow(
@@ -120,13 +120,13 @@ public class HighlightServiceImpl implements HighlightService {
         highlight.changeColor(request.color());
         highlightRepository.save(highlight);
 
-        HighlightLog highlightLog = highlightLogRepository.findByHighlightId(highlightId)
-                .orElseThrow(() -> new BadRequestException(HIGHLIGHT_NOT_FOUND));
-        if(highlightLog.getPost().getMember() != member) {
-            throw new ForbiddenException(_FORBIDDEN);
-        }
-        highlightLog.changeColor(request.color());
-        highlightLogRepository.save(highlightLog);
+//        HighlightLog highlightLog = highlightLogRepository.findByHighlightId(highlightId)
+//                .orElseThrow(() -> new BadRequestException(HIGHLIGHT_NOT_FOUND));
+//        if(highlightLog.getPost().getMember() != member) {
+//            throw new ForbiddenException(_FORBIDDEN);
+//        }
+//        highlightLog.changeColor(request.color());
+//        highlightLogRepository.save(highlightLog);
     }
 
     @Override
