@@ -129,37 +129,37 @@ public class HighlightServiceImpl implements HighlightService {
 //        highlightLogRepository.save(highlightLog);
     }
 
-    @Override
-    public List<HighlightResponse> getHighlights(String url, Long memberId) {
-        Member member = memberService.findById(memberId);
-        return postRepository.findAllByMemberAndUrl(member, url)
-                .map(highlightLogRepository::findAllByPost)
-                .map(highlights -> {
-                    List<HighlightResponse> hr = new ArrayList<>();
-                    for (HighlightLog highlight : highlights) {
-                        hr.add(HighlightResponse.of(highlight));
-                    }
-                    return hr;
-                })
-                .orElseGet(ArrayList::new);
-    }
-
-
 //    @Override
-//    @Transactional
 //    public List<HighlightResponse> getHighlights(String url, Long memberId) {
 //        Member member = memberService.findById(memberId);
 //        return postRepository.findAllByMemberAndUrl(member, url)
-//                .map(highlightRepository::findAllByPost)
+//                .map(highlightLogRepository::findAllByPost)
 //                .map(highlights -> {
 //                    List<HighlightResponse> hr = new ArrayList<>();
-//                    for (Highlight highlight : highlights) {
+//                    for (HighlightLog highlight : highlights) {
 //                        hr.add(HighlightResponse.of(highlight));
 //                    }
 //                    return hr;
 //                })
 //                .orElseGet(ArrayList::new);
 //    }
+
+
+    @Override
+    @Transactional
+    public List<HighlightResponse> getHighlights(String url, Long memberId) {
+        Member member = memberService.findById(memberId);
+        return postRepository.findAllByMemberAndUrl(member, url)
+                .map(highlightRepository::findAllByPost)
+                .map(highlights -> {
+                    List<HighlightResponse> hr = new ArrayList<>();
+                    for (Highlight highlight : highlights) {
+                        hr.add(HighlightResponse.of(highlight));
+                    }
+                    return hr;
+                })
+                .orElseGet(ArrayList::new);
+    }
 
     @Override
     @Transactional

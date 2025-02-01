@@ -21,9 +21,9 @@ public record HighlightResponse(
         @JsonInclude(JsonInclude.Include.NON_NULL)
         Integer lastOffset,
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        Type type,
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        Boolean is_deleted
+        Type type
+//        @JsonInclude(JsonInclude.Include.NON_NULL)
+//        Boolean is_deleted
 
 ) {
     @Builder
@@ -44,22 +44,22 @@ public record HighlightResponse(
                 highlight.getStartOffset(),
                 highlight.getLastIndex(),
                 highlight.getLastOffset(),
-                highlight.getType(),
-                highlight.getIsDeleted()
+                highlight.getType()
+//                highlight.getIsDeleted()
         );
     }
 
-    public static HighlightResponse of(HighlightLog highlight) {
-        return new HighlightResponse(
-                highlight.getId(),
-                highlight.getContent(),
-                highlight.getColor(),
-                highlight.getStartIndex(),
-                highlight.getStartOffset(),
-                highlight.getLastIndex(),
-                highlight.getLastOffset(),
-                highlight.getType(),
-                highlight.getIsDeleted()
-        );
-    }
+//    public static HighlightResponse of(HighlightLog highlight) {
+//        return new HighlightResponse(
+//                highlight.getId(),
+//                highlight.getContent(),
+//                highlight.getColor(),
+//                highlight.getStartIndex(),
+//                highlight.getStartOffset(),
+//                highlight.getLastIndex(),
+//                highlight.getLastOffset(),
+//                highlight.getType(),
+//                highlight.getIsDeleted()
+//        );
+//    }
 }
