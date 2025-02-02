@@ -20,10 +20,10 @@ describe("pageModel 테스트", () => {
     pageModel.init();
 
     //then
-    expect(pageModel.domain).toBe("test.com");
-    expect(pageModel.url).toBe("https://test.com/page");
-    expect(pageModel.thumbnailUrl).toBe("test-thumbnail.jpg");
-    expect(pageModel.title).toBe("Test Page Title");
+    expect(pageModel.getDomain()).toBe("test.com");
+    expect(pageModel.getUrl()).toBe("https://test.com/page");
+    expect(pageModel.getThumbnailUrl()).toBe("test-thumbnail.jpg");
+    expect(pageModel.getTitle()).toBe("Test Page Title");
   })
 
   test("saveChromePage(): 초기 접속 시 페이지 정보(domain, url, thumbnailUrl, title)를 로컬 크롬 스토리지에 저장한다다.", () => {

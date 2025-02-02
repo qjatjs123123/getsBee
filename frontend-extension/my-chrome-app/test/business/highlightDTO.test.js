@@ -23,7 +23,7 @@ describe("highlightDTO 테스트", () => {
     // given
     const highlightParam = {
       color : 'yello',
-      range : selectionModel.range,
+      range : selectionModel.getRange(),
       url : "https://test.com",
       thumbnailUrl: "https://test.com/thumbnail.jpg",
       title: "Test Highlight",
@@ -56,7 +56,7 @@ describe("highlightDTO 테스트", () => {
      // given
     const highlightParam = {
       color : 'yellow',
-      range : selectionModel.range,
+      range : selectionModel.getRange(),
       url : "https://test.com",
       thumbnailUrl: "https://test.com/thumbnail.jpg",
       title: "Test Highlight",
@@ -98,7 +98,7 @@ describe("highlightDTO 테스트", () => {
     // given
     const highlightParam = {
       color : 'yellow',
-      range : selectionModel.range,
+      range : selectionModel.getRange(),
       url : "https://test.com",
       thumbnailUrl: "https://test.com/thumbnail.jpg",
       title: "Test Highlight",
@@ -122,7 +122,7 @@ describe("highlightDTO 테스트", () => {
      // given
      const highlightParam = {
       color : 'yellow',
-      range : selectionModel.range,
+      range : selectionModel.getRange(),
       url : "https://test.com",
       thumbnailUrl: "https://test.com/thumbnail.jpg",
       title: "Test Highlight",

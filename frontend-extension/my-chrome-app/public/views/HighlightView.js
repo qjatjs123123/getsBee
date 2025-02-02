@@ -57,8 +57,8 @@ HighlightView.onClick = function(event) {
   const clickedElement = event.currentTarget;
   const clickedId = Number(clickedElement.dataset.id);
 
-  selectionModel.SELECTED_ID = clickedId;
-
+  selectionModel.getSelectedId(clickedId);
+  
   const left = event.clientX + window.scrollX + 10;
   const top = event.clientY + window.scrollY + 10;
   eventManager.emit('showTooltip', { left, top });
@@ -75,4 +75,4 @@ HighlightView.getOriginalColor = (hoverColor) => {
   return colorObj ? colorObj.color : hoverColor; 
 };
 
-module.exports = { HighlightView };
+//module.exports = { HighlightView };

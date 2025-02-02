@@ -34,7 +34,7 @@ describe("selectionModel 테스트", () => {
     selectionModel.create();
 
     // then
-    expect(selectionModel.selection).toBeTruthy(); 
+    expect(selectionModel.getSelection()).toBeTruthy(); 
     
   });
 
@@ -43,7 +43,7 @@ describe("selectionModel 테스트", () => {
     selectionModel.create();
 
     // then
-    expect(selectionModel.range).toBeTruthy(); 
+    expect(selectionModel.getRange()).toBeTruthy(); 
     
   });
 
@@ -53,7 +53,7 @@ describe("selectionModel 테스트", () => {
     selectionModel.delete();
 
     // then
-    const isValid = selectionModel.isValidSelection(selectionModel.selection); 
+    const isValid = selectionModel.isValidSelection(selectionModel.getSelection()); 
   expect(isValid).toBe(false);
     
   });
@@ -64,7 +64,7 @@ describe("selectionModel 테스트", () => {
     selectionModel.delete();
 
     // then
-    const isValid = selectionModel.isTextSelected(selectionModel.selection); 
+    const isValid = selectionModel.isTextSelected(selectionModel.getSelection()); 
   expect(isValid).toBe(false);
     
   });
@@ -75,7 +75,7 @@ describe("selectionModel 테스트", () => {
     selectionModel.delete();
 
     // then
-    const range = selectionModel.range; 
+    const range = selectionModel.getRange(); 
     expect(range).toBeNull();
     
   });
@@ -111,8 +111,9 @@ describe("selectionModel 테스트", () => {
     ];
 
     selection.range.getClientRects.mockReturnValue(mockRects);
+    selectionModel.setRange(selection.range);
     const result = selection.getRectPos();
-
+    
     // then
     expect(result[0]).toBeGreaterThanOrEqual(0); 
     expect(result[1]).toBeGreaterThanOrEqual(0);

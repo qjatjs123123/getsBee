@@ -12,24 +12,24 @@ class Main {
       
       pageModel.init();
       recommendModel.init();
-      pageModel.saveChromePage(pageModel.domain,recommendModel.recommendArr, highlightModel.RANGE_STRINGIFY_ARR);
+      pageModel.saveChromePage(recommendModel.recommendArr, highlightModel.RANGE_STRINGIFY_ARR);
 
       loginModel.init();
       loginModel.login();
       
       document.addEventListener("visibilitychange", () => {
         if (document.visibilityState === "visible") {
-          pageModel.saveChromePage(pageModel.domain,recommendModel.recommendArr, highlightModel.RANGE_STRINGIFY_ARR);
+          pageModel.saveChromePage(recommendModel.recommendArr, highlightModel.RANGE_STRINGIFY_ARR);
         } 
       });
 
-      if(await this.isNotstartTooltip(pageModel.domain)) return;
+      if(await this.isNotstartTooltip(pageModel.getDomain())) return;
       const tooltip = this.getToolTipElement();
       document.body.appendChild(tooltip);
       document.addEventListener("mouseup", (event) => this.onMouseUp());
       document.addEventListener("mousedown", (event) => this.onMouseDown());
       this.handleSelect();
-      pageModel.saveChromePage(pageModel.domain,recommendModel.recommendArr, highlightModel.RANGE_STRINGIFY_ARR); 
+      pageModel.saveChromePage(recommendModel.recommendArr, highlightModel.RANGE_STRINGIFY_ARR); 
     });
 
   }
@@ -92,7 +92,7 @@ class Main {
       return;
     }
     // Update
-    if (selectionModel.SELECTED_ID >= 0) this.handleUpdate(color)
+    if (selectionModel.getSelectedId() >= 0) this.handleUpdate(color)
     else this.handleRecommend(color);
 
     this.onMouseDown();
@@ -122,14 +122,13 @@ class Main {
   
 
   async handleRecommend(color) {
-    highlightModel.deleteColor(selectionModel.SELECTED_ID);
-    const rangeData = recommendModel.findRecommendDataById(selectionModel.SELECTED_ID);
+    highlightModel.deleteColor(selectionModel.getSelectedId());
+    const rangeData = recommendModel.findRecommendDataById(selectionModel.getSelectedId());
 
     const range = highlightModel.parseRange(rangeData);
 
+    selectionModel.setRange(range);
 
-    selectionModel.range = range;
-    
     await this.handleInsert(color);
   }
 
@@ -145,36 +144,42 @@ class Main {
   handleSelect() { 
     const data = LocalStorageModel.select(LOCAL_STORAGE_KEY, pageModel.url);
 
-    for (const param of data) {
-
-      const highlightDTO = new HighlightDTO(param);
-      highlightDTO.setId(param.id);
-
-      if (param.is_updated) {
-        highlightModel.updateColor(highlightDTO.color, highlightDTO.getId());
-        highlightModel.updateRANGE_STRINGIFY_ARR(highlightDTO.getId(), highlightDTO.color);  
-        continue;
+    try{
+      for (const param of data) {
+        
+        const highlightDTO = new HighlightDTO(param);
+        
+        highlightDTO.setId(param.id);
+  
+        if (param.is_updated) {
+          highlightModel.updateColor(highlightDTO.color, highlightDTO.getId());
+          highlightModel.updateRANGE_STRINGIFY_ARR(highlightDTO.getId(), highlightDTO.color);  
+          continue;
+        }
+  
+        if (param.is_deleted) {
+          highlightModel.removeElementByDataId(highlightDTO.getId());
+          highlightModel.deleteRANGE_STRINGIFY_ARR(highlightDTO.getId());
+        }else {  
+          highlightModel.setRANGE_PARSE_ARR(param.id, highlightDTO.getParseRange())
+          highlightModel.setRANGE_STRINGIFY_ARR(highlightDTO.getId(), highlightDTO.getStringifyRange()); 
+          Main.renderHighlight(highlightDTO);
+        }
+        console.log(param);
       }
-
-      if (param.is_deleted) {
-        highlightModel.removeElementByDataId(highlightDTO.getId());
-        highlightModel.deleteRANGE_STRINGIFY_ARR(highlightDTO.getId());
-      }else {  
-        highlightModel.setRANGE_PARSE_ARR(param.id, highlightDTO.getParseRange())
-        highlightModel.setRANGE_STRINGIFY_ARR(highlightDTO.getId(), highlightDTO.getStringifyRange()); 
-        Main.renderHighlight(highlightDTO);
-      }
-      
+    } catch(error) {
+      console.log(error)
     }
+
   }
 
   async handleInsert(color) {
     const param = {
       color: color,
-      range : selectionModel.range,
-      url : pageModel.url,
-      thumbnailUrl : pageModel.thumbnailUrl,
-      title : pageModel.title,
+      range : selectionModel.getRange(),
+      url : pageModel.getUrl(),
+      thumbnailUrl : pageModel.getThumbnailUrl(),
+      title : pageModel.getTitle(),
       type : "TEXT",
       is_deleted : false,
       is_updated : false,
@@ -199,7 +204,7 @@ class Main {
 
     Main.renderHighlight(highlightDTO);
     LocalStorageModel.insert(highlightDTO.getStringifyRange(), LOCAL_STORAGE_KEY);
-    pageModel.saveChromePage(pageModel.domain,recommendModel.recommendArr, highlightModel.RANGE_STRINGIFY_ARR);
+    pageModel.saveChromePage(recommendModel.recommendArr, highlightModel.RANGE_STRINGIFY_ARR);
   }
 
   static renderHighlight(highlightDTO) {
@@ -217,7 +222,7 @@ class Main {
   async handleUpdate(color) {
 
     const apiResult = await this.executeWithErrorHandling(
-      async () => await highlightModel.updateAPI(color, selectionModel.SELECTED_ID), 
+      async () => await highlightModel.updateAPI(color, selectionModel.getSelectedId()), 
       ERROR_LOG.UPDATE
     )
 
@@ -227,33 +232,33 @@ class Main {
   }
 
   handleUpdateCallback(color) {
-    highlightModel.updateColor(color, selectionModel.SELECTED_ID);
+    highlightModel.updateColor(color, selectionModel.getSelectedId());
 
-      const range = highlightModel.getRANGE_PARSE_ARR_by_ID(selectionModel.SELECTED_ID);
+      const range = highlightModel.getRANGE_PARSE_ARR_by_ID(selectionModel.getSelectedId());
 
       const param = {
         color: color,
         range : range,
-        url : pageModel.url,
-        thumbnailUrl : pageModel.thumbnailUrl,
-        title : pageModel.title,
+        url : pageModel.getUrl(),
+        thumbnailUrl : pageModel.getThumbnailUrl(),
+        title : pageModel.getTitle(),
         type : "TEXT",
         is_deleted : false,
         is_updated : true,
       };
       const highlightDTO = new HighlightDTO(param);
-      highlightDTO.setId(selectionModel.SELECTED_ID);
+      highlightDTO.setId(selectionModel.getSelectedId());
       
       highlightModel.updateRANGE_STRINGIFY_ARR(highlightDTO.getId(), highlightDTO.color);  
 
       LocalStorageModel.insert(highlightDTO.getStringifyRange(), LOCAL_STORAGE_KEY);
-      pageModel.saveChromePage(pageModel.domain,recommendModel.recommendArr, highlightModel.RANGE_STRINGIFY_ARR);
+      pageModel.saveChromePage(recommendModel.recommendArr, highlightModel.RANGE_STRINGIFY_ARR);
   }
 
   async handleDelete() {
 
     const apiResult = await this.executeWithErrorHandling(
-      async () => await highlightModel.deleteAPI(selectionModel.SELECTED_ID), 
+      async () => await highlightModel.deleteAPI(selectionModel.getSelectedId()), 
       ERROR_LOG.DELETE
     )
 
@@ -263,28 +268,28 @@ class Main {
   }
 
   handleDeleteCallback() {
-    highlightModel.deleteColor(selectionModel.SELECTED_ID);
-    const range = highlightModel.getRANGE_PARSE_ARR_by_ID(selectionModel.SELECTED_ID);
+    highlightModel.deleteColor(selectionModel.getSelectedId());
+    const range = highlightModel.getRANGE_PARSE_ARR_by_ID(selectionModel.getSelectedId());
 
     const param = {
       color: "00000",
       range : range,
-      url : pageModel.url,
-      thumbnailUrl : pageModel.thumbnailUrl,
-      title : pageModel.title,
+      url : pageModel.getUrl(),
+      thumbnailUrl : pageModel.getThumbnailUrl(),
+      title : pageModel.getTitle(),
       type : "TEXT",
       is_deleted : true,
       is_updated : false,
     };
 
     const highlightDTO = new HighlightDTO(param);
-    highlightDTO.setId(selectionModel.SELECTED_ID);
+    highlightDTO.setId(selectionModel.getSelectedId());
 
     LocalStorageModel.insert(highlightDTO.getStringifyRange(), LOCAL_STORAGE_KEY);
-    highlightModel.deleteRANGE_PARSE_ARR(selectionModel.SELECTED_ID);
-    highlightModel.deleteRANGE_STRINGIFY_ARR(selectionModel.SELECTED_ID);
+    highlightModel.deleteRANGE_PARSE_ARR(selectionModel.getSelectedId());
+    highlightModel.deleteRANGE_STRINGIFY_ARR(selectionModel.getSelectedId());
 
-    pageModel.saveChromePage(pageModel.domain,recommendModel.recommendArr, highlightModel.RANGE_STRINGIFY_ARR);
+    pageModel.saveChromePage(recommendModel.recommendArr, highlightModel.RANGE_STRINGIFY_ARR);
   }
 
   async executeWithErrorHandling(asyncFunction, errorMessage) {
@@ -299,4 +304,4 @@ class Main {
   }
 }
 
-module.exports = { Main };
+//module.exports = { Main };

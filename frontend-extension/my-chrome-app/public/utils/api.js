@@ -9,7 +9,7 @@ async function apiFunc( url, method, body, callFunc) {
         method: method,
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${loginModel.accessToken}`,
+          Authorization: `Bearer ${loginModel.getAccessToken()}`,
         },
         body: JSON.stringify(body),
       }
