@@ -57,7 +57,7 @@ HighlightView.onClick = function(event) {
   const clickedElement = event.currentTarget;
   const clickedId = Number(clickedElement.dataset.id);
 
-  selectionModel.getSelectedId(clickedId);
+  selectionModel.setSelectedId(clickedId);
   
   const left = event.clientX + window.scrollX + 10;
   const top = event.clientY + window.scrollY + 10;

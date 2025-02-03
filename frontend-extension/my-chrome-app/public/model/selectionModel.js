@@ -34,7 +34,6 @@ const selectionModel = (() => {
   }
 
   function getRectPos() {
-    console.log(range);
     if (!range) return [null, null];
     const rects = range.getClientRects();
     

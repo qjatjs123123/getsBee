@@ -46,5 +46,5 @@ async function handleAPIStatus(response, url, method, body) {
 async function handleRefresh(url, method, body) {
   await loginModel.refresh();
   await loginModel.login();
-  await apiFunc(url, method, body); 
+  // await apiFunc(url, method, body); 
 }

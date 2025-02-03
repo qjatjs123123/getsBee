@@ -142,9 +142,8 @@ class Main {
   }
 
   handleSelect() { 
-    const data = LocalStorageModel.select(LOCAL_STORAGE_KEY, pageModel.url);
+    const data = LocalStorageModel.select(LOCAL_STORAGE_KEY, pageModel.getUrl());
 
-    try{
       for (const param of data) {
         
         const highlightDTO = new HighlightDTO(param);
@@ -165,11 +164,9 @@ class Main {
           highlightModel.setRANGE_STRINGIFY_ARR(highlightDTO.getId(), highlightDTO.getStringifyRange()); 
           Main.renderHighlight(highlightDTO);
         }
-        console.log(param);
+        
       }
-    } catch(error) {
-      console.log(error)
-    }
+
 
   }
 
